@@ -14,23 +14,53 @@ void esperar(int minMillis, int maxMillis) {
       chrono::milliseconds(rand() % (maxMillis - minMillis + 1) + minMillis));
 }
 //-----------------------------------------------------
-void t_filosofo(Scoreboard& scb, string fil) {
+void t_worker(Scoreboard& scb) {
 	
-	Tupla note("1");
-	Tupla obt("3");
+	Tupla init("init");
+	scb.readN(init);
 	
-	for(int i=0;i<10;++i){
-		esperar(200,300);
-		obt = scb.RN(note);
-		cout << "["+fil+"] <-- entro\n";
-		esperar(0,100);
-		scb.PN(note);
-		cout << "["+fil+"] --> salgo\n";
+	Tupla t_hacer("hacer", "?b", "?s");
+	Tupla t_hecho("hecho","");
+	while(true){
+		Tupla t = scb.RN(t_hacer);
+		if(t[1] == "salir"){
+			break;
+		}
+		cout<< "Ordenando fichero >"<<t[2]<<endl;
+		esperar(100,1000);
+		cout<< "Fichero ordenado >"<<t[2]<<endl;
+		t_hecho[1] = t[2];
+		scb.PN(t_hecho);
 	}
+}
+//-----------------------------------------------------
+void t_supervisor(Scoreboard& scb, int M){
+	Tupla t_hacer("hacer", "ordenar","");
+	for(int i=0;i<M;++i){
+		t_hacer[2] = "fichero_"+to_string(i);
+		scb.PN(t_hacer);
+	}
+	
+	Tupla init("init");
+	scb.PN(init);
+	
+	Tupla t_hecho("hecho", "");
+	for(int i=0;i<M;++i){
+		t_hecho[1] = "fichero_"+to_string(i);
+		scb.RN(t_hecho);
+	}
+	
+	t_hacer[1] = "salir";
+	t_hacer[2] = "";
+	for(int i=0;i<M;++i){
+		scb.PN(t_hacer);
+	}
+	
 }
 //-----------------------------------------------------
 int main(int argc, char* argv[]) {
 	
+	/*
 	Scoreboard scb;
 	Tupla it("1");
 	Tupla pat("?X");
@@ -46,7 +76,6 @@ int main(int argc, char* argv[]) {
 	
 	scb.RN(pat);
 	
-	return 0;
 	
   // iniciar threads
   thread a[10];
@@ -59,7 +88,7 @@ int main(int argc, char* argv[]) {
 		a[i].join();
 	}
 	
-	return 0;
+	*/
 	
 	//suyo
 	Scoreboard LD;
@@ -131,6 +160,26 @@ int main(int argc, char* argv[]) {
 	delete v[0];
 	delete v[1];
 
+	
+	//mío
+	//ejercicio de ordenacion de ficheros
+	Scoreboard scb;
+	
+	int N = 10;
+	thread w[N];
+	thread s;
+	
+	for(int i=0;i<N;++i){
+		w[i] = thread(&t_worker, ref(scb));
+	}
+	s = thread(&t_supervisor, ref(scb),100);
+	
+	for(int i=0;i<N;++i){
+		w[i].join();
+	}
+	s.join();
+	
+	
   return 0;
 	
 }
