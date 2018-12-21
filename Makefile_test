@@ -1,0 +1,32 @@
+#---------------------------------------------------------
+# macros
+RM = /bin/rm -f  # para limpiar
+CC = g++         # para compilar
+#---------------------------------------------------------
+# para compilación y enlazado ("linkado")
+CPPFLAGS=-I. -std=c++11 -fmax-errors=1 -D DEBUG_MODE=true -g # opciones compilación
+LDFLAGS=-pthread            # opciones de "linkado"
+#---------------------------------------------------------
+# vars
+EJEC = test
+SCOREBOARD = scoreboard
+TUPLE = tupla
+
+all: ${EJEC} #lo que se generará al ejecutar "make"
+#---------------------------------------------------------
+# "linkar" y generar ejecutable.
+${EJEC}: ${EJEC}.o ${SCOREBOARD}.o ${TUPLE}.o
+	${CC} ${EJEC}.o ${SCOREBOARD}.o ${TUPLE}.o -o ${EJEC} ${CPPFLAGS} ${LDFLAGS}
+#---------------------------------------------------------
+${EJEC}.o: ${EJEC}.cpp ${SCOREBOARD}.hpp ${TUPLE}.hpp
+	${CC} -c ${EJEC}.cpp ${CPPFLAGS}
+#---------------------------------------------------------
+${SCOREBOARD}.o: ${SCOREBOARD}.cpp ${SCOREBOARD}.hpp
+	${CC} -c ${SCOREBOARD}.cpp ${CPPFLAGS}
+#---------------------------------------------------------
+${TUPLE}.o: ${TUPLE}.cpp ${TUPLE}.hpp
+	${CC} -c ${TUPLE}.cpp ${CPPFLAGS}
+#---------------------------------------------------------
+# Cuidado con lo que se pone aquí, que se borra sin preguntar
+clean:
+	$(RM) ${SCOREBOARD}.o ${EJEC}.o ${EJEC}
