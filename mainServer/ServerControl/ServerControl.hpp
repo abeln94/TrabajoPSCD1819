@@ -14,7 +14,7 @@
 #include <Socket.hpp>
 #include <string>
 #include <mutex>
-//#include <condition_variable>
+#include <condition_variable>
 
 using namespace std;
 
@@ -34,9 +34,10 @@ class ControlSys {
 
     bool ready();
 
-    //Socket *soc_priv;
-    //Socket *soc_publ;
-    //int soc_publ_fd, soc_priv_fd ;
+    void endPH2();
+
+    int sumPH2(int n);
+
 
   private:
     int private_port, public_port;
@@ -45,6 +46,8 @@ class ControlSys {
     string ip_s1, ip_s2, ip_s3;
     int port_s1, port_s2, port_s3;
     bool s1_b, s2_b, s3_b;
+    int cntrPH2;
+    condition_variable endPH2_cv;
 };
 
 #endif

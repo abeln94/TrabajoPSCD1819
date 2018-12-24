@@ -17,46 +17,7 @@ ControlSys::ControlSys(int priv_p, int pub_p){
   s1_b = false;
   s2_b = false;
   s3_b = false;
-  /*
-  soc_priv = new Socket(priv_p);
-  soc_publ = new Socket(pub_p);
-
-  //Bind
-  soc_priv_fd = soc_priv -> Bind();
-  if (soc_priv_fd == -1) {
-    string mensError(strerror(errno));
-      cerr << "--Error en el bind: " + mensError + "\n";
-    exit(1);
-  }
-
-  //Listen
-  int errcode1 = soc_priv -> Listen(5);
-  if (errcode1 == -1) {
-    string mensError(strerror(errno));
-      cerr << "--Error en el listen: " + mensError + "\n";
-    // Cerramos el socket
-    soc_priv -> Close(soc_priv_fd);
-    exit(1);
-  }
-
-
-  //Bind
-  soc_publ_fd = soc_publ -> Bind();
-  if (soc_publ_fd == -1) {
-    string mensError(strerror(errno));
-      cerr << "--Error en el bind: " + mensError + "\n";
-    exit(1);
-  }
-
-  // Listen
-  int errcode2 = soc_publ -> Listen(100);
-  if (errcode2 == -1) {
-    string mensError(strerror(errno));
-      cerr << "--Error en el listen: " + mensError + "\n";
-    // Cerramos el socket
-    soc_publ -> Close(soc_publ_fd);
-    exit(1);
-  }*/
+  cntrPH2 = 0;
 }
 
 ControlSys::~ControlSys(){
@@ -108,4 +69,20 @@ void ControlSys::err_safe_print(string c){
 
 bool ControlSys::ready(){
   return s1_b&&s2_b&&s3_b;
+}
+
+void ControlSys::endPH2(){
+  unique_lock<mutex> lck(mtx);
+  while(cntrPH2 != 0){
+    endPH2_cv.wait(lck);
+  }
+}
+
+int ControlSys::sumPH2(int n){
+  unique_lock<mutex> lck(mtx);
+  cntrPH2 = cntrPH2 + n;
+  if(cntrPH2 == 0){
+    endPH2_cv.notify_one();
+  }
+  return cntrPH2;
 }

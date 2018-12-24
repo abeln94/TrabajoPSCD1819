@@ -96,6 +96,7 @@ void conection(int subserv_fd, ControlSys &sys, Socket& soc){
     if(err){
       sys.safe_print("[x] Ending process with errors.");
     }
+    sys.sumPH2(-1);
 }
 
 void sig_handler(int signo){
@@ -227,10 +228,13 @@ int main(int argc, char * argv[]) {
     }
 
     if (!ctrl.ready()){
+      ctrl.sumPH2(1);
       cliente = thread(&conection, soc_priv_fd, ref(ctrl), ref(soc_priv));
       cliente.detach();
     }
   }
+
+  ctrl.endPH2(); //Bug fixed
 
   ctrl.safe_print("[x]Todos sub-servidores conectados.");
   ctrl.safe_print("[x] Fase 2 completada.");
