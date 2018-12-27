@@ -44,7 +44,7 @@ class Scoreboard {
   con cualquier elemento.
 
   Ejemplo: La nota [1,2,3,4,5]:
-  Coincide con [1,2,3,4]
+  Coincide con [1,2,3,4,5]
   Coincide con [,?,?X,4,?Y]
   No coincide con [?X,2,?,?Y,?X] (el primer y último elemento no son iguales)
   */
