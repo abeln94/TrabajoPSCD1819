@@ -1,0 +1,32 @@
+#---------------------------------------------------------
+# macros
+RM = /bin/rm -f  # para limpiar
+CC = g++         # para compilar
+#---------------------------------------------------------
+# para compilación y enlazado ("linkado")
+CPPFLAGS=-I. -std=c++11 -fmax-errors=1 -D DEBUG_MODE=true -g # opciones compilación
+LDFLAGS=-pthread            # opciones de "linkado"
+#---------------------------------------------------------
+#Para gestionar opciones de compilación según la máquina: hendrix tiene sus manías
+#Descomentar la siguiente línea para compilar en hendrix
+SOCKETSFLAGS=-lsocket -lnsl
+#---------------------------------------------------------
+# vars
+EJEC = testSockets
+SOCKET = Socket
+
+all: ${EJEC} #lo que se generará al ejecutar "make"
+#---------------------------------------------------------
+# "linkar" y generar ejecutable.
+${EJEC}: ${EJEC}.o ${SOCKET}.o
+	${CC} ${EJEC}.o ${SOCKET}.o -o ${EJEC} ${CPPFLAGS} ${LDFLAGS} ${SOCKETSFLAGS}
+#---------------------------------------------------------
+${EJEC}.o: ${EJEC}.cpp ${SOCKET}.hpp
+	${CC} -c ${EJEC}.cpp ${CPPFLAGS} ${SOCKETSFLAGS}
+#---------------------------------------------------------
+${SOCKET}.o: ${SOCKET}.cpp ${SOCKET}.hpp
+	${CC} -c ${SOCKET}.cpp ${CPPFLAGS} ${SOCKETSFLAGS}
+#---------------------------------------------------------
+# Cuidado con lo que se pone aquí, que se borra sin preguntar
+clean:
+	$(RM) ${SOCKET}.o ${EJEC}.o ${EJEC}
