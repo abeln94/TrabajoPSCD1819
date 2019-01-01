@@ -129,8 +129,15 @@ bool Tupla::from_string(string s) {
 		// element assigned
     i++;
   }
-
   length = i;
+	
+	
+	if(s[s.length() - 2] == ','){
+		//if string ends with the delimiter, add the missing element
+		elements[i] = "";
+		length++;
+	}
+
   return true;
 }
 //-----------------------------------------------------
