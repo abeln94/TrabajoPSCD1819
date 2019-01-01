@@ -121,7 +121,16 @@ bool Tupla::from_string(string s) {
     return false;
   }
 	
-  stringstream data(s.substr(1, s.length() - 2));
+	string inside = s.substr(1, s.length() - 2);
+	
+	if(inside.length() == 0){
+		//if string is empty it is 1 empty element
+		elements[0] = "";
+		length = 1;
+		return true;
+	}
+	
+  stringstream data(inside);
 
   // assign each element
   int i = 0;
@@ -132,11 +141,14 @@ bool Tupla::from_string(string s) {
   length = i;
 	
 	
-	if(s[s.length() - 2] == ','){
+	if(inside[inside.length() - 1] == ','){
 		//if string ends with the delimiter, add the missing element
 		elements[i] = "";
 		length++;
 	}
+	
+	
+	if()
 
   return true;
 }
