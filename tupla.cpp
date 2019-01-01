@@ -146,9 +146,6 @@ bool Tupla::from_string(string s) {
 		elements[i] = "";
 		length++;
 	}
-	
-	
-	if()
 
   return true;
 }
