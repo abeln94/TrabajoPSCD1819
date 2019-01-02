@@ -21,8 +21,18 @@ using namespace std;
 //Se puede cambiar por otra cosa??
 sig_atomic_t end_mark = 0;
 
-void contact(const int n){
+void contact(Socket& soc, int client_fd, ControlSys& sys){
+  sys.sumPH3(1);
+  //Como envio los msg?? que codificacion llevan??
 
+  // . . .
+  //soc.Send(client_fd,"STRING AQUIIIIIII", max leng); //IP1
+  //soc.Send(client_fd,"STRING AQUIIIIIII", max leng); //IP2
+  //soc.Send(client_fd,"STRING AQUIIIIIII", max leng); //IP3
+
+  //End process
+  sys.sumPH3(-1);
+  soc.Close(client_fd);
 }
 
 void conection(int subserv_fd, ControlSys &sys, Socket& soc){
@@ -35,7 +45,15 @@ void conection(int subserv_fd, ControlSys &sys, Socket& soc){
   rcv_bytes = soc.Recv(subserv_fd,buffer,maxlength);
   if (rcv_bytes == -1 || rcv_bytes == 0) {
     sys.err_safe_print("[x] Error al recibir datos: Finalización del subservidor inesperada.");
-    goto errend;
+    err = true;
+    if(soc.Close(subserv_fd) == -1){
+      sys.err_safe_print("[x] Fallo al cerrar socket corrupto: " + string(strerror(errno)));
+    }
+    if(err){
+      sys.safe_print("[x] Ending process with errors.");
+    }
+    sys.sumPH2(-1);
+    return;
   }
 
   //Must recive a buffer like "Si:IP=xxx.xxx.xxx.xxx-PORT=PPPPP"
@@ -79,24 +97,24 @@ void conection(int subserv_fd, ControlSys &sys, Socket& soc){
   snd_bytes = soc.Send(subserv_fd,res);
   if (snd_bytes == -1) {
     sys.err_safe_print("[x] Error al enviar datos: Finalización del subservidor inesperada.");
-    goto errend;
-  }
-
-  sys.fill(id,subserv_fd,port,ip);
-  sys.safe_print("[x] Subservidor " + to_string(id) + " conectado.");
-  goto end;
-
-  errend:
     err = true;
     if(soc.Close(subserv_fd) == -1){
       sys.err_safe_print("[x] Fallo al cerrar socket corrupto: " + string(strerror(errno)));
     }
-    goto end;
-  end:
     if(err){
       sys.safe_print("[x] Ending process with errors.");
     }
     sys.sumPH2(-1);
+    return;
+  }
+
+  sys.fill(id,subserv_fd,port,ip);
+  sys.safe_print("[x] Subservidor " + to_string(id) + " conectado.");
+  if(err){
+    sys.safe_print("[x] Ending process with errors.");
+  }
+  sys.sumPH2(-1);
+  return;
 }
 
 void sig_handler(int signo){
@@ -246,6 +264,37 @@ int main(int argc, char * argv[]) {
 
   ctrl.safe_print("[x] Fase 3 en desarrollo :D");
 
+  thread cliente;
+  int client_fd;
+  while(end_mark == 0){
+    client_fd = socket.Accept();
+    if(client_fd == -1 || (client_fd==0 && end_mark==1)) {
+      if (end_mark == 1){
+        ctrl.err_safe_print("[x]Error en accept causado por señal; IGNORAR");
+        continue;
+        /*
+        if (mntr.sum(0) == 0){
+          mntr.sum(1);
+          mntr.end_test();
+        }
+        continue;*/
+      } else {
+        string mensError(strerror(errno));
+        cerr << "--Error en el accept: " + mensError + "\n";
+        // Cerramos el socket
+        socket.Close(socket_fd);
+        exit(1);
+      }
+    }
+
+    cliente = thread(&contact, std::ref(soc_pub), client_fd, std::ref(ctrl));
+    cliente.detach();
+    client_fd=0;
+  }
+
+  ctrl.endPH3();
+
+  ctrl.safe_print("[x] Fin de Ejecución.");
 
 }
 //-------------------------------------------------------------

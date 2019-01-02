@@ -78,6 +78,13 @@ void ControlSys::endPH2(){
   }
 }
 
+void ControlSys::endPH3(){
+  unique_lock<mutex> lck(mtx);
+  while(cntrPH3 != 0){
+    endPH3_cv.wait(lck);
+  }
+}
+
 int ControlSys::sumPH2(int n){
   unique_lock<mutex> lck(mtx);
   cntrPH2 = cntrPH2 + n;
@@ -85,4 +92,14 @@ int ControlSys::sumPH2(int n){
     endPH2_cv.notify_one();
   }
   return cntrPH2;
+}
+
+
+int ControlSys::sumPH3(int n){
+  unique_lock<mutex> lck(mtx);
+  cntrPH3 = cntrPH3 + n;
+  if(cntrPH3 == 0){
+    endPH3_cv.notify_one();
+  }
+  return cntrPH3;
 }
