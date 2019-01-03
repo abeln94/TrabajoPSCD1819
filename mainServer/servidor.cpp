@@ -264,10 +264,10 @@ int main(int argc, char * argv[]) {
 
   ctrl.safe_print("[x] Fase 3 en desarrollo :D");
 
-  thread cliente;
+  //thread cliente; redeclaration
   int client_fd;
   while(end_mark == 0){
-    client_fd = socket.Accept();
+    client_fd = soc_pub.Accept();
     if(client_fd == -1 || (client_fd==0 && end_mark==1)) {
       if (end_mark == 1){
         ctrl.err_safe_print("[x]Error en accept causado por señal; IGNORAR");
@@ -282,7 +282,8 @@ int main(int argc, char * argv[]) {
         string mensError(strerror(errno));
         cerr << "--Error en el accept: " + mensError + "\n";
         // Cerramos el socket
-        socket.Close(socket_fd);
+        soc_pub.Close(soc_pub_fd);
+        soc_priv.Close(soc_priv_fd);
         exit(1);
       }
     }
@@ -295,6 +296,9 @@ int main(int argc, char * argv[]) {
   ctrl.endPH3();
 
   ctrl.safe_print("[x] Fin de Ejecución.");
+
+  soc_pub.Close(soc_pub_fd);
+  soc_priv.Close(soc_priv_fd);
 
 }
 //-------------------------------------------------------------

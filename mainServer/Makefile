@@ -24,6 +24,7 @@ all:
 	@echo "    ## POSIBLES COMPILACIONES: ##"
 	@echo "    #/ lcl: local              \#"
 	@echo "    #| hdrx: hendrix           |#"
+	@echo "    #| clean                   |#"
 	@echo " "
 
 #-----------------------------------------------------------
