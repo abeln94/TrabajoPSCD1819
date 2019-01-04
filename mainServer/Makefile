@@ -19,7 +19,6 @@ LDFLAGS=-pthread -lnsl# Flags linkado threads
 SOCKETSFLAGS=-lsocket -lnsl
 
 all:
-	@echo " AVISO, NO ES UNA VERSION A USAR "
 	@echo " "
 	@echo "    ## POSIBLES COMPILACIONES: ##"
 	@echo "    #/ lcl: local              \#"
@@ -33,11 +32,9 @@ all:
 
 lcl: ${SOCKET}.o ${SCTRL}.o ${SERVER}.o
 	${CC} ${LDFLAGS} ${SOCKET}.o ${SCTRL}.o ${SERVER}.o -o ${SERVER}
-	@echo " AVISO, NO ES UNA VERSION A USAR "
 
 hdrx: ${SOCKET}.o ${SCTRL}.o ${SERVER}.o
 	${CC} ${LDFLAGS} ${SOCKET}.o ${SCTRL}.o ${SERVER}.o -o ${SERVER} ${SOCKETSFLAGS}
-	@echo " AVISO, NO ES UNA VERSION A USAR "
 
 ${SERVER}.o: ${SERVER}.cpp
 	${CC} -c ${CPPFLAGS} ${SERVER}.cpp
