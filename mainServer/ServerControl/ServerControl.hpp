@@ -28,6 +28,8 @@ class ControlSys {
 
     void fill(int n, int fd, int port, string ip);
 
+    string ips_to_string();
+
     void safe_print(string c);
 
     void err_safe_print(string c);

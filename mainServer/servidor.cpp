@@ -23,12 +23,8 @@ sig_atomic_t end_mark = 0;
 
 void contact(Socket& soc, int client_fd, ControlSys& sys){
   sys.sumPH3(1);
-  //Como envio los msg?? que codificacion llevan??
 
-  // . . .
-  //soc.Send(client_fd,"STRING AQUIIIIIII", max leng); //IP1
-  //soc.Send(client_fd,"STRING AQUIIIIIII", max leng); //IP2
-  //soc.Send(client_fd,"STRING AQUIIIIIII", max leng); //IP3
+  soc.Send(client_fd,sys.ips_to_string());
 
   //End process
   sys.sumPH3(-1);

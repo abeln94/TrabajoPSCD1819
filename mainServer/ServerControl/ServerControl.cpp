@@ -57,6 +57,11 @@ void ControlSys::fill(int n, int fd, int port, string ip){
   }
 }
 
+string ControlSys::ips_to_string(){
+  return "1:" + ip_s1 + "," + to_string(port_s1) + "|2:" + ip_s2 + "," +
+          to_string(port_s2) + "|3:" + ip_s3 + "," + to_string(port_s3);
+}
+
 void ControlSys::safe_print(string c){
   unique_lock<mutex> lck(mtx);
   cout << c << endl;
@@ -93,7 +98,6 @@ int ControlSys::sumPH2(int n){
   }
   return cntrPH2;
 }
-
 
 int ControlSys::sumPH3(int n){
   unique_lock<mutex> lck(mtx);
