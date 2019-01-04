@@ -1,5 +1,5 @@
 //******************************************************************
-// File:  non_defined
+// File:  ServerControl.cpp
 // Authors:   Daniel González
 //            NOMBRES
 //            NOMBRES
