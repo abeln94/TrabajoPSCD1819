@@ -28,8 +28,8 @@ class LindaDriver{
     ~LindaDriver();
     //Operaciones de Linda
     void PN (Tupla mensaje);
-    void RN (Tupla mensaje);
-    void readN (Tupla mensaje);
+    Tupla RN (Tupla mensaje);
+    Tupla readN (Tupla mensaje);
 
 
     //...

@@ -9,9 +9,25 @@
 
 #include "LindaDriver.hpp"
 
+
+#ifdef ALLOW_LOCAL
+	//alows running in local having a global scoreboard object
+	#include "../Scoreboard/scoreboard.hpp"
+	#include "../Scoreboard/scoreboard.cpp"
+	Scoreboard _lindaDriver_scoreboard;
+	bool _lindaDriver_local = false;
+#endif
+
 //...
 
 LindaDriver::LindaDriver(string ip, int puerto){
+	#ifdef ALLOW_LOCAL
+		if(ip == "local" && puerto == 0){
+			_lindaDriver_local = true;
+			return;
+		}
+	#endif
+			
   ip_serv = ip;
   port_serv = puerto;
   soc_serv = new Socket(ip, puerto);
@@ -69,6 +85,12 @@ LindaDriver::LindaDriver(string ip, int puerto){
 }
 
 LindaDriver::~LindaDriver(){
+	#ifdef ALLOW_LOCAL
+		if(_lindaDriver_local){
+			return;
+		}
+	#endif
+	
   //Cerramos conexiones restantes
   if(s1_ready){
     int snd_bytes = soc_s1 -> Send(s1_fd, "END");
@@ -143,6 +165,13 @@ void LindaDriver::test_server(int numTuplas){
 }
 
 void LindaDriver::PN(Tupla mensaje){
+	#ifdef ALLOW_LOCAL
+		if(_lindaDriver_local){
+			_lindaDriver_scoreboard.PN(mensaje);
+			return;
+		}
+	#endif
+	
     test_server(mensaje.size());
     string mens = "1" + mensaje.to_string(); //Añadimos "1" para que el subservidor sepa que accion realizar.
     if(mensaje.size() <=3){
@@ -220,7 +249,14 @@ void LindaDriver::PN(Tupla mensaje){
     }
 }
 
-void LindaDriver::RN(Tupla mensaje){
+Tupla LindaDriver::RN(Tupla mensaje){
+	#ifdef ALLOW_LOCAL
+		if(_lindaDriver_local){
+			return _lindaDriver_scoreboard.RN(mensaje);
+		}
+	#endif
+	
+	
         test_server(mensaje.size());
     string mens = "2" + mensaje.to_string(); //Añadimos "2" para que el subservidor sepa que accion realizar.
     if(mensaje.size() <=3){
@@ -298,7 +334,14 @@ void LindaDriver::RN(Tupla mensaje){
     }
 }
 
-void LindaDriver::readN(Tupla mensaje){
+Tupla LindaDriver::readN(Tupla mensaje){
+	#ifdef ALLOW_LOCAL
+		if(_lindaDriver_local){
+			return _lindaDriver_scoreboard.readN(mensaje);
+		}
+	#endif
+	
+	
         test_server(mensaje.size());
     string mens = "3" + mensaje.to_string(); //Añadimos "3" para que el subservidor sepa que accion realizar.
     if(mensaje.size() <=3){

@@ -8,7 +8,8 @@
 #---------------------------------------------------------------------
 ###### AQUI VA EL NOMBRE DEL ARCHIVO DEL CLIENTE QUE IMPLEMENTARA
 ###### LA LIBRERIA LINDADRIVER
-CLIENT=mainLindaDriver
+CLIENT=Cliente
+CLIENT_EXTRA=tests
 #---------------------------------------------------------------------
 CC=g++
 
@@ -21,7 +22,7 @@ TUPLA_DIR=${LD_DIR}/Tuplas
 TUPLA=${TUPLA_DIR}/Tuplas
 
 # Flags compilacion
-CPPFLAGS=-I. -I${SOCKET_DIR} -I${TUPLA_DIR} -I${LD_DIR} -O2 -std=c++11 -lsockets
+CPPFLAGS=-I. -I${SOCKET_DIR} -I${TUPLA_DIR} -I${LD_DIR} -O2 -std=c++11 -lsockets -D ALLOW_LOCAL -I../Sub-Servers/Tupla
 # Flags linkado threads
 LDFLAGS=-pthread -lnsl
 SOCKETSFLAGS=-lsocket -lnsl
@@ -45,7 +46,7 @@ lcl: ${TUPLA}.o ${SOCKET}.o ${LD}.o ${CLIENT}.o
 hdrx: ${TUPLA}.o ${SOCKET}.o ${LD}.o ${CLIENT}.o
 	${CC} ${LDFLAGS} ${TUPLA}.o ${SOCKET}.o ${LD}.o ${CLIENT}.o -o ${CLIENT} ${SOCKETSFLAGS}
 
-${CLIENT}.o: ${CLIENT}.cpp
+${CLIENT}.o: ${CLIENT}.cpp ${CLIENT_EXTRA}.cpp
 	${CC} -c ${CPPFLAGS} ${CLIENT}.cpp
 
 #-----------------------------------------------------------
