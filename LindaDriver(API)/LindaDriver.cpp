@@ -31,11 +31,17 @@ LindaDriver::LindaDriver(string ip, int puerto){
     return;
   }
 
+  //Asumimos que el mensaje es correcto????
+  for(int i = 0; i<3; i++){
+    size_t found1 = buffer.find_first_of(",",0);
+    size_t found2 = buffer.find_first_of("|",0);
+    rellenar(buffer[0]-'0',buffer.substr(2,found1-2),atoi(buffer.substr(found1+1,found2-1).c_str()));
+    buffer.erase(0,found2);
+  }
+
+  /*
   //Tratamiento msg
   bool correcto = true;
-
-
-
   //end
   if(!correcto){
     int snd_bytes = soc_serv -> Send(serv_fd, "ERROR");
@@ -45,7 +51,8 @@ LindaDriver::LindaDriver(string ip, int puerto){
     }
     soc_serv -> Close(serv_fd);
     return;
-  }
+  }*/
+
   //corecto
   int snd_bytes = soc_serv -> Send(serv_fd, "OK");
   if(snd_bytes == -1){
@@ -58,14 +65,8 @@ LindaDriver::LindaDriver(string ip, int puerto){
   s2_ready = false;
   s3_ready = false;
 
-  //
-  //  Conviene cerrar socket con serv??
-  //
-  /*
   soc_serv -> Close(serv_fd);
-  */
 }
-
 
 LindaDriver::~LindaDriver(){
   //Cerramos conexiones restantes
