@@ -25,7 +25,7 @@ LindaDriver::LindaDriver(string ip, int puerto){
   //Buffer content: 1:000.000.000.000,XXXX|2:000.000.000.000,XXXX|3:000.000.000.000,XXXX
   int rcv_bytes = soc_serv -> Recv(serv_fd, buffer, length);
   if(rcv_bytes == -1){
-    mensError = strerror(errno);
+    string mensError = strerror(errno);
     cerr << "[Linda] Error al recibir/enviar datos: " + mensError + "\n";
     soc_serv -> Close(serv_fd);
     return;
@@ -56,7 +56,7 @@ LindaDriver::LindaDriver(string ip, int puerto){
   //corecto
   int snd_bytes = soc_serv -> Send(serv_fd, "OK");
   if(snd_bytes == -1){
-    mensError = strerror(errno);
+    string mensError = strerror(errno);
     cerr << "[Linda] Error al recibir/enviar datos: " + mensError + "\n";
     soc_serv -> Close(serv_fd);
     return;
@@ -73,7 +73,7 @@ LindaDriver::~LindaDriver(){
   if(s1_ready){
     int snd_bytes = soc_s1 -> Send(s1_fd, "END");
     if(snd_bytes == -1){
-      mensError = strerror(errno);
+      string mensError = strerror(errno);
       cerr << "[Linda] Error al enviar marca finalización: " + mensError + "\n";
     }
     soc_s1 -> Close(s1_fd);
@@ -81,7 +81,7 @@ LindaDriver::~LindaDriver(){
   if(s2_ready){
     int snd_bytes = soc_s2 -> Send(s2_fd, "END");
     if(snd_bytes == -1){
-      mensError = strerror(errno);
+      string mensError = strerror(errno);
       cerr << "[Linda] Error al enviar marca finalización: " + mensError + "\n";
     }
     soc_s2 -> Close(s2_fd);
@@ -89,7 +89,7 @@ LindaDriver::~LindaDriver(){
   if(s3_ready){
     int snd_bytes = soc_s3 -> Send(s3_fd, "END");
     if(snd_bytes == -1){
-      mensError = strerror(errno);
+      string mensError = strerror(errno);
       cerr << "[Linda] Error al enviar marca finalización: " + mensError + "\n";
     }
     soc_s3 -> Close(s3_fd);
@@ -103,7 +103,7 @@ LindaDriver::~LindaDriver(){
 }
 
 //Pendiente de usar, igual la quito (SOLO SE USA EN CONSTRUCTOR)
-LindaDriver::void rellenar(int id, string ip, int port){
+void LindaDriver::rellenar(int id, string ip, int port){
   if(id == 1){
     port_s1 = port;
     ip_s1 = ip;
@@ -117,7 +117,7 @@ LindaDriver::void rellenar(int id, string ip, int port){
   return;
 }
 
-LindaDriver::void test_server(int numTuplas);{
+void LindaDriver::test_server(int numTuplas){
   if(numTuplas == 1 || numTuplas == 2 || numTuplas == 3){
     if(!s1_ready){
       s1_ready = true;
@@ -142,7 +142,7 @@ LindaDriver::void test_server(int numTuplas);{
   return;
 }
 
-LindaDriver::void PN(Tupla mensaje){
+void LindaDriver::PN(Tupla mensaje){
     test_server(mensaje.length);
     string mens = "1" + mensaje.to_string(); //Añadimos "1" para que el subservidor sepa que accion realizar.
     if(mensaje.length <=3){
@@ -220,7 +220,7 @@ LindaDriver::void PN(Tupla mensaje){
     }
 }
 
-LindaDriver::void RN(Tupla mensaje){
+void LindaDriver::RN(Tupla mensaje){
         test_server(mensaje.length);
     string mens = "2" + mensaje.to_string(); //Añadimos "2" para que el subservidor sepa que accion realizar.
     if(mensaje.length <=3){
@@ -298,7 +298,7 @@ LindaDriver::void RN(Tupla mensaje){
     }
 }
 
-LindaDriver::void readN(Tupla mensaje){
+void LindaDriver::readN(Tupla mensaje){
         test_server(mensaje.length);
     string mens = "3" + mensaje.to_string(); //Añadimos "3" para que el subservidor sepa que accion realizar.
     if(mensaje.length <=3){

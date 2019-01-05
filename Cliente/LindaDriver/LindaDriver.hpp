@@ -12,7 +12,7 @@
 
 #include <iostream>
 #include "Socket.hpp"
-#include "Tupla.hpp"
+#include "Tuplas.hpp"
 #include <string>
 //#include <mutex>
 //#include <condition_variable>

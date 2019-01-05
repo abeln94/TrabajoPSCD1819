@@ -12,13 +12,13 @@ CLIENT=mainLindaDriver
 #---------------------------------------------------------------------
 CC=g++
 
-LD_DIR="LindaDriver(API)"
+LD_DIR=LindaDriver
 LD=${LD_DIR}/LindaDriver
 
-SOCKET_DIR="LindaDriver(API)"/Socket
+SOCKET_DIR=${LD_DIR}/Socket
 SOCKET=${SOCKET_DIR}/Socket
-TUPLA_DIR="LindaDriver(API)"/Tupla
-TUPLA=${TUPLA_DIR}/Tupla
+TUPLA_DIR=${LD_DIR}/Tuplas
+TUPLA=${TUPLA_DIR}/Tuplas
 
 # Flags compilacion
 CPPFLAGS=-I. -I${SOCKET_DIR} -I${TUPLA_DIR} -I${LD_DIR} -O2 -std=c++11 -lsockets
@@ -56,7 +56,7 @@ ${LD}.o: ${TUPLA}.o ${SOCKET}.o ${LD}.hpp ${LD}.cpp
 
 #-----------------------------------------------------------
 # TUPLA
-# Compilacion Tupla
+# Compilacion Tuplas
 ${TUPLA}.o: ${TUPLA}.hpp ${TUPLA}.cpp
 	${CC} -c ${CPPFLAGS} ${TUPLA}.cpp -o ${TUPLA}.o
 
