@@ -298,9 +298,9 @@ LindaDriver::void RN(Tupla mensaje){
     }
 }
 
-LindaDriver::void RN(Tupla mensaje){
+LindaDriver::void readN(Tupla mensaje){
         test_server(mensaje.length);
-    string mens = "3" + mensaje.to_string(); //Añadimos "2" para que el subservidor sepa que accion realizar.
+    string mens = "3" + mensaje.to_string(); //Añadimos "3" para que el subservidor sepa que accion realizar.
     if(mensaje.length <=3){
         int snd_bytes = soc_s1->Send(s1_fd, mens);
         if(snd_bytes == -1){
