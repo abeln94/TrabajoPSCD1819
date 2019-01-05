@@ -1,7 +1,0 @@
-#!/bin/bash
-
-set -e #Exit on first error
-
-make -f Makefile_testSockets
-./testSockets
-
