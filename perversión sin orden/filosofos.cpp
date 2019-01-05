@@ -1,9 +1,9 @@
 //*****************************************************************
 // File:   Cliente.cpp
 // Author: Álvaro García Díaz
-//		   Abel Naya Forcano
-//		   NOMBRE
-//		   NOMBRE
+//	   Abel Naya Forcano
+//	   NOMBRE
+//	   NOMBRE
 // Date:   Enero 2019
 // Coms:   invocar mediante
 //				./Cliente <IP_Linda> <Port_Linda> 
