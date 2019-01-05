@@ -1,5 +1,5 @@
 /*
-** Fichero de tests, para usar con clientAbel.cpp **
+** Fichero de tests, para usar con Cliente.cpp **
 
 ** Uso:
 	Para cada test, añadir una o más funciones con parámetros (char* ip, char* port, int i, char* param) siendo
@@ -7,7 +7,7 @@
 		i es el identificador de la instancia actual (contador empezando en 0)
 		param es el parámetro lanzado por línea de comandos
 	
-	Después añadir la macro ADDTEST(nombre,descripción) siendo
+	Después añadir la macro ADDFUNCTION(nombre,descripción) siendo
 		name el nombre de la función anterior (añadir tantas macros como funciones)
 		descripción un string que se imprime al definir el test
 
@@ -26,11 +26,11 @@
 			#undef NEXTTEST
 			#define NEXTTEST myTestDefinitionFunction();
 			
-			addTest("test",&myTestFunction);
+			ADDFUNCTION("test",&myTestFunction);
 			//other if necessary
 		}
 		
-		ADDTEST(myTestFunction,"Example, run as 'N myTestFunction M'")
+		ADDFUNCTION(myTestFunction,"Example, run as 'N myTestFunction M'")
 
 	Al lanzar como "$run <ip> <port> 10 test 0" se mostrará lo siguiente:
 		I am the instance 0 launched with parameter 0
@@ -107,8 +107,8 @@ void t_supervisor(char* ip, int port, int i, char* param){
 
 //---------------------------
 
-ADDTEST(t_worker,"test trabajador-supervisor, 'N t_worker .' siendo N el número de trabajadores");
-ADDTEST(t_supervisor,"test trabajador-supervisor, '1 t_supervisor M' siendo M el número de ficheros a ordenar");
+ADDFUNCTION(t_worker,"test trabajador-supervisor, 'N t_worker .' siendo N el número de trabajadores");
+ADDFUNCTION(t_supervisor,"test trabajador-supervisor, '1 t_supervisor M' siendo M el número de ficheros a ordenar");
 
 //---------------------------
 //--------Ejemplo profesores
@@ -183,7 +183,7 @@ void example(char* ip, int port, int i, char* param){
 }
 //---------------------------
 
-ADDTEST(example,"Ejemplo profesores, lanzar como '1 example .'");
+ADDFUNCTION(example,"Ejemplo profesores, lanzar como '1 example .'");
 
 //---------------------------
 //----Ejemplo sencillo
@@ -227,7 +227,7 @@ void myexample(char* ip, int port, int i, char* param){
 
 //---------------------------
 
-ADDTEST( myexample, "test sencillo, hace PN y RN de tuplas con tamaños 1 a 6, lanzar como '1 mytest .'")
+ADDFUNCTION( myexample, "test sencillo, hace PN y RN de tuplas con tamaños 1 a 6, lanzar como '1 myexample .'")
 
 
 	
@@ -310,6 +310,6 @@ void t_coger(char* ip, int port, int _, char* param){
 
 //--------------------------------------------------
 
-ADDTEST( t_filosofo, "test filosofos, ejecutar como 'N t_filosofo M' siendo M las veces que come");
-ADDTEST( t_coger, "test filosofos, ejecutar como '1 t_coger N'");
-ADDTEST( t_dejar, "test filosofos, ejecutar como '1 t_dejar N' siendo N el número de filosofos totales");
+ADDFUNCTION( t_filosofo, "test filosofos, ejecutar como 'N t_filosofo M' siendo M las veces que come");
+ADDFUNCTION( t_coger, "test filosofos, ejecutar como '1 t_coger N'");
+ADDFUNCTION( t_dejar, "test filosofos, ejecutar como '1 t_dejar N' siendo N el número de filosofos totales");

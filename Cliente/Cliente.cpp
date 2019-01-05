@@ -15,7 +15,7 @@ typedef void (* TestFunction)(char*,int,int,char*);
 map<string,TestFunction> functions;
 
 //this...this is a magic macro. I'm proud of it. (check usage in tests.cpp)
-#define ADDTEST(name,description) 															\
+#define ADDFUNCTION(name,description) 															\
 class _Class##name{         																		\
 	public:                   																		\
 	_Class##name(){           																		\
@@ -32,6 +32,8 @@ _Class##name _object##name;
 
 //-----------------------------------------------------
 int main(int argc, char* argv[]) {
+	
+	cout << endl;
 	
 	//check parameters
 	if(argc < 6 || argc%3 != 0){
@@ -64,7 +66,7 @@ int main(int argc, char* argv[]) {
 		
 		TestFunction func = functions[name];
 		
-		cout << "Running " << instances << " threads as function '" << name << "' with parameter '" << param << "'" <<endl;
+		cout << "Running " << instances << " thread" <<(instances==1?"":"s")<< " as function '" << name << "' with parameter '" << param << "'" <<endl;
 		for(int j=0;j<instances;++j){
 			threads.push_back( thread(func,argv[1],atoi(argv[2]),j,param) );
 		}
