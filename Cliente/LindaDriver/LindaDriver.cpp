@@ -143,9 +143,9 @@ void LindaDriver::test_server(int numTuplas){
 }
 
 void LindaDriver::PN(Tupla mensaje){
-    test_server(mensaje.length);
+    test_server(mensaje.size());
     string mens = "1" + mensaje.to_string(); //Añadimos "1" para que el subservidor sepa que accion realizar.
-    if(mensaje.length <=3){
+    if(mensaje.size() <=3){
         int snd_bytes = soc_s1->Send(s1_fd, mens);
         if(snd_bytes == -1){
             string mensError = strerror(errno);
@@ -170,7 +170,7 @@ void LindaDriver::PN(Tupla mensaje){
         }
 
     }
-    else if(mensaje.length == 4 || mensaje.length == 5){
+    else if(mensaje.size() == 4 || mensaje.size() == 5){
         int snd_bytes = soc_s2->Send(s2_fd, mens);
         if(snd_bytes == -1){
             string mensError = strerror(errno);
@@ -221,9 +221,9 @@ void LindaDriver::PN(Tupla mensaje){
 }
 
 void LindaDriver::RN(Tupla mensaje){
-        test_server(mensaje.length);
+        test_server(mensaje.size());
     string mens = "2" + mensaje.to_string(); //Añadimos "2" para que el subservidor sepa que accion realizar.
-    if(mensaje.length <=3){
+    if(mensaje.size() <=3){
         int snd_bytes = soc_s1->Send(s1_fd, mens);
         if(snd_bytes == -1){
             string mensError = strerror(errno);
@@ -248,7 +248,7 @@ void LindaDriver::RN(Tupla mensaje){
         }
 
     }
-    else if(mensaje.length == 4 || mensaje.length == 5){
+    else if(mensaje.size() == 4 || mensaje.size() == 5){
         int snd_bytes = soc_s2->Send(s2_fd, mens);
         if(snd_bytes == -1){
             string mensError = strerror(errno);
@@ -299,9 +299,9 @@ void LindaDriver::RN(Tupla mensaje){
 }
 
 void LindaDriver::readN(Tupla mensaje){
-        test_server(mensaje.length);
+        test_server(mensaje.size());
     string mens = "3" + mensaje.to_string(); //Añadimos "3" para que el subservidor sepa que accion realizar.
-    if(mensaje.length <=3){
+    if(mensaje.size() <=3){
         int snd_bytes = soc_s1->Send(s1_fd, mens);
         if(snd_bytes == -1){
             string mensError = strerror(errno);
@@ -326,7 +326,7 @@ void LindaDriver::readN(Tupla mensaje){
         }
 
     }
-    else if(mensaje.length == 4 || mensaje.length == 5){
+    else if(mensaje.size() == 4 || mensaje.size() == 5){
         int snd_bytes = soc_s2->Send(s2_fd, mens);
         if(snd_bytes == -1){
             string mensError = strerror(errno);
