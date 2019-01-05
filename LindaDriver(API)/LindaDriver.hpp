@@ -11,7 +11,8 @@
 #define LINDA_DRIVER
 
 #include <iostream>
-#include <Socket.hpp>
+#include "Socket.hpp"
+#include "Tupla.hpp"
 #include <string>
 //#include <mutex>
 //#include <condition_variable>
@@ -25,6 +26,10 @@ class LindaDriver{
     LindaDriver(string ip, int puerto);
 
     ~LindaDriver();
+    //Operaciones de Linda
+    void PN (Tupla mensaje);
+    void RN (Tupla mensaje);
+    void readN (Tupla mensaje);
 
 
     //...
@@ -39,6 +44,6 @@ class LindaDriver{
 
     void rellenar(int id, string ip, int port);
     void test_server(int numTuplas);
-}
+};
 
 #endif

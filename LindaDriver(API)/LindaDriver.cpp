@@ -141,3 +141,237 @@ LindaDriver::void test_server(int numTuplas);{
   }
   return;
 }
+
+LindaDriver::void PN(Tupla mensaje){
+    test_server(mensaje.length);
+    string mens = "1" + mensaje.to_string(); //Añadimos "1" para que el subservidor sepa que accion realizar.
+    if(mensaje.length <=3){
+        int snd_bytes = soc_s1->Send(s1_fd, mens);
+        if(snd_bytes == -1){
+            string mensError = strerror(errno);
+            cerr << "[Linda] Error al enviar mensaje al subservidor 1: " + mensError + "\n";
+            //Cerrar o no socket?
+        }
+        else{
+            string buffer;
+            int rcv_bytes = soc_s1->Recv(s1_fd, buffer, 1000);
+            if (rcv_bytes == -1){
+               string mensError = strerror(errno);
+                cerr << "[Linda] Eror al recibir mensaje del subservidor 1: " + mensError + "\n";
+            }
+            else{
+                if(buffer == "OK"){
+                    cout << "OK" << endl;
+                }
+                else{
+                    cout << "Error en PN " << mens << endl;
+                }
+            }
+        }
+
+    }
+    else if(mensaje.length == 4 || mensaje.length == 5){
+        int snd_bytes = soc_s2->Send(s2_fd, mens);
+        if(snd_bytes == -1){
+            string mensError = strerror(errno);
+            cerr << "[Linda] Error al enviar mensaje al subservidor 2: " + mensError + "\n";
+            //Cerrar o no socket?
+        }
+        else{
+            string buffer;
+            int rcv_bytes = soc_s2->Recv(s2_fd, buffer, 1000);
+            if (rcv_bytes == -1){
+                string mensError = strerror(errno);
+                cerr << "[Linda] Eror al recibir mensaje del subservidor 2: " + mensError + "\n";
+            }
+            else{
+                if(buffer == "OK"){
+                    cout << "OK" << endl;
+                }
+                else{
+                    cout << "Error en PN " << mens << endl;
+                }
+            }
+        }
+    }
+    else{
+        int snd_bytes = soc_s3->Send(s3_fd,mens);
+        if(snd_bytes == -1){
+            string mensError = strerror(errno);
+            cerr << "[Linda] Error al enviar mensaje al subservidor 3: " + mensError + "\n";
+            //Cerrar o no socket?
+        }
+        else{
+            string buffer;
+            int rcv_bytes = soc_s3->Recv(s3_fd, buffer, 1000);
+            if (rcv_bytes == -1){
+                string mensError = strerror(errno);
+                cerr << "[Linda] Eror al recibir mensaje del subservidor 3: " + mensError + "\n";
+            }
+            else{
+                if(buffer == "OK"){
+                    cout << "OK" << endl;
+                }
+                else{
+                    cout << "Error en PN " << mens << endl;
+                }
+            }
+        }
+    }
+}
+
+LindaDriver::void RN(Tupla mensaje){
+        test_server(mensaje.length);
+    string mens = "2" + mensaje.to_string(); //Añadimos "2" para que el subservidor sepa que accion realizar.
+    if(mensaje.length <=3){
+        int snd_bytes = soc_s1->Send(s1_fd, mens);
+        if(snd_bytes == -1){
+            string mensError = strerror(errno);
+            cerr << "[Linda] Error al enviar mensaje al subservidor 1: " + mensError + "\n";
+            //Cerrar o no socket?
+        }
+        else{
+            string buffer;
+            int rcv_bytes = soc_s1->Recv(s1_fd, buffer, 1000);
+            if (rcv_bytes == -1){
+                string mensError = strerror(errno);
+                cerr << "[Linda] Eror al recibir mensaje del subservidor 1: " + mensError + "\n";
+            }
+            else{
+                if(buffer == "OK"){
+                    cout << "OK" << endl;
+                }
+                else{
+                    cout << "Error en RN " << mens << endl;
+                }
+            }
+        }
+
+    }
+    else if(mensaje.length == 4 || mensaje.length == 5){
+        int snd_bytes = soc_s2->Send(s2_fd, mens);
+        if(snd_bytes == -1){
+            string mensError = strerror(errno);
+            cerr << "[Linda] Error al enviar mensaje al subservidor 2: " + mensError + "\n";
+            //Cerrar o no socket?
+        }
+        else{
+            string buffer;
+            int rcv_bytes = soc_s2->Recv(s2_fd, buffer, 1000);
+            if (rcv_bytes == -1){
+                string mensError = strerror(errno);
+                cerr << "[Linda] Eror al recibir mensaje del subservidor 2: " + mensError + "\n";
+            }
+            else{
+                if(buffer == "OK"){
+                    cout << "OK" << endl;
+                }
+                else{
+                    cout << "Error en RN " << mens << endl;
+                }
+            }
+        }
+    }
+    else{
+        int snd_bytes = soc_s3->Send(s3_fd,mens);
+        if(snd_bytes == -1){
+            string mensError = strerror(errno);
+            cerr << "[Linda] Error al enviar mensaje al subservidor 3: " + mensError + "\n";
+            //Cerrar o no socket?
+        }
+        else{
+            string buffer;
+            int rcv_bytes = soc_s3->Recv(s3_fd, buffer, 1000);
+            if (rcv_bytes == -1){
+                string mensError = strerror(errno);
+                cerr << "[Linda] Eror al recibir mensaje del subservidor 3: " + mensError + "\n";
+            }
+            else{
+                if(buffer == "OK"){
+                    cout << "OK" << endl;
+                }
+                else{
+                    cout << "Error en RN " << mens << endl;
+                }
+            }
+        }
+    }
+}
+
+LindaDriver::void RN(Tupla mensaje){
+        test_server(mensaje.length);
+    string mens = "3" + mensaje.to_string(); //Añadimos "2" para que el subservidor sepa que accion realizar.
+    if(mensaje.length <=3){
+        int snd_bytes = soc_s1->Send(s1_fd, mens);
+        if(snd_bytes == -1){
+            string mensError = strerror(errno);
+            cerr << "[Linda] Error al enviar mensaje al subservidor 1: " + mensError + "\n";
+            //Cerrar o no socket?
+        }
+        else{
+            string buffer;
+            int rcv_bytes = soc_s1->Recv(s1_fd, buffer, 1000);
+            if (rcv_bytes == -1){
+                string mensError = strerror(errno);
+                cerr << "[Linda] Eror al recibir mensaje del subservidor 1: " + mensError + "\n";
+            }
+            else{
+                if(buffer == "OK"){
+                    cout << "OK" << endl;
+                }
+                else{
+                    cout << "Error en readN " << mens << endl;
+                }
+            }
+        }
+
+    }
+    else if(mensaje.length == 4 || mensaje.length == 5){
+        int snd_bytes = soc_s2->Send(s2_fd, mens);
+        if(snd_bytes == -1){
+            string mensError = strerror(errno);
+            cerr << "[Linda] Error al enviar mensaje al subservidor 2: " + mensError + "\n";
+            //Cerrar o no socket?
+        }
+        else{
+            string buffer;
+            int rcv_bytes = soc_s2->Recv(s2_fd, buffer, 1000);
+            if (rcv_bytes == -1){
+                string mensError = strerror(errno);
+                cerr << "[Linda] Eror al recibir mensaje del subservidor 2: " + mensError + "\n";
+            }
+            else{
+                if(buffer == "OK"){
+                    cout << "OK" << endl;
+                }
+                else{
+                    cout << "Error en readN " << mens << endl;
+                }
+            }
+        }
+    }
+    else{
+        int snd_bytes = soc_s3->Send(s3_fd,mens);
+        if(snd_bytes == -1){
+            string mensError = strerror(errno);
+            cerr << "[Linda] Error al enviar mensaje al subservidor 3: " + mensError + "\n";
+            //Cerrar o no socket?
+        }
+        else{
+            string buffer;
+            int rcv_bytes = soc_s3->Recv(s3_fd, buffer, 1000);
+            if (rcv_bytes == -1){
+                string mensError = strerror(errno);
+                cerr << "[Linda] Eror al recibir mensaje del subservidor 3: " + mensError + "\n";
+            }
+            else{
+                if(buffer == "OK"){
+                    cout << "OK" << endl;
+                }
+                else{
+                    cout << "Error en readN " << mens << endl;
+                }
+            }
+        }
+    }
+}
