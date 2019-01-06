@@ -1,3 +1,22 @@
+#include <iostream>
+#include <string>
+#include <strings.h>
+#include <string.h> 
+
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <errno.h>
+#include <iostream>
+#include <unistd.h>
+
+#include <ifaddrs.h>
+
+#include <arpa/inet.h>
+
+using namespace std;
 
 //Función que devuelve la ip en string
 
@@ -24,4 +43,9 @@ string getIPAddress(){
     // Free memory
     freeifaddrs(interfaces);
     return ipAddress;
+}
+
+
+main(){
+	cout << getIPAddress() << endl;
 }
