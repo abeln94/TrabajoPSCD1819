@@ -27,7 +27,7 @@ LindaDriver::LindaDriver(string ip, int puerto){
 			return;
 		}
 	#endif
-			
+
   ip_serv = ip;
   port_serv = puerto;
   soc_serv = new Socket(ip, puerto);
@@ -90,8 +90,9 @@ LindaDriver::~LindaDriver(){
 			return;
 		}
 	#endif
-	
+
   //Cerramos conexiones restantes
+	/*
   if(s1_ready){
     int snd_bytes = soc_s1 -> Send(s1_fd, "END");
     if(snd_bytes == -1){
@@ -115,7 +116,7 @@ LindaDriver::~LindaDriver(){
       cerr << "[Linda] Error al enviar marca finalización: " + mensError + "\n";
     }
     soc_s3 -> Close(s3_fd);
-  }
+  }*/
 
   //END
   delete[] soc_serv;
@@ -171,7 +172,7 @@ void LindaDriver::PN(Tupla mensaje){
 			return;
 		}
 	#endif
-	
+
     test_server(mensaje.size());
     string mens = "1" + mensaje.to_string(); //Añadimos "1" para que el subservidor sepa que accion realizar.
     if(mensaje.size() <=3){
@@ -255,8 +256,8 @@ Tupla LindaDriver::RN(Tupla mensaje){
 			return _lindaDriver_scoreboard.RN(mensaje);
 		}
 	#endif
-	
-	
+
+
         test_server(mensaje.size());
     string mens = "2" + mensaje.to_string(); //Añadimos "2" para que el subservidor sepa que accion realizar.
     if(mensaje.size() <=3){
@@ -340,8 +341,8 @@ Tupla LindaDriver::readN(Tupla mensaje){
 			return _lindaDriver_scoreboard.readN(mensaje);
 		}
 	#endif
-	
-	
+
+
         test_server(mensaje.size());
     string mens = "3" + mensaje.to_string(); //Añadimos "3" para que el subservidor sepa que accion realizar.
     if(mensaje.size() <=3){
