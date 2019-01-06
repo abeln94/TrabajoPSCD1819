@@ -20,15 +20,6 @@
 			cout << "I am the instance " << i << " launched with parameter " << param << endl;
 			//do things
 		}
-
-		void myTestDefinitionFunction(){
-			NEXTTEST
-			#undef NEXTTEST
-			#define NEXTTEST myTestDefinitionFunction();
-			
-			ADDFUNCTION("test",&myTestFunction);
-			//other if necessary
-		}
 		
 		ADDFUNCTION(myTestFunction,"Example, run as 'N myTestFunction M'")
 
