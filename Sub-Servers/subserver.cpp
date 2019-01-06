@@ -139,36 +139,6 @@ int main(int argc, char * argv[]) {
 
   cout << "[x] Fase 3 en desarrollo :D"  << endl;
 
-  /*
-  //thread cliente; redeclaration
-  int client_fd;
-  while(end_mark == 0){
-    client_fd = soc_pub.Accept();
-    if(client_fd == -1 || (client_fd==0 && end_mark==1)) {
-      if (end_mark == 1){
-        cerr << "[x]Error en accept causado por señal; IGNORAR"  << endl;
-        continue;
-      } else {
-        string mensError(strerror(errno));
-        cerr << "--Error en el accept: " + mensError + "\n";
-        // Cerramos el socket
-        soc_pub.Close(soc_pub_fd);
-        soc_priv.Close(soc_priv_fd);
-        exit(1);
-      }
-    }
-
-    cliente = thread(&contact, std::ref(soc_pub), client_fd, std::ref(ctrl));
-    cliente.detach();
-    client_fd=0;
-  }
-
-  ctrl.endPH3();
-  */
 
   cout << "[x] Fin de Ejecución."  << endl;
-
-  soc_pub.Close(soc_pub_fd);
-  soc_priv.Close(soc_priv_fd);
-
 }

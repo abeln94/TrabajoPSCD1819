@@ -1,18 +1,17 @@
 #include <iostream>
 #include <string>
 #include <strings.h>
-#include <string.h> 
+#include <string.h>
 
 #include <sys/socket.h>
+#include <ifaddrs.h>
+
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <errno.h>
 #include <iostream>
-#include <unistd.h>
-
-#include <ifaddrs.h>
 
 #include <arpa/inet.h>
 

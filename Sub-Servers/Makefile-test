@@ -1,0 +1,44 @@
+#*****************************************************************
+# File:   Makefile_test
+# Author: D. González
+# Date:   diciembre 2018
+# Coms:
+#*****************************************************************
+
+#---------------------------------------------------------------------
+CC=g++
+IP=ComoSaberMiIp
+
+# Flags compilacion
+CPPFLAGS=-I. -O2 -std=c++11 -lsockets
+# Flags linkado threads
+LDFLAGS=-pthread -lnsl
+SOCKETSFLAGS=-lsocket -lnsl
+
+
+all:
+	@echo " "
+	@echo "    ## POSIBLES COMPILACIONES: ##"
+	@echo "    #/ lcl: local              \#"
+	@echo "    #| hdrx: hendrix           |#"
+	@echo "    #| clean                   |#"
+	@echo " "
+
+#-----------------------------------------------------------
+# Cliente
+# Compilacion
+
+lcl: ${CLIENT}.o
+	${CC} ${LDFLAGS} ${IP}.o -o ${IP}
+
+hdrx: ${IP}.o
+	${CC} ${LDFLAGS} ${IP}.o -o ${IP} ${SOCKETSFLAGS}
+
+${IP}.o: ${IP}.cpp
+	${CC} -c ${CPPFLAGS} ${IP}.cpp
+
+#-----------------------------------------------------------
+#-----------------------------------------------------------
+# LIMPIEZA
+clean:
+	$(RM) ${IP} ${IP}.o
