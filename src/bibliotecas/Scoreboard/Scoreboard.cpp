@@ -1,5 +1,5 @@
 
-#include "scoreboard.hpp"
+#include "Scoreboard.hpp"
 
 #include <cassert>
 #include <map>

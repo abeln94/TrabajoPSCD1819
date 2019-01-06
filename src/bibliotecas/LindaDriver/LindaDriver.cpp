@@ -12,8 +12,7 @@
 
 #ifdef ALLOW_LOCAL
 	//alows running in local having a global scoreboard object
-	#include "../Scoreboard/scoreboard.hpp"
-	#include "../Scoreboard/scoreboard.cpp"
+	#include "Scoreboard.hpp"
 	Scoreboard _lindaDriver_scoreboard;
 	bool _lindaDriver_local = false;
 #endif
