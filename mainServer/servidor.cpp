@@ -250,6 +250,13 @@ int main(int argc, char * argv[]) {
 
   ctrl.endPH2(); //Bug fixed
 
+  if (end_mark == 1){
+    ctrl.safe_print("[x] Fin de Ejecución.");
+    soc_pub.Close(soc_pub_fd);
+    soc_priv.Close(soc_priv_fd);
+    exit(0);
+  }
+
   ctrl.safe_print("[x]Todos sub-servidores conectados.");
   ctrl.safe_print("[x] Fase 2 completada.");
   //###################################################//
