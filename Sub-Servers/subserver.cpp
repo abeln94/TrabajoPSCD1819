@@ -15,11 +15,16 @@
 #include <cstdlib>
 #include <signal.h>
 
+#include <mutex>
+#include <condition_variable>
+
+
 using namespace std;
 
 sig_atomic_t end_mark = 0;
 
 //###################################################################
+//Pequeño controlador de exclusion mutua (no mas de 40 lineas)
 class SafeSYS {
   public:
     //Constructor
@@ -59,6 +64,7 @@ class SafeSYS {
     condition_variable end;
 };
 //###################################################################
+//Funciones encargadas de la comunicación exterior
 
 void control(Socket& soc, int& socket_fd){
   // en espera
@@ -74,6 +80,7 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys)){
 }
 
 //###################################################################
+//Función encargada del tratamiento de señales
 void sig_handler(int signo){
   end_mark = 1;
   cerr << endl;
@@ -92,7 +99,7 @@ void sig_handler(int signo){
   //signal(signo,sig_handler);
 }
 //###################################################################
-
+//Main func.
 int main(int argc, char * argv[]) {
   //Declaración de variables
   const string localhost = "localhost";
