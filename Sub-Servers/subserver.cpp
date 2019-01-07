@@ -9,7 +9,6 @@
 
 
 #include "Socket.hpp"
-#include "ServerControl.hpp"
 #include <iostream>
 #include <thread>
 #include <cstring>
@@ -20,7 +19,61 @@ using namespace std;
 
 sig_atomic_t end_mark = 0;
 
+//###################################################################
+class SafeSYS {
+  public:
+    //Constructor
+    SafeSYS(){
+      counter = 0;
+    }
 
+    void endPH3(){
+      unique_lock<mutex> lck(mtx);
+      while(counter != 0){
+        end.wait(lck);
+      }
+    }
+
+    int sum(int n){
+      unique_lock<mutex> lck(mtx);
+      counter = counter + n;
+      if(counter == 0){
+        end.notify_one();
+      }
+      return counter;
+    }
+
+    void safe_print(string c){
+      unique_lock<mutex> lck(mtx);
+      cout << c << endl;
+    }
+
+    void err_safe_print(string c){
+      unique_lock<mutex> lck(mtx);
+      cerr << c << endl;
+    }
+
+  private:
+    int counter;
+    mutex mtx;
+    condition_variable end;
+};
+//###################################################################
+
+void control(Socket& soc, int& socket_fd){
+  // en espera
+}
+
+void newclient(int socket_fd, Socket& soc, SafeSYS& sys)){
+  sys.sum(1);
+
+  //.......... codigo???
+
+
+  sys.sum(-1);
+}
+
+//###################################################################
 void sig_handler(int signo){
   end_mark = 1;
   cerr << endl;
@@ -38,6 +91,7 @@ void sig_handler(int signo){
   cerr << endl;
   //signal(signo,sig_handler);
 }
+//###################################################################
 
 int main(int argc, char * argv[]) {
   //Declaración de variables
@@ -142,8 +196,37 @@ int main(int argc, char * argv[]) {
   //Servicio iniciado, comandos disponibles
   cout << "[x] Inicio Fase 3 . . ."  << endl;
 
+  SafeSYS system;
+
   cout << "[x] Fase 3 en desarrollo :D"  << endl;
 
+  thread cntrl(&control,ref(soc_serv),ref(soc_serv_fd), ref(system));
+
+  thread cliente;
+  int client_fd = 0;
+  while(end_mark==0){
+    client_fd = soc_local.Accept();
+    if(client_fd == -1 || (client_fd==0 && end_mark==1)) {
+      if (end_mark == 1){
+        system.err_safe_print("[x]Error en accept causado por señal; IGNORAR");
+        continue;
+      } else {
+        string mensError(strerror(errno));
+        system.err_safe_print("[x] -- Error en el accept: " + mensError);
+        // Cerramos el socket
+        soc_local.Close(soc_serv_fd);
+        soc_serv.Close(soc_serv_fd);
+        exit(1);
+      }
+    }
+
+    cliente = thread(&newclient, client_fd, std::ref(soc_local), std::ref(system));
+    cliente.detach();
+    client_fd=0;
+  }
+
+  //Nos aseguramos que el proceso de control termina
+  system.endPH3();
 
   cout << "[x] Fin de Ejecución."  << endl;
 }
