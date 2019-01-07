@@ -28,7 +28,7 @@ all:
 # Cliente
 # Compilacion
 
-lcl: ${CLIENT}.o
+lcl: ${IP}.o
 	${CC} ${LDFLAGS} ${IP}.o -o ${IP}
 
 hdrx: ${IP}.o

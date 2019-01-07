@@ -16,6 +16,11 @@
 #include <cstdlib>
 #include <signal.h>
 
+using namespace std;
+
+sig_atomic_t end_mark = 0;
+
+
 void sig_handler(int signo){
   end_mark = 1;
   cerr << endl;
