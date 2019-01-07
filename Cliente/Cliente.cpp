@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <ctime>
 #include "LindaDriver.hpp"
 
 using namespace std;
