@@ -83,12 +83,33 @@ void conection(int subserv_fd, ControlSys &sys, Socket& soc){
   } else {
     err = true;
   }
+  
+  /*
+  if (buffer.length() >= 9){
+    //SUBSERVER ID
+    string sub_id = buffer.substr(0,3);
+    sub_id.erase(0,1);
+    id = atoi(sub_id.c_str());
+    if(id == 0){
+      err = true;
+    }
+
+    //SUBSERVER PORT
+    int portpos = buffer.find("PORT=",0);
+    if(portpos == -1){
+      err = true;
+    } else {
+      port = atoi(buffer.substr(portpos+5,buffer.length()).c_str());
+    }
+  } else {
+    err = true;
+  }
 
   if(!err){
     res = "OK";
   } else {
     res = "ERROR";
-  }
+  }*/
 
   snd_bytes = soc.Send(subserv_fd,res);
   if (snd_bytes == -1) {
@@ -104,10 +125,12 @@ void conection(int subserv_fd, ControlSys &sys, Socket& soc){
     return;
   }
 
-  sys.fill(id,subserv_fd,port,ip);
-  sys.safe_print("[x] Subservidor " + to_string(id) + " conectado.");
+
   if(err){
     sys.safe_print("[x] Ending process with errors.");
+  } else {
+    sys.fill(id,subserv_fd,port,ip);
+    sys.safe_print("[x] Subservidor " + to_string(id) + " conectado.");
   }
   sys.sumPH2(-1);
   return;
