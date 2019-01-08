@@ -21,7 +21,7 @@ using namespace std;
 //Se puede cambiar por otra cosa??
 sig_atomic_t end_mark = 0;
 
-void contact(Socket& soc, int client_fd, ControlSys& sys){
+void contact(int client_fd, Socket& soc, ControlSys& sys){
   sys.sumPH3(1);
 
   soc.Send(client_fd,sys.ips_to_string());
@@ -31,7 +31,7 @@ void contact(Socket& soc, int client_fd, ControlSys& sys){
   soc.Close(client_fd);
 }
 
-void conection(int subserv_fd, ControlSys &sys, Socket& soc){
+void conection(int subserv_fd, Socket& soc, ControlSys &sys){
   const int maxlength = 150;
 	string buffer = "", res = "", ip;
   bool err = false;
@@ -40,7 +40,8 @@ void conection(int subserv_fd, ControlSys &sys, Socket& soc){
 
   rcv_bytes = soc.Recv(subserv_fd,buffer,maxlength);
   if (rcv_bytes == -1 || rcv_bytes == 0) {
-    sys.err_safe_print("[x] Error al recibir datos: Finalización del subservidor inesperada.");
+    sys.err_safe_print(buffer);
+    sys.err_safe_print("[x]  datos: Finalización del subservidor inesperada.");
     err = true;
     if(soc.Close(subserv_fd) == -1){
       sys.err_safe_print("[x] Fallo al cerrar socket corrupto: " + string(strerror(errno)));
@@ -48,7 +49,6 @@ void conection(int subserv_fd, ControlSys &sys, Socket& soc){
     if(err){
       sys.safe_print("[x] Ending process with errors.");
     }
-    sys.sumPH2(-1);
     return;
   }
 
@@ -83,33 +83,12 @@ void conection(int subserv_fd, ControlSys &sys, Socket& soc){
   } else {
     err = true;
   }
-  
-  /*
-  if (buffer.length() >= 9){
-    //SUBSERVER ID
-    string sub_id = buffer.substr(0,3);
-    sub_id.erase(0,1);
-    id = atoi(sub_id.c_str());
-    if(id == 0){
-      err = true;
-    }
 
-    //SUBSERVER PORT
-    int portpos = buffer.find("PORT=",0);
-    if(portpos == -1){
-      err = true;
-    } else {
-      port = atoi(buffer.substr(portpos+5,buffer.length()).c_str());
-    }
-  } else {
-    err = true;
-  }
-
-  if(!err){
-    res = "OK";
-  } else {
+  if(err){
     res = "ERROR";
-  }*/
+  }else{
+    res = "OK";
+  }
 
   snd_bytes = soc.Send(subserv_fd,res);
   if (snd_bytes == -1) {
@@ -121,10 +100,8 @@ void conection(int subserv_fd, ControlSys &sys, Socket& soc){
     if(err){
       sys.safe_print("[x] Ending process with errors.");
     }
-    sys.sumPH2(-1);
     return;
   }
-
 
   if(err){
     sys.safe_print("[x] Ending process with errors.");
@@ -132,7 +109,6 @@ void conection(int subserv_fd, ControlSys &sys, Socket& soc){
     sys.fill(id,subserv_fd,port,ip);
     sys.safe_print("[x] Subservidor " + to_string(id) + " conectado.");
   }
-  sys.sumPH2(-1);
   return;
 }
 
@@ -244,11 +220,9 @@ int main(int argc, char * argv[]) {
   //###################################################//
   //Conexión con subs
   ctrl.safe_print("[x] Inicio Fase 2 . . .");
-  ctrl.safe_print("[x]Localizando sub-servidores. (en espera de conexión)");
-
+  ctrl.safe_print("[x] >>Localizando sub-servidores. (en espera de conexión)");
 
   int strange_fd;
-  thread cliente;
   while(!ctrl.ready() && end_mark == 0){
     strange_fd = soc_priv.Accept();
     if(strange_fd == -1 || (strange_fd==0 && end_mark==1)) {
@@ -263,15 +237,10 @@ int main(int argc, char * argv[]) {
         exit(1);
       }
     }
-
     if (!ctrl.ready()){
-      ctrl.sumPH2(1);
-      cliente = thread(&conection, soc_priv_fd, ref(ctrl), ref(soc_priv));
-      cliente.detach();
+      conection(strange_fd, soc_priv, ctrl);
     }
   }
-
-  ctrl.endPH2(); //Bug fixed
 
   if (end_mark == 1){
     ctrl.safe_print("[x] Fin de Ejecución.");
@@ -280,7 +249,7 @@ int main(int argc, char * argv[]) {
     exit(0);
   }
 
-  ctrl.safe_print("[x]Todos sub-servidores conectados.");
+  ctrl.safe_print("[x] Todos sub-servidores conectados.");
   ctrl.safe_print("[x] Fase 2 completada.");
   //###################################################//
   //################## P H A S E : 3 ##################//
@@ -288,22 +257,14 @@ int main(int argc, char * argv[]) {
   //Servicio iniciado, comandos disponibles
   ctrl.safe_print("[x] Inicio Fase 3 . . .");
 
-  ctrl.safe_print("[x] Fase 3 en desarrollo :D");
-
-  //thread cliente; redeclaration
   int client_fd;
+  thread cliente;
   while(end_mark == 0){
     client_fd = soc_pub.Accept();
     if(client_fd == -1 || (client_fd==0 && end_mark==1)) {
       if (end_mark == 1){
         ctrl.err_safe_print("[x]Error en accept causado por señal; IGNORAR");
-        continue;
-        /*
-        if (mntr.sum(0) == 0){
-          mntr.sum(1);
-          mntr.end_test();
-        }
-        continue;*/
+        break;
       } else {
         string mensError(strerror(errno));
         cerr << "--Error en el accept: " + mensError + "\n";
@@ -314,17 +275,18 @@ int main(int argc, char * argv[]) {
       }
     }
 
-    cliente = thread(&contact, std::ref(soc_pub), client_fd, std::ref(ctrl));
+    cliente = thread(&contact, client_fd, std::ref(soc_pub), std::ref(ctrl));
     cliente.detach();
     client_fd=0;
   }
 
-  ctrl.endPH3();
+  if(ctrl.sumPH3(0)!=0){
+    ctrl.endPH3();
+  }
 
   ctrl.safe_print("[x] Fin de Ejecución.");
 
   soc_pub.Close(soc_pub_fd);
   soc_priv.Close(soc_priv_fd);
-
 }
 //-------------------------------------------------------------

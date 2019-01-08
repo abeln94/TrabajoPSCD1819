@@ -36,11 +36,7 @@ class ControlSys {
 
     bool ready();
 
-    void endPH2();
-
     void endPH3();
-
-    int sumPH2(int n);
 
     int sumPH3(int n);
 
@@ -52,8 +48,8 @@ class ControlSys {
     string ip_s1, ip_s2, ip_s3;
     int port_s1, port_s2, port_s3;
     bool s1_b, s2_b, s3_b;
-    int cntrPH2,cntrPH3;
-    condition_variable endPH2_cv, endPH3_cv;
+    int cntrPH3;
+    condition_variable endPH3_cv;
 };
 
 #endif

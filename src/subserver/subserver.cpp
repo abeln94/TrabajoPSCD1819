@@ -83,7 +83,7 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
   else{
     int tam = mensaje.length();
     //Caso PN
-    if(mensaje[tam-1] == '1'){ 
+    if(mensaje[tam-1] == '1'){
         mensaje.erase(tam-1);
         tam = mensaje.length();
         string lons = to_string(mensaje[tam-1] - '0');
@@ -150,7 +150,7 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
         else{
             cout << "Error al crear tupla, formato de mensaje incorrecto" << endl;
         }
-    }   
+    }
 
   }
 
@@ -280,6 +280,15 @@ int main(int argc, char * argv[]) {
   // Si:PORT=PPPPP
   //soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":PORT=" + argv[2]);
 
+  string test;
+  soc_serv.Recv(soc_serv_fd, test, 15);
+  if (test != "OK"){
+    cout << "[x] Error en respuesta de CENTRAL." << endl;
+    soc_serv.Close(soc_serv_fd);
+    soc_local.Close(soc_local_fd);
+    exit(0);
+  }
+
 
   cout << "[x] Fase 2 completada." << endl;
   //###################################################//
@@ -302,7 +311,7 @@ int main(int argc, char * argv[]) {
     if(client_fd == -1 || (client_fd==0 && end_mark==1)) {
       if (end_mark == 1){
         system.err_safe_print("[x]Error en accept causado por señal; IGNORAR");
-        continue;
+        break;
       } else {
         string mensError(strerror(errno));
         system.err_safe_print("[x] -- Error en el accept: " + mensError);
@@ -319,7 +328,10 @@ int main(int argc, char * argv[]) {
   }
 
   //Nos aseguramos que el proceso de control termina
-  system.endPH3();
+  if(system.sumPH3(0)!=0){
+    system.endPH3();
+  }
+
 
   cout << "[x] Fin de Ejecución."  << endl;
 }
