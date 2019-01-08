@@ -54,7 +54,7 @@ BIN_DIR=${GENERATED_DIR}/bin
 CC=g++
 
 # Flags compilacion
-CPPFLAGS=-I. -I${SRC_DIR}/${LINDADRIVER_DIR} -I${SRC_DIR}/${SCOREBOARD_DIR} -I${SRC_DIR}/${SOCKET_DIR} -I${SRC_DIR}/${TUPLA_DIR} -I${SRC_DIR}/${SERVER_EXTRA_DIR} -O2 -std=c++11 -lsockets -D ALLOW_LOCAL
+CPPFLAGS=-I. -I${SRC_DIR}/${LINDADRIVER_DIR} -I${SRC_DIR}/${SCOREBOARD_DIR} -I${SRC_DIR}/${SOCKET_DIR} -I${SRC_DIR}/${TUPLA_DIR} -I${SRC_DIR}/${SERVER_EXTRA_DIR} -O2 -std=c++11 -lsockets -D ALLOW_LOCAL -fmax-errors=1
 # Flags linkado threads
 LDFLAGS=-pthread -lnsl
 

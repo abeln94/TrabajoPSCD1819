@@ -10,7 +10,7 @@
 
 #include "Socket.hpp"
 #include "Scoreboard.hpp"
-#include "Tuplas.hpp"
+#include "Tupla.hpp"
 #include <iostream>
 #include <thread>
 #include <cstring>
@@ -68,7 +68,7 @@ class SafeSYS {
 //###################################################################
 //Funciones encargadas de la comunicación exterior
 
-void control(Socket& soc, int& socket_fd){
+void control(Socket& soc, int& socket_fd, SafeSYS& sys){
   // en espera
 }
 
@@ -83,7 +83,7 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
   else{
     int tam = mensaje.length();
     //Caso PN
-    if(mensaje[tam-1] == "1"){ 
+    if(mensaje[tam-1] == '1'){ 
         mensaje.erase(tam-1);
         tam = mensaje.length();
         string lons = to_string(mensaje[tam-1] - '0');
@@ -106,7 +106,7 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
 
     }
     //Caso RN
-    else if(mensaje[tam-1] == "2"){
+    else if(mensaje[tam-1] == '2'){
         mensaje.erase(tam-1);
         tam = mensaje.length();
         string lons = to_string(mensaje[tam-1] - '0');
