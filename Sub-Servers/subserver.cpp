@@ -106,21 +106,22 @@ int main(int argc, char * argv[]) {
   //Declaración de variables
   const string localhost = "localhost";
   string quiensoy;
-  string ip_serv
+  string ip_serv, ipmia;
   int port_localhost;
   int port_serv;
 
 
   //COMPROBACIONES
-  if(argc == 5){
+  if(argc == 6){
     quiensoy = argv[1];
-    port_localhost = atoi(argv[2]);
-    ip_serv = argv[3];
-    port_serv = atoi(argv[4]);
+    ipmia = argv[2];
+    port_localhost = atoi(argv[3]);
+    ip_serv = argv[4];
+    port_serv = atoi(argv[5]);
   } else {
     cout << "[x]Advertencia"<< endl;
     cout << "[x]Error: Número de argumentos invalido"<< endl;
-    cout << "./<ejecutable> <quiensoy> <puerto local> <ip_serv> <puerto_serv>"<<endl;
+    cout << "./<ejecutable> <quiensoy> <ip_mia> <puerto local> <ip_serv> <puerto_serv>"<<endl;
     exit(0);
   }
 
@@ -195,9 +196,9 @@ int main(int argc, char * argv[]) {
   }
 
   // Si:IP=xxx.xxx.xxx.xxx-PORT=PPPPP
-  //soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":IP=" + miip + "-PORT=" + argv[2]);
+  soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":IP=" + miip + "-PORT=" + argv[2]);
   // Si:PORT=PPPPP
-  soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":PORT=" + argv[2]);
+  //soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":PORT=" + argv[2]);
 
 
   cout << "[x] Fase 2 completada." << endl;
