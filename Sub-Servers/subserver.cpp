@@ -9,6 +9,8 @@
 
 
 #include "Socket.hpp"
+#include "Scoreboard.hpp"
+//#include "Tuplas.hpp"
 #include <iostream>
 #include <thread>
 #include <cstring>
@@ -70,7 +72,7 @@ void control(Socket& soc, int& socket_fd){
   // en espera
 }
 
-void newclient(int socket_fd, Socket& soc, SafeSYS& sys)){
+void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra)){
   sys.sum(1);
 
   //.......... codigo???
@@ -204,6 +206,7 @@ int main(int argc, char * argv[]) {
   cout << "[x] Inicio Fase 3 . . ."  << endl;
 
   SafeSYS system;
+  Scoreboard board;
 
   cout << "[x] Fase 3 en desarrollo :D"  << endl;
 
@@ -227,7 +230,7 @@ int main(int argc, char * argv[]) {
       }
     }
 
-    cliente = thread(&newclient, client_fd, std::ref(soc_local), std::ref(system));
+    cliente = thread(&newclient, client_fd, std::ref(soc_local), std::ref(system), std::ref(board));
     cliente.detach();
     client_fd=0;
   }
