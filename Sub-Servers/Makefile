@@ -17,7 +17,7 @@ TUPLA_DIR=Tuplas
 TUPLA=${TUPLA_DIR}/Tuplas
 
 
-CPPFLAGS=-I. -I${SOCKET_DIR} -I${SCTRL_DIR} -O2 -std=c++11 -lsockets # Flags compilacion
+CPPFLAGS=-I. -I${SOCKET_DIR} -I${SBRD_DIR} -I${TUPLA_DIR} -O2 -std=c++11 -lsockets # Flags compilacion
 LDFLAGS=-pthread -lnsl# Flags linkado threads
 SOCKETSFLAGS=-lsocket -lnsl
 
@@ -47,7 +47,7 @@ ${SERVER}.o: ${SERVER}.cpp
 # SBRD
 # Compilacion Scoreboard
 ${SBRD}.o: ${TUPLA}.o ${SBRD}.hpp ${SBRD}.cpp
-	${CC} -c ${CPPFLAGS} ../${TUPLA}.o ${SBRD}.cpp -o ${SBRD}.o
+	${CC} -c ${CPPFLAGS} ${TUPLA}.o ${SBRD}.cpp -o ${SBRD}.o
 
 #-----------------------------------------------------------
 # TUPLA
@@ -65,5 +65,6 @@ ${SOCKET}.o: ${SOCKET}.hpp ${SOCKET}.cpp
 # LIMPIEZA
 clean:
 	$(RM) ${SOCKET}.o
-	$(RM) ${SCTRL}.o
+	$(RM) ${TUPLA}.o
+	$(RM) ${SBRD}.o
 	$(RM) ${SERVER} ${SERVER}.o
