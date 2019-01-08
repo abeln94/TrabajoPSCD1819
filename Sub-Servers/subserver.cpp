@@ -105,7 +105,7 @@ void sig_handler(int signo){
 int main(int argc, char * argv[]) {
   //Declaración de variables
   const string localhost = "localhost";
-  int quiensoy;
+  string quiensoy;
   string ip_serv
   int port_localhost;
   int port_serv;
@@ -113,7 +113,7 @@ int main(int argc, char * argv[]) {
 
   //COMPROBACIONES
   if(argc == 5){
-    quiensoy = atoi(argv[1]);
+    quiensoy = argv[1];
     port_localhost = atoi(argv[2]);
     ip_serv = argv[3];
     port_serv = atoi(argv[4]);
@@ -124,7 +124,7 @@ int main(int argc, char * argv[]) {
     exit(0);
   }
 
-  if(quiensoy != "1" && quiensoy != "2" && quiensoy != "2"){
+  if(quiensoy != "1" && quiensoy != "2" && quiensoy != "3"){
     cout << "[x]Advertencia"<< endl;
     cout << "[x]Error: Valor para <quiensoy> invalido"<< endl;
     cout << "./<ejecutable> <quiensoy> <puerto local> <ip_serv> <puerto_serv>"<<endl;
@@ -181,8 +181,8 @@ int main(int argc, char * argv[]) {
   //Conexión con serv
   cout << "[x] Inicio Fase 2 . . ."  << endl;
   //cout << "[x]Localizando sub-servidores. (en espera de conexión)"  << endl;
-  ###################
-  sting miip = getmiip();
+  //###################
+  //sting miip = getmiip();
 
   Socket soc_serv(ip_serv,port_serv);
 
