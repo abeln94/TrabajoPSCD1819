@@ -7,7 +7,7 @@
 #include <condition_variable>
 #include <list>
 
-#include "tupla.hpp"
+#include "Tuplas.hpp"
 
 using namespace std;
 
