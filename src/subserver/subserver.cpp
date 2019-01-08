@@ -10,7 +10,7 @@
 
 #include "Socket.hpp"
 #include "Scoreboard.hpp"
-#include "Tuplas.hpp"
+#include "Tupla.hpp"
 #include <iostream>
 #include <thread>
 #include <cstring>

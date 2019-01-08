@@ -69,10 +69,20 @@ endif
 
 all: cliente server subserver
 
+help:
+	@echo "gmake -> cliente & server & subserver"
+	@echo "gmake cliente"
+	@echo "gmake server"
+	@echo "gmake subserver"
+	@echo "gmake help"
+	@echo "gmake clean"
+
 #-----------------------------------------------------------
 # Compilacion cliente
 
-cliente: ${O_DIR}/${LINDADRIVER}.o ${O_DIR}/${SCOREBOARD}.o ${O_DIR}/${SOCKET}.o ${O_DIR}/${TUPLA}.o ${O_DIR}/${CLIENTE}.o
+cliente: ${BIN_DIR}/${CLIENTE}
+
+${BIN_DIR}/${CLIENTE}: ${O_DIR}/${LINDADRIVER}.o ${O_DIR}/${SCOREBOARD}.o ${O_DIR}/${SOCKET}.o ${O_DIR}/${TUPLA}.o ${O_DIR}/${CLIENTE}.o
 	mkdir -p ${BIN_DIR}/${CLIENTE_DIR}
 	${CC} ${LDFLAGS} ${O_DIR}/${LINDADRIVER}.o ${O_DIR}/${SCOREBOARD}.o ${O_DIR}/${SOCKET}.o ${O_DIR}/${TUPLA}.o ${O_DIR}/${CLIENTE}.o -o ${BIN_DIR}/${CLIENTE} ${SOCKETSFLAGS}
 	
@@ -83,7 +93,9 @@ ${O_DIR}/${CLIENTE}.o: ${SRC_DIR}/${CLIENTE}.cpp ${SRC_DIR}/${CLIENTE_EXTRA}.cpp
 #-----------------------------------------------------------
 # Compilacion servidor
 
-server: ${O_DIR}/${LINDADRIVER}.o ${O_DIR}/${SCOREBOARD}.o ${O_DIR}/${SOCKET}.o ${O_DIR}/${TUPLA}.o ${O_DIR}/${SERVER}.o ${O_DIR}/${SERVER_EXTRA}.o
+server: ${BIN_DIR}/${SERVER}
+
+${BIN_DIR}/${SERVER}: ${O_DIR}/${LINDADRIVER}.o ${O_DIR}/${SCOREBOARD}.o ${O_DIR}/${SOCKET}.o ${O_DIR}/${TUPLA}.o ${O_DIR}/${SERVER}.o ${O_DIR}/${SERVER_EXTRA}.o
 	mkdir -p ${BIN_DIR}/${SERVER_DIR}
 	${CC} ${LDFLAGS} ${O_DIR}/${LINDADRIVER}.o ${O_DIR}/${SCOREBOARD}.o ${O_DIR}/${SOCKET}.o ${O_DIR}/${TUPLA}.o ${O_DIR}/${SERVER}.o ${O_DIR}/${SERVER_EXTRA}.o -o ${BIN_DIR}/${SERVER} ${SOCKETSFLAGS}
 	
@@ -98,7 +110,9 @@ ${O_DIR}/${SERVER_EXTRA}.o: ${SRC_DIR}/${SERVER_EXTRA}.cpp ${SRC_DIR}/${SERVER_E
 #-----------------------------------------------------------
 # Compilacion subservidor
 
-subserver: ${O_DIR}/${LINDADRIVER}.o ${O_DIR}/${SCOREBOARD}.o ${O_DIR}/${SOCKET}.o ${O_DIR}/${TUPLA}.o ${O_DIR}/${SUBSERVER}.o
+subserver: ${BIN_DIR}/${SUBSERVER}
+
+${BIN_DIR}/${SUBSERVER}: ${O_DIR}/${LINDADRIVER}.o ${O_DIR}/${SCOREBOARD}.o ${O_DIR}/${SOCKET}.o ${O_DIR}/${TUPLA}.o ${O_DIR}/${SUBSERVER}.o
 	mkdir -p ${BIN_DIR}/${SUBSERVER_DIR}
 	${CC} ${LDFLAGS} ${O_DIR}/${LINDADRIVER}.o ${O_DIR}/${SCOREBOARD}.o ${O_DIR}/${SOCKET}.o ${O_DIR}/${TUPLA}.o ${O_DIR}/${SUBSERVER}.o -o ${BIN_DIR}/${SUBSERVER} ${SOCKETSFLAGS}
 	
