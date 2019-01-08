@@ -15,14 +15,14 @@ Scoreboard::~Scoreboard() {}
 //-----------------------------------------------------
 void Scoreboard::PN(const Tupla& note) {
 	// Post Note
-	
+
   unique_lock<mutex> lck(mtxMonitor);
 
   // check if there are pending that want it
   auto p = pending.begin();
   while (p != pending.end()) {
 		// for each pending
-		
+
     if (_compare((*p).get().note, note)) {
       // the note can be assigned
 
@@ -48,14 +48,14 @@ void Scoreboard::PN(const Tupla& note) {
 //-----------------------------------------------------
 Tupla Scoreboard::RN(const Tupla& note) {
 	// Remove Note
-	
+
   unique_lock<mutex> lck(mtxMonitor);
   return _rn(note, true, lck);
 }
 //-----------------------------------------------------
 Tupla Scoreboard::readN(const Tupla& note) {
 	// read Note
-	
+
   unique_lock<mutex> lck(mtxMonitor);
   return _rn(note, false, lck);
 }
@@ -95,7 +95,7 @@ Tupla Scoreboard::_rn(const Tupla& note, bool remove, unique_lock<mutex>& lck) {
 //-----------------------------------------------------
 bool Scoreboard::_compare(const Tupla& dst, const Tupla& src) {
 	// compare patter tuple (dst) with tuple (src)
-	
+
   if (dst.size() != src.size()) {
     // different sizes, doesn't match
     return false;
@@ -108,10 +108,10 @@ bool Scoreboard::_compare(const Tupla& dst, const Tupla& src) {
 
     if (dst[i] == "" || dst[i] == "?") {
       // unnamed variable, nothing to check
-			
+
     } else if (dst[i][0] == '?') {
       // named variable, check
-			
+
       string name = dst[i].substr(1, dst[i].size() - 1);
 
       // insert into map
@@ -123,7 +123,7 @@ bool Scoreboard::_compare(const Tupla& dst, const Tupla& src) {
 
     } else {
       // not a variable, check exact value
-			
+
       if (dst[i] != src[i]) {
         // different value, doesn't match
         return false;

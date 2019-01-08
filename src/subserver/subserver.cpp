@@ -10,7 +10,7 @@
 
 #include "Socket.hpp"
 #include "Scoreboard.hpp"
-//#include "Tuplas.hpp"
+#include "Tuplas.hpp"
 #include <iostream>
 #include <thread>
 #include <cstring>
@@ -72,7 +72,7 @@ void control(Socket& soc, int& socket_fd){
   // en espera
 }
 
-void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra)){
+void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
   sys.sum(1);
 
   //.......... codigo???
@@ -196,7 +196,7 @@ int main(int argc, char * argv[]) {
   }
 
   // Si:IP=xxx.xxx.xxx.xxx-PORT=PPPPP
-  soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":IP=" + miip + "-PORT=" + argv[2]);
+  soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":IP=" + ipmia + "-PORT=" + argv[2]);
   // Si:PORT=PPPPP
   //soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":PORT=" + argv[2]);
 
