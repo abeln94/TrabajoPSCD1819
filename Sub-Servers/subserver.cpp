@@ -195,7 +195,9 @@ int main(int argc, char * argv[]) {
   }
 
   // Si:IP=xxx.xxx.xxx.xxx-PORT=PPPPP
-  soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":IP=" + miip + "-PORT=" + argv[2]);
+  //soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":IP=" + miip + "-PORT=" + argv[2]);
+  // Si:PORT=PPPPP
+  soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":PORT=" + argv[2]);
 
 
   cout << "[x] Fase 2 completada." << endl;
