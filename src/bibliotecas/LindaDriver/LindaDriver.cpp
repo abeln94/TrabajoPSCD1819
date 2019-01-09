@@ -26,6 +26,7 @@ LindaDriver::LindaDriver(string ip, int puerto){
 			return;
 		}
 	#endif
+	
 
   ip_serv = ip;
   port_serv = puerto;
@@ -43,7 +44,7 @@ LindaDriver::LindaDriver(string ip, int puerto){
     string mensError = strerror(errno);
     cerr << "[Linda] Error al recibir/enviar datos: " + mensError + "\n";
     soc_serv -> Close(serv_fd);
-    return;
+    exit(1);
   }
 
   //Asumimos que el mensaje es correcto????
@@ -69,18 +70,21 @@ LindaDriver::LindaDriver(string ip, int puerto){
   }*/
 
   //corecto
+  /*
   int snd_bytes = soc_serv -> Send(serv_fd, "OK");
   if(snd_bytes == -1){
     string mensError = strerror(errno);
     cerr << "[Linda] Error al recibir/enviar datos: " + mensError + "\n";
     soc_serv -> Close(serv_fd);
-    return;
-    }
+    exit(1);
+  }
+  */
   s1_ready = false;
   s2_ready = false;
   s3_ready = false;
 
   soc_serv -> Close(serv_fd);
+  cout << "inicializado" << endl;
 }
 
 LindaDriver::~LindaDriver(){
@@ -353,7 +357,7 @@ Tupla LindaDriver::readN(Tupla mensaje){
         test_server(mensaje.size());
     
     //Añadimos "2" para que el subservidor sepa que accion realizar, y el tamaño de la tupla para que pueda tratar el mensaje.
-    string mens = mensaje.to_string() + to_string(mensaje.size()) + "2";
+    string mens = mensaje.to_string() + to_string(mensaje.size()) + "3";
     if(mensaje.size() <=3){
         int snd_bytes = soc_s1->Send(s1_fd, mens);
         if(snd_bytes == -1){

@@ -271,7 +271,7 @@ int main(int argc, char * argv[]) {
   }
 
   // Si:IP=xxx.xxx.xxx.xxx-PORT=PPPPP
-  soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":IP=" + ipmia + "-PORT=" + argv[2]);
+  soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":IP=" + ipmia + "-PORT=" + to_string(port_localhost));
   // Si:PORT=PPPPP
   //soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":PORT=" + argv[2]);
 
