@@ -328,7 +328,7 @@ int main(int argc, char * argv[]) {
   }
 
   //Nos aseguramos que el proceso de control termina
-  if(system.sumPH3(0)!=0){
+  if(system.sum(0)!=0){
     system.endPH3();
   }
 
