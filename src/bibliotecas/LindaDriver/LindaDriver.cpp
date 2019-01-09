@@ -26,7 +26,7 @@ LindaDriver::LindaDriver(string ip, int puerto){
 			return;
 		}
 	#endif
-	
+
 
   ip_serv = ip;
   port_serv = puerto;
@@ -52,7 +52,7 @@ LindaDriver::LindaDriver(string ip, int puerto){
     size_t found1 = buffer.find_first_of(",",0);
     size_t found2 = buffer.find_first_of("|",0);
     rellenar(buffer[0]-'0',buffer.substr(2,found1-2),atoi(buffer.substr(found1+1,found2-1).c_str()));
-    buffer.erase(0,found2);
+    buffer.erase(0,found2+1);
   }
 
   /*
@@ -95,7 +95,7 @@ LindaDriver::~LindaDriver(){
 	#endif
 
   //Cerramos conexiones restantes
-	
+
   if(s1_ready){
     int snd_bytes = soc_s1 -> Send(s1_fd, "END");
     if(snd_bytes == -1){
@@ -176,9 +176,9 @@ void LindaDriver::PN(Tupla mensaje){
 		}
 	    #endif
         test_server(mensaje.size());
-        
+
     //Añadimos "1" para que el subservidor sepa que accion realizar, y el tamaño de la tupla para que pueda tratar el mensaje.
-    string mens = mensaje.to_string() + to_string(mensaje.size()) + "1"; 
+    string mens = mensaje.to_string() + to_string(mensaje.size()) + "1";
     if(mensaje.size() <=3){
         int snd_bytes = soc_s1->Send(s1_fd, mens);
         if(snd_bytes == -1){
@@ -210,7 +210,7 @@ void LindaDriver::PN(Tupla mensaje){
             string mensError = strerror(errno);
             cerr << "[Linda] Error al enviar mensaje al subservidor 2: " + mensError + "\n";
             //Cerrar o no socket?
-        }    
+        }
         else{
             string buffer;
             int rcv_bytes = soc_s2->Recv(s2_fd, buffer, 1000);
@@ -225,8 +225,8 @@ void LindaDriver::PN(Tupla mensaje){
                 else{
                     cout << "Error en PN " << mens << endl;
                 }
-            }            
-        }        
+            }
+        }
     }
     else{
         int snd_bytes = soc_s3->Send(s3_fd,mens);
@@ -234,7 +234,7 @@ void LindaDriver::PN(Tupla mensaje){
             string mensError = strerror(errno);
             cerr << "[Linda] Error al enviar mensaje al subservidor 3: " + mensError + "\n";
             //Cerrar o no socket?
-        }   
+        }
         else{
             string buffer;
             int rcv_bytes = soc_s3->Recv(s3_fd, buffer, 1000);
@@ -250,7 +250,7 @@ void LindaDriver::PN(Tupla mensaje){
                     cout << "Error en PN " << mens << endl;
                 }
             }
-        }             
+        }
     }
 }
 
@@ -298,7 +298,7 @@ Tupla LindaDriver::RN(Tupla mensaje){
             string mensError = strerror(errno);
             cerr << "[Linda] Error al enviar mensaje al subservidor 2: " + mensError + "\n";
             //Cerrar o no socket?
-        }    
+        }
         else{
             string buffer;
             int rcv_bytes = soc_s2->Recv(s2_fd, buffer, 1000);
@@ -317,7 +317,7 @@ Tupla LindaDriver::RN(Tupla mensaje){
                     cout << "Error en la tupla enviado por el subservidor 2" << endl;
                 }
             }
-        }        
+        }
     }
     else{
         int snd_bytes = soc_s3->Send(s3_fd,mens);
@@ -325,7 +325,7 @@ Tupla LindaDriver::RN(Tupla mensaje){
             string mensError = strerror(errno);
             cerr << "[Linda] Error al enviar mensaje al subservidor 3: " + mensError + "\n";
             //Cerrar o no socket?
-        }   
+        }
         else{
             string buffer;
             int rcv_bytes = soc_s3->Recv(s3_fd, buffer, 1000);
@@ -344,7 +344,7 @@ Tupla LindaDriver::RN(Tupla mensaje){
                     cout << "Error en la tupla enviado por el subservidor 3" << endl;
                 }
             }
-        }             
+        }
     }
 }
 
@@ -354,9 +354,9 @@ Tupla LindaDriver::readN(Tupla mensaje){
 			return _lindaDriver_scoreboard.readN(mensaje);
 		}
 	    #endif
-        
+
         test_server(mensaje.size());
-    
+
     //Añadimos "3" para que el subservidor sepa que accion realizar, y el tamaño de la tupla para que pueda tratar el mensaje.
     string mens = mensaje.to_string() + to_string(mensaje.size()) + "3";
     if(mensaje.size() <=3){
@@ -392,7 +392,7 @@ Tupla LindaDriver::readN(Tupla mensaje){
             string mensError = strerror(errno);
             cerr << "[Linda] Error al enviar mensaje al subservidor 2: " + mensError + "\n";
             //Cerrar o no socket?
-        }    
+        }
         else{
             string buffer;
             int rcv_bytes = soc_s2->Recv(s2_fd, buffer, 1000);
@@ -411,7 +411,7 @@ Tupla LindaDriver::readN(Tupla mensaje){
                     cout << "Error en la tupla enviado por el subservidor 2" << endl;
                 }
             }
-        }        
+        }
     }
     else{
         int snd_bytes = soc_s3->Send(s3_fd,mens);
@@ -419,7 +419,7 @@ Tupla LindaDriver::readN(Tupla mensaje){
             string mensError = strerror(errno);
             cerr << "[Linda] Error al enviar mensaje al subservidor 3: " + mensError + "\n";
             //Cerrar o no socket?
-        }   
+        }
         else{
             string buffer;
             int rcv_bytes = soc_s3->Recv(s3_fd, buffer, 1000);
@@ -438,7 +438,6 @@ Tupla LindaDriver::readN(Tupla mensaje){
                     cout << "Error en la tupla enviado por el subservidor 3" << endl;
                 }
             }
-        }             
+        }
     }
 }
-
