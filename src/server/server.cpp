@@ -26,9 +26,9 @@ void contact(int client_fd, Socket& soc, ControlSys& sys){
   string buffer;
 
   sys.safe_print("[x] Cliente conectado.");
-  if (soc.Send(client_fd, sys.ips_to_string()); == -1) {
+  if (soc.Send(client_fd, sys.ips_to_string()) == -1) {
     sys.err_safe_print("[x] Error al enviar datos: Finalización del subservidor inesperada.");
-  } else if (soc.Recv(client_fd, buffer, 15); == -1) {
+  } else if (soc.Recv(client_fd, buffer, 15) == -1) {
     sys.err_safe_print("[x] Error al recibir datos: Finalización del subservidor inesperada.");
   }
 

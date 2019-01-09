@@ -95,7 +95,7 @@ LindaDriver::~LindaDriver(){
 	#endif
 
   //Cerramos conexiones restantes
-	/*
+	
   if(s1_ready){
     int snd_bytes = soc_s1 -> Send(s1_fd, "END");
     if(snd_bytes == -1){
@@ -119,7 +119,7 @@ LindaDriver::~LindaDriver(){
       cerr << "[Linda] Error al enviar marca finalización: " + mensError + "\n";
     }
     soc_s3 -> Close(s3_fd);
-  }*/
+  }
 
   //END
   delete[] soc_serv;
@@ -176,6 +176,7 @@ void LindaDriver::PN(Tupla mensaje){
 		}
 	    #endif
         test_server(mensaje.size());
+        
     //Añadimos "1" para que el subservidor sepa que accion realizar, y el tamaño de la tupla para que pueda tratar el mensaje.
     string mens = mensaje.to_string() + to_string(mensaje.size()) + "1"; 
     if(mensaje.size() <=3){
@@ -203,7 +204,7 @@ void LindaDriver::PN(Tupla mensaje){
         }
 
     }
-    else if(mensaje.size() || mensaje.size() == 5){
+    else if(mensaje.size() ==4 || mensaje.size() == 5){
         int snd_bytes = soc_s2->Send(s2_fd, mens);
         if(snd_bytes == -1){
             string mensError = strerror(errno);
@@ -356,7 +357,7 @@ Tupla LindaDriver::readN(Tupla mensaje){
         
         test_server(mensaje.size());
     
-    //Añadimos "2" para que el subservidor sepa que accion realizar, y el tamaño de la tupla para que pueda tratar el mensaje.
+    //Añadimos "3" para que el subservidor sepa que accion realizar, y el tamaño de la tupla para que pueda tratar el mensaje.
     string mens = mensaje.to_string() + to_string(mensaje.size()) + "3";
     if(mensaje.size() <=3){
         int snd_bytes = soc_s1->Send(s1_fd, mens);

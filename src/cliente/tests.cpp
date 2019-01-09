@@ -199,6 +199,8 @@ void myexample(char* ip, int port, int i, char* param){
 	LD.PN(mt5);
 	LD.PN(mt6);
 	
+	cout << "PN correctos" << endl;
+	
 	mt1.from_string("[?]");
 	mt2.from_string("[?,?]");
 	mt3.from_string("[?X,?,3]");
@@ -206,12 +208,24 @@ void myexample(char* ip, int port, int i, char* param){
 	mt5.from_string("[?,?,?,?,?]");
 	mt6.from_string("[?,?,?,4,?,?]");
 	
+	
+	mt1 = LD.readN(mt1);
+	mt2 = LD.readN(mt2);
+	mt3 = LD.readN(mt3);
+	mt4 = LD.readN(mt4);
+	mt5 = LD.readN(mt5);
+	mt6 = LD.readN(mt6);
+	
+	cout << "readN correctos" << endl;
+	
 	mt1 = LD.RN(mt1);
 	mt2 = LD.RN(mt2);
 	mt3 = LD.RN(mt3);
 	mt4 = LD.RN(mt4);
 	mt5 = LD.RN(mt5);
 	mt6 = LD.RN(mt6);
+	
+	cout << "RN correctos" << endl;
 	
 	cout << mt1 << mt2 << mt3 << mt4 << mt5 << mt6 << endl;
 }
