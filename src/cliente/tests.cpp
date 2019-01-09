@@ -343,19 +343,20 @@ void t_coche(char* ip, int port, int i, char* param){
 void t_mantenimiento(char* ip, int port, int _, char* param){
   LindaDriver scb(ip, port);
 	
-  int max = atoi(param);
+  int repetir = atoi(param);
 
   Tupla gasolinera("gasolinera", "?S");
   Tupla mantenimiento("mantenimiento");
 
   scb.PN(mantenimiento);
-  scb.readN(gasolinera);
+  Tupla querer = scb.readN(gasolinera);
+  int max = stoi(querer[1]);
   
-  while(true){
+  for(int i = 0; i < repetir; ++i){
 	esperar(4000, 6000);
 	scb.RN(mantenimiento);
 	cout << "------>>>> LLAMADA MANTENIMIENTO <<<<------" << endl;
-	Tupla querer = scb.readN(gasolinera);
+	querer = scb.readN(gasolinera);
 	int n = stoi(querer[1]);
 	while(n != max){
 	  querer = scb.readN(gasolinera);
@@ -398,16 +399,15 @@ void t_gasolinera(char* ip, int port, int _, char* param){
 	while(n == 0){
 	  querer = scb.readN(gasolinera);
 	  n = stoi(querer[1]);
+	  scb.readN(mantenimiento);
 	}
-	if(n > 0){
-	  scb.RN(gasolinera);
-	  querer[1] = to_string(n - 1);
-	  scb.PN(querer);
-	  querer = scb.readN(surtidor);
-	  coger[2] = querer[2];
-	  scb.RN(querer);
-	  scb.PN(coger);
-	} 
+	scb.RN(gasolinera);
+	querer[1] = to_string(n - 1);
+	scb.PN(querer);
+	querer = scb.readN(surtidor);
+	coger[2] = querer[2];
+	scb.RN(querer);
+	scb.PN(coger);
   }
   
 }
@@ -437,7 +437,7 @@ void t_surtidor(char* ip, int port, int _, char* param){
 //--------------------------------------------------
 
 ADDFUNCTION( t_coche, "Control Gasolinera, ejecutar como 'N t_coche M' siendo N el número de coches y M las veces que pasa por la gasolinera");
-ADDFUNCTION( t_mantenimiento, "Control Gasolinera, ejecutar como '1 t_mantenimiento N' siendo N el número de surtidores totales");
+ADDFUNCTION( t_mantenimiento, "Control Gasolinera, ejecutar como '1 t_mantenimiento N' siendo N el número de mantenimientos");
 ADDFUNCTION( t_gasolinera, "Control Gasolinera, ejecutar como '1 t_gasolinera N' siendo N el número de surtidores totales");
 ADDFUNCTION( t_surtidor, "Control Gasolinera, ejecutar como '1 t_surtidor N' ");
 
@@ -446,6 +446,25 @@ ADDFUNCTION( t_surtidor, "Control Gasolinera, ejecutar como '1 t_surtidor N' ");
 //-----------------------------------------------------
 //---------Tiempo tuplas
 //-----------------------------------------------------
+//Devuelve el tiempo que se tarda en una de las operaciones de LindaDriver 
+//con <max> tuplas <a>
+float time_LD(LindaDriver& scb, const int max, const Tupla& a, const int select){
+	
+  clock_t t = clock();
+  for(int j = 0; j < max; ++j){
+	if(select == 1){
+	  scb.PN(a);
+	} else{ 
+	  (select ? scb.RN(a) : scb.readN(a));
+	}
+  }
+  
+  t = clock() - t;
+  return (float(t))/CLOCKS_PER_SEC;
+
+}
+
+//--------------------------------------------------
 void t_tuplas(char* ip, int port, int _, char* param){
   LindaDriver scb(ip, port);
   
@@ -471,29 +490,25 @@ void t_tuplas(char* ip, int port, int _, char* param){
 	Tupla a("tupla", "tupla", "tupla", "tupla", "tupla", "tupla");
   }
   
-  clock_t t = clock();
-  float aux, aux2;
+  float aux, aux2, aux3;
   
   cout << "Metiendo " << max << " tuplas..." << endl;
-  for(int j = 0; j < max; ++j){
-	scb.PN(a);
-  }
   
-  t = clock() - t;
-  aux = (float(t))/CLOCKS_PER_SEC;
+  aux = time_LD(scb, max, a, 1);
   cout << "Incluidas " << max << " tuplas en " << fixed << aux << " segundos" << endl;
   
-  t = clock();
-  cout << "Eliminando " << max << " tuplas..." << endl;
-  for(int j = 0; j < max; ++j){
-	scb.RN(a);
-  }
-  
-  t = clock() - t;
-  aux2 = (float(t))/CLOCKS_PER_SEC;
-  cout << "Eliminadas " << max << " tuplas en " << fixed << aux2 << " segundos" << endl;
-  
+  cout << "Leyendo " << max << " tuplas..." << endl;
+
+  aux2 = time_LD(scb, max, a, 0);
+  cout << "Leídas " << max << " tuplas en " << fixed << aux2 << " segundos" << endl;
   aux += aux2;
+  
+  cout << "Eliminando " << max << " tuplas..." << endl;
+
+  aux2 = time_LD(scb, max, a, -1);
+  cout << "Eliminadas " << max << " tuplas en " << fixed << aux2 << " segundos" << endl;
+  aux += aux2;
+  
   cout << "Tiempo total parte 1: " << fixed << aux << " segundos" << endl << endl;
   
   cout << "Ahora las tuplas serán creadas de la forma from_string" << endl << endl;
@@ -512,28 +527,24 @@ void t_tuplas(char* ip, int port, int _, char* param){
 	a.from_string("[prove,prove,prove,prove,prove,prove]");
   }
   
-  t = clock();
   cout << "Metiendo " << max << " tuplas..." << endl;
-  for(int j = 0; j < max; ++j){
-	scb.PN(a);
-  }
   
-  t = clock() - t;
-  aux2 = (float(t))/CLOCKS_PER_SEC;
+  aux2 = time_LD(scb, max, a, 1);
   cout << "Incluidas " << max << " tuplas en " << fixed << aux2 << " segundos" << endl;
   
-  t = clock();
+  cout << "Leyendo " << max << " tuplas..." << endl;
+
+  aux3 = time_LD(scb, max, a, 0);
+  cout << "Leídas " << max << " tuplas en " << fixed << aux3 << " segundos" << endl;
+  aux2 += aux3;
+  
   cout << "Eliminando " << max << " tuplas..." << endl;
-  for(int j = 0; j < max; ++j){
-	scb.RN(a);
-  }
+
+  aux3 = time_LD(scb, max, a, -1);
+  cout << "Eliminadas " << max << " tuplas en " << fixed << aux3 << " segundos" << endl;
   
-  t = clock() - t;
-  cout << "Eliminadas " << max << " tuplas en " << fixed << ((float)t)/CLOCKS_PER_SEC << " segundos" << endl;
-  aux2 += (float(t))/CLOCKS_PER_SEC;
-  
-  cout << "Tiempo total parte 2: " << fixed << aux2 << " segundos" << endl << endl;
-  cout << "Tiempo total entre las dos partes: " << fixed << aux2 + aux << " segundos" << endl;
+  cout << "Tiempo total parte 2: " << fixed << aux2 + aux3 << " segundos" << endl << endl;
+  cout << "Tiempo total entre las dos partes: " << fixed << aux + aux2 + aux3 << " segundos" << endl;
 }
 
 //--------------------------------------------------
