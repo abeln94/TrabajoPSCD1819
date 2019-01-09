@@ -23,9 +23,14 @@ sig_atomic_t end_mark = 0;
 
 void contact(int client_fd, Socket& soc, ControlSys& sys){
   sys.sumPH3(1);
+  string buffer;
 
   sys.safe_print("[x] Cliente conectado.");
-  soc.Send(client_fd,sys.ips_to_string());
+  if (soc.Send(client_fd, sys.ips_to_string()); == -1) {
+    sys.err_safe_print("[x] Error al enviar datos: Finalización del subservidor inesperada.");
+  } else if (soc.Recv(client_fd, buffer, 15); == -1) {
+    sys.err_safe_print("[x] Error al recibir datos: Finalización del subservidor inesperada.");
+  }
 
   //End process
   sys.sumPH3(-1);
@@ -108,7 +113,8 @@ void conection(int subserv_fd, Socket& soc, ControlSys &sys){
     sys.safe_print("[x] Ending process with errors.");
   } else {
     sys.fill(id,subserv_fd,port,ip);
-    sys.safe_print("[x] Subservidor " + to_string(id) + " conectado.");
+    sys.safe_print("[x] Subservidor " + to_string(id) + " conectado (" + ip +
+                    ":" + to_string(port) + ")." );
   }
   return;
 }
