@@ -271,10 +271,16 @@ int main(int argc, char * argv[]) {
 			cliente.detach();
 			
 		}catch(...){
-			string mensError(strerror(errno));
-			system.err_safe_print("[x] -- Error en el accept: " + mensError);
-			// el socket se cierra automáticamente
-			correcto = false;
+			
+			if (end_mark == 1){
+        system.err_safe_print("[x]Error en accept causado por señal; IGNORAR");
+        break;
+      } else {
+        string mensError(strerror(errno));
+        system.err_safe_print("[x] -- Error en el accept: " + mensError);
+				// el socket se cierra automáticamente
+        exit(1);
+			}
 		}
   }
 

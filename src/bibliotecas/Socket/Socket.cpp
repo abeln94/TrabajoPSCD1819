@@ -38,7 +38,7 @@ Servidor::Servidor(int port, int max_connections) {
   if (socket_fd == -1) {
     string mensError(strerror(errno));
     cerr << "Error en el bind: " + mensError + "\n";
-    exit(1);
+    throw "BIND"; //exit(1);
   }
 
   // Listen
@@ -46,7 +46,7 @@ Servidor::Servidor(int port, int max_connections) {
   if (error_code == -1) {
     string mensError(strerror(errno));
     cerr << "Error en el listen: " + mensError + "\n";
-    exit(1);
+    throw "LISTEN"; //exit(1);
   }
 }
 //-------------------------------------------------------------
@@ -57,7 +57,7 @@ Canal& Servidor::getCliente() {
   if (client_fd == -1) {
     string mensError(strerror(errno));
     cerr << "Mensaje de error: " + mensError + "\n";
-    exit(1);
+    throw "ACCEPT"; //exit(1);
   }
 
   return *(new Canal(socket, client_fd));
