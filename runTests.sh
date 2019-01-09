@@ -6,8 +6,12 @@ server_ip=localhost
 server_port=32040
 server_privateport=32071
 
-subserver_ip=(localhost localhost localhost)
-subserver_port=(32310 32411 32512)
+subserver_ip1=localhost
+subserver_ip2=localhost
+subserver_ip3=localhost
+subserver_port1=32310
+subserver_port2=32411
+subserver_port3=32512
 
 local_ip=local
 local_port=0
@@ -47,11 +51,11 @@ xterm -geometry +0+0 -T "Servidor" -e $PWD/$server $server_port $server_privatep
 sleep 5
 
 echo -----Ejecutando subservidores-----
-xterm -geometry -0-0 -T "Subservidor 1" -e $PWD/$subserver 1 $subserver_ip[0] $subserver_port[0] $server_ip $server_privateport &
-xterm -geometry -0+0 -T "Subservidor 2" -e $PWD/$subserver 2 $subserver_ip[1] $subserver_port[1] $server_ip $server_privateport &
-xterm -geometry +0-0 -T "Subservidor 3" -e $PWD/$subserver 3 $subserver_ip[2] $subserver_port[2] $server_ip $server_privateport &
+xterm -geometry -0-0 -T "Subservidor 1" -e $PWD/$subserver 1 $subserver_ip1 $subserver_port1 $server_ip $server_privateport &
+xterm -geometry -0+0 -T "Subservidor 2" -e $PWD/$subserver 2 $subserver_ip2 $subserver_port2 $server_ip $server_privateport &
+xterm -geometry +0-0 -T "Subservidor 3" -e $PWD/$subserver 3 $subserver_ip3 $subserver_port3 $server_ip $server_privateport &
 
 sleep 5
 
-# tests
+echo -----Ejecutando cliente-----
 $cliente $server_ip $server_port  1 myexample .
