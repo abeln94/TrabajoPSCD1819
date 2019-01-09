@@ -190,10 +190,10 @@ void LindaDriver::PN(Tupla mensaje){
 			break;
 		case 4:
 		case 5:
-			snd_bytes = soc_s1->Send(s1_fd, mens);
+			snd_bytes = soc_s2->Send(s2_fd, mens);
 			break;
 		case 6:
-			snd_bytes = soc_s1->Send(s1_fd, mens);
+			snd_bytes = soc_s3->Send(s3_fd, mens);
 			break;
 		default:
 			cout << "[Linda][PN] Numero de elementos de Tupla invalido" << endl;
@@ -209,7 +209,7 @@ void LindaDriver::PN(Tupla mensaje){
 		case 1:
 		case 2:
 		case 3:
-			rcv_bytes = soc_s2->Recv(s2_fd, buffer, 1000);
+			rcv_bytes = soc_s1->Recv(s1_fd, buffer, 1000);
 			break;
 		case 4:
 		case 5:
@@ -318,6 +318,7 @@ Tupla LindaDriver::RN(Tupla mensaje){
 		#endif
 
 	test_server(mensaje.size());
+	int snd_bytes, rcv_bytes;
 
 	//Añadimos "2" para que el subservidor sepa que accion realizar
 	//			 y el tamaño de la tupla para que pueda tratar el mensaje.
@@ -330,10 +331,10 @@ Tupla LindaDriver::RN(Tupla mensaje){
 			break;
 		case 4:
 		case 5:
-			snd_bytes = soc_s1->Send(s1_fd, mens);
+			snd_bytes = soc_s2->Send(s2_fd, mens);
 			break;
 		case 6:
-			snd_bytes = soc_s1->Send(s1_fd, mens);
+			snd_bytes = soc_s3->Send(s3_fd, mens);
 			break;
 		default:
 			cout << "[Linda][PN] Numero de elementos de Tupla invalido" << endl;
@@ -349,7 +350,7 @@ Tupla LindaDriver::RN(Tupla mensaje){
 		case 1:
 		case 2:
 		case 3:
-			rcv_bytes = soc_s2->Recv(s2_fd, buffer, 1000);
+			rcv_bytes = soc_s1->Recv(s1_fd, buffer, 1000);
 			break;
 		case 4:
 		case 5:
@@ -365,7 +366,7 @@ Tupla LindaDriver::RN(Tupla mensaje){
 	}
 	if (rcv_bytes == -1){
 			string mensError = strerror(errno);
-			cerr << "[Linda] Eror al recibir mensaje del subservidor 3: " + mensError + "\n";
+			cerr << "[Linda] Error al recibir mensaje del subservidor 3: " + mensError + "\n";
 			exit(0);
 	}
 	Tupla mens_final(mensaje.size());
