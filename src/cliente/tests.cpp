@@ -243,7 +243,12 @@ void t_filosofo(char* ip, int port, int i, char* param){
   LindaDriver scb(ip, port);
 	
   int repetir = atoi(param);
-
+  
+  if(i == 0){
+	Tupla info("repetir", to_string(repetir));
+	scb.PN(info);
+  }
+  
   Tupla init("init");
   scb.readN(init);
 
@@ -267,13 +272,22 @@ void t_dejar(char* ip, int port, int _, char* param){
 	
   int max = atoi(param);
 
+  Tupla info("repetir", "?B");
   Tupla tenedor("filosofo", "tenedor", "");
   Tupla terminar("filosofo", "terminar", "?B");
 
+  for (int i = 0; i < max; ++i) {
+    tenedor[2] = to_string(i);
+    scb.PN(tenedor);
+  }
+  
+  info = scb.readN(info);
+  int repetir = stoi(info[1]);
+  
   Tupla init("init");
-  scb.readN(init);
+  scb.PN(init);
 
-  while(true){
+  for(int i = 0; i < repetir * max; ++i){
 	Tupla querer = scb.RN(terminar);
 	int n = stoi(querer[2]);
 	tenedor[2] = querer[2];
@@ -281,7 +295,13 @@ void t_dejar(char* ip, int port, int _, char* param){
 	(n % 2 == 0 ? tenedor[2] = to_string((n + 1)% max) : tenedor[2] = to_string((n - 1)% max));
 	scb.PN(tenedor);
   }
-
+  //finalizar
+  scb.RN(info);
+  
+  for (int i = 0; i < max; ++i) {
+    tenedor[2] = to_string(i);
+    scb.RN(tenedor);
+  }
 }
 
 //-----------------------------------------------------
@@ -290,19 +310,18 @@ void t_coger(char* ip, int port, int _, char* param){
 	
   int max = atoi(param);
 
+  Tupla info("repetir", "?B");
   Tupla coger("filosofo", "coger", "?B");
   Tupla tenedor("filosofo", "tenedor", "");
   Tupla comer("filosofo", "comer", "");
 
-  for (int i = 0; i < max; ++i) {
-    tenedor[2] = to_string(i);
-    scb.PN(tenedor);
-  }
-
+  info = scb.readN(info);
+  int repetir = stoi(info[1]);
+  
   Tupla init("init");
-  scb.PN(init);
+  scb.readN(init);
 
-  while(true){
+  for(int i = 0; i < repetir * max; ++i){
 	Tupla querer = scb.RN(coger);
 	int n = stoi(querer[2]);
 	tenedor[2] = querer[2];
@@ -317,9 +336,9 @@ void t_coger(char* ip, int port, int _, char* param){
 
 //--------------------------------------------------
 
-ADDFUNCTION( t_filosofo, "test filosofos, ejecutar como 'N t_filosofo M' siendo M las veces que come");
-ADDFUNCTION( t_coger, "test filosofos, ejecutar como '1 t_coger N'");
-ADDFUNCTION( t_dejar, "test filosofos, ejecutar como '1 t_dejar N' siendo N el número de filosofos totales");
+ADDFUNCTION( t_filosofo, "test filósofos, ejecutar como 'N t_filosofo M' siendo N el número de filósofos y M las veces que come");
+ADDFUNCTION( t_coger, "test filósofos, ejecutar como '1 t_coger N' siendo N el número de filósofos");
+ADDFUNCTION( t_dejar, "test filósofos, ejecutar como '1 t_dejar N' siendo N el número de filósofos");
 
 
 	
@@ -336,6 +355,11 @@ void t_coche(char* ip, int port, int i, char* param){
   Tupla gasolinera("gasolinera", "?S");
   Tupla mantenimiento("mantenimiento");
   Tupla surtidorf("surtidor", "dejo", "");
+  
+  if(i == 0){
+	Tupla info("repetir", to_string(repetir));
+	scb.PN(info);
+  }
   
   scb.readN(gasolinera);
   
@@ -361,6 +385,7 @@ void t_mantenimiento(char* ip, int port, int _, char* param){
 
   Tupla gasolinera("gasolinera", "?S");
   Tupla mantenimiento("mantenimiento");
+  Tupla fin("fin");
 
   scb.PN(mantenimiento);
   Tupla querer = scb.readN(gasolinera);
@@ -382,30 +407,40 @@ void t_mantenimiento(char* ip, int port, int _, char* param){
 	scb.PN(mantenimiento);
   }
 
+  scb.RN(fin);
+  fin.from_string("[OK]");
+  scb.PN(fin);
+  scb.RN(mantenimiento);
 }
 
 //-----------------------------------------------------
 void t_gasolinera(char* ip, int port, int _, char* param){
   LindaDriver scb(ip, port);
 	
-  int max = atoi(param);
+  char * end;
+  int max, numCoche;
+  sscanf (param,"%d %*c %d",&max,&numCoche);
 
   Tupla coche("coche", "?B");
   Tupla gasolinera("gasolinera", to_string(max));
   Tupla surtidor("surtidor", "entro", "");
   Tupla coger("surtidor", "coger", "");
   Tupla mantenimiento("mantenimiento");
+  Tupla info("repetir", "?S");
   
   for(int i = 0; i < max; ++i){
 	surtidor[2] = to_string(i);
 	scb.PN(surtidor);
   }
   
+  info = scb.readN(info);
+  int repetir = stoi(info[1]);
+  
   surtidor[2] = "?B";
   scb.PN(gasolinera);
   gasolinera[1] = "?B";
   
-  while(true){
+  for(int i = 0; i < repetir * numCoche; ++i){
 	scb.readN(mantenimiento);
 	Tupla querer = scb.RN(coche);
 	querer = scb.readN(gasolinera);
@@ -430,13 +465,22 @@ void t_gasolinera(char* ip, int port, int _, char* param){
 void t_surtidor(char* ip, int port, int _, char* param){
   LindaDriver scb(ip, port);
 
+  char * end;
+  int max, numCoche;
+  sscanf (param,"%d %*c %d",&max,&numCoche);
+
   Tupla gasolinera("gasolinera", "?B");
   Tupla surtidor("surtidor", "entro", "");
   Tupla surtidorf("surtidor", "dejo", "?B");
+  Tupla info("repetir", "?S");
+  Tupla fin("fin");
+ 
+  info = scb.readN(info);
+  int repetir = stoi(info[1]);
 
   scb.readN(gasolinera);
   
-  while(true){
+  for(int i = 0; i < repetir * numCoche; ++i){
 	Tupla querer = scb.RN(surtidorf);
 	surtidor[2] = querer[2]; 
 	querer = scb.RN(gasolinera);
@@ -446,14 +490,28 @@ void t_surtidor(char* ip, int port, int _, char* param){
 	scb.PN(surtidor);
   }
 
+  //esperar fin mantenimiento
+  scb.PN(fin);
+  fin.from_string("[OK]");
+  scb.RN(fin);
+
+  //finalizar
+  scb.RN(info);
+  
+  for(int i = 0; i < max; ++i){
+	surtidor[2] = to_string(i);
+	scb.RN(surtidor);
+  }
+  
+  scb.RN(gasolinera);
 }
 
 //--------------------------------------------------
 
 ADDFUNCTION( t_coche, "Control Gasolinera, ejecutar como 'N t_coche M' siendo N el número de coches y M las veces que pasa por la gasolinera");
 ADDFUNCTION( t_mantenimiento, "Control Gasolinera, ejecutar como '1 t_mantenimiento N' siendo N el número de mantenimientos");
-ADDFUNCTION( t_gasolinera, "Control Gasolinera, ejecutar como '1 t_gasolinera N' siendo N el número de surtidores totales");
-ADDFUNCTION( t_surtidor, "Control Gasolinera, ejecutar como '1 t_surtidor N' ");
+ADDFUNCTION( t_gasolinera, "Control Gasolinera, ejecutar como '1 t_gasolinera N' siendo N el número de surtidores totales y el de coches con este formato 'surtidores:coches'");
+ADDFUNCTION( t_surtidor, "Control Gasolinera, ejecutar como '1 t_surtidor N' siendo N el número de surtidores totales y el de coches con este formato 'surtidores:coches'");
 
 
 	
