@@ -24,6 +24,7 @@ sig_atomic_t end_mark = 0;
 void contact(int client_fd, Socket& soc, ControlSys& sys){
   sys.sumPH3(1);
 
+  sys.safe_print("[x] Cliente conectado.");
   soc.Send(client_fd,sys.ips_to_string());
 
   //End process
