@@ -12,6 +12,7 @@
 #include "Scoreboard.hpp"
 #include "Tupla.hpp"
 #include <iostream>
+#include <sstream>
 #include <thread>
 #include <cstring>
 #include <cstdlib>
@@ -77,8 +78,8 @@ void control(Socket& soc, int& socket_fd, SafeSYS& sys){
 void newclient(Canal cliente, SafeSYS& sys, Scoreboard& pizarra){
   sys.sum(1);
 	
+	string mensaje, respuesta;
 	try{
-		string mensaje, buffer;
 		bool err = false, crear = false;
 		while(!err){
 			//repetimos indefinidamente hasta que el cliente se vaya
@@ -86,57 +87,25 @@ void newclient(Canal cliente, SafeSYS& sys, Scoreboard& pizarra){
 			//esperamos el mensaje
 			cliente >> mensaje;
 
-			// Tratado de msg
-			int tam = mensaje.length();
-			if(mensaje[tam-1] == '1'){ //PN
-					mensaje.erase(tam-1);
-					tam = mensaje.length();
-					string lons = to_string(mensaje[tam-1] - '0');
-					int lon = stoi(lons);
-					mensaje.erase(tam-1);
-					Tupla mens(lon);
-					crear = mens.from_string(mensaje);
-					if(crear){
-							pizarra.PN(mens);
-							buffer = "OK";
-					} else {
-							cerr << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
-							err = true;
-					}
-			} else if(mensaje[tam-1] == '2'){ //RN
-					mensaje.erase(tam-1);
-					tam = mensaje.length();
-					string lons = to_string(mensaje[tam-1] - '0');
-					int lon = stoi(lons);
-					mensaje.erase(tam-1);
-					Tupla mens(lon);
-					Tupla mens_fin(lon);
-					crear = mens.from_string(mensaje);
-					if(crear){
-							mens_fin = pizarra.RN(mens);
-							buffer = mens_fin.to_string();
-					} else {
-							cerr << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
-							err = true;
-					}
-			} else if(mensaje[tam-1] == '3'){ // Readnote
-					mensaje.erase(tam-1);
-					tam = mensaje.length();
-					string lons = to_string(mensaje[tam-1] - '0');
-					int lon = stoi(lons);
-					mensaje.erase(tam-1);
-					Tupla mens(lon);
-					Tupla mens_fin(lon);
-					crear = mens.from_string(mensaje);
-					if(crear){
-							mens_fin = pizarra.readN(mens);
-							buffer = mens_fin.to_string();
-					} else {
-							cout << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
-							err = true;
-					}
+			// Tratado de msg del tipo "P1[bla]"
+			
+			Tupla tupla(mensaje[1]-'0');//tamaño
+			tupla.from_string(mensaje.substr(2)); //tupla
+			
+			switch(mensaje[0]){ //operacion
+				case 'P':
+					pizarra.PN(tupla);
+					respuesta = "OK";
+					break;
+				case 'R':
+					respuesta = pizarra.RN(tupla).to_string();
+					break;
+				case 'r':
+					respuesta = pizarra.readN(tupla).to_string();
+					break;
 			}
-			cliente << (crear ? buffer : "ERR");
+			
+			cliente << respuesta;
 		}
   }catch(...){
 		//el cliente se ha desconectado
@@ -228,21 +197,15 @@ int main(int argc, char * argv[]) {
   //###################################################//
   //Conexión con serv
   cout << "[x] Inicio Fase 2 . . ."  << endl;
-  //cout << "[x]Localizando sub-servidores. (en espera de conexión)"  << endl;
   //###################
   //sting miip = getmiip();
 
 	Canal servidor(ip_serv,port_serv, 10, 1000);
 
-  // Si:IP=xxx.xxx.xxx.xxx-PORT=PPPPP
-	servidor << "S" + quiensoy + ":IP=" + ipmia + "-PORT=" + to_string(port_localhost);
-
-  string test;
-	servidor >> test;
-  if (test != "OK"){
-    cout << "[x] Error en respuesta de CENTRAL." << endl;
-    exit(0);
-  }
+  // i xxx.xxx.xxx.xxx PPPPP
+	servidor << quiensoy + " " + ipmia + " " + to_string(port_localhost);
+	
+	//no es necesaria una respuesta
 
 
   cout << "[x] Fase 2 completada." << endl;

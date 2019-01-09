@@ -8,6 +8,7 @@
 //*****************************************************************
 
 #include "LindaDriver.hpp"
+#include <sstream>
 
 
 #ifdef ALLOW_LOCAL
@@ -27,25 +28,27 @@ LindaDriver::LindaDriver(string ip, int puerto){
 		}
 	#endif
 	
+	string mensaje, subIp, subPort;
+	
+	
+	//conectamos con servidor
 	Canal servidor(ip, puerto, 10, 1000);
 			
-	string buffer;
 	
-  //Buffer content: 1:000.000.000.000,XXXX|2:000.000.000.000,XXXX|3:000.000.000.000,XXXX
-	servidor >> buffer;
-
-  //Asumimos que el mensaje es correcto????
+	//recibimos mensaje
+  //Buffer content: 000.000.000.000 XXXX 000.000.000.000 XXXX 000.000.000.000 XXXX
+	servidor >> mensaje;
+	
+	//parseamos mensaje
+	stringstream data(mensaje); 
   for(int i = 0; i<3; i++){
-    size_t found1 = buffer.find_first_of(",",0);
-    size_t found2 = buffer.find_first_of("|",0);
-		canal[ buffer[0]-'0'-1 ] = new Canal(
-					buffer.substr(2,found1-2),  // ip
-					atoi(buffer.substr(found1+1,found2-1).c_str()),  // port
-					10, 1000);
-    
-		buffer.erase(0,found2+1);
+		data >> subIp;
+		data >> subPort;
+		canal[i] = new Canal(subIp, atoi(subPort.c_str()), 10, 1000);
   }
 
+	//no es necesario ningun mensaje de ok
+	
   cout << "inicializado" << endl;
 	// la conexión con el servidor se cierra automáticamente
 }
@@ -63,89 +66,70 @@ LindaDriver::~LindaDriver(){
 	}
 }
 
-void LindaDriver::PN(Tupla mensaje){
+void LindaDriver::PN(Tupla tupla){
 		#ifdef ALLOW_LOCAL
 		if(_lindaDriver_local){
-			_lindaDriver_scoreboard.PN(mensaje);
+			_lindaDriver_scoreboard.PN(tupla);
 			return;
 		}
 		#endif
-        
 		
-		string buffer;
-		Canal& c = *getCanal(mensaje.size());
+		Canal& subserver = *getCanal(tupla.size());
 		
-    //Añadimos "1" para que el subservidor sepa que accion realizar, y el tamaño de la tupla para que pueda tratar el mensaje.
-    string mens = mensaje.to_string() + to_string(mensaje.size()) + "1";
+    //Añadimos "P" para que el subservidor sepa que accion realizar, y el tamaño de la tupla para que pueda tratar el mensaje.
+    string mens = "P" + to_string(tupla.size()) + tupla.to_string();
 		cout << mens << endl;
-		c << mens;
+		subserver << mens;
 		
-		cout << "test" << endl;
-		
-		c >> buffer;
-		if(buffer == "OK"){
-				cout << "OK" << endl;
-		}
-		else{
-				cout << "Error en PN " << mens << endl;
-		}
+		//recibimos respuesta, aunque la omitimos
+		string respuesta;
+		subserver >> respuesta;
 }
 
-Tupla LindaDriver::RN(Tupla mensaje){
+Tupla LindaDriver::RN(Tupla tupla){
 	#ifdef ALLOW_LOCAL
 		if(_lindaDriver_local){
-			return _lindaDriver_scoreboard.RN(mensaje);
+			return _lindaDriver_scoreboard.RN(tupla);
 		}
 	#endif
-
-        //test_server(mensaje.size());
-				
 		
-		string buffer;
-		Canal& c = *getCanal(mensaje.size());
-				
-    //Añadimos "2" para que el subservidor sepa que accion realizar, y el tamaño de la tupla para que pueda tratar el mensaje.
-    string mens = mensaje.to_string() + to_string(mensaje.size()) + "2";
-		c << mens;
+		Canal& subserver = *getCanal(tupla.size());
 		
-		c >> buffer;
-		Tupla mens_final(mensaje.size());
-		bool crear = mens_final.from_string(buffer);
-		if(crear){
-				cout << "OK" << endl;
-				return mens_final;
-		}
-		else{
-				cout << "Error en la tupla enviado por el subservidor 1" << endl;
-		}
+    //Añadimos "R" para que el subservidor sepa que accion realizar, y el tamaño de la tupla para que pueda tratar el mensaje.
+    string mens = "R" + to_string(tupla.size()) + tupla.to_string();
+		cout << mens << endl;
+		subserver << mens;
+		
+		//recibimos respuesta
+		string respuesta;
+		subserver >> respuesta;
+		
+		Tupla resultado(tupla.size());
+		resultado.from_string(respuesta);
+		return resultado;
 }
 
-Tupla LindaDriver::readN(Tupla mensaje){
+Tupla LindaDriver::readN(Tupla tupla){
 		#ifdef ALLOW_LOCAL
 			if(_lindaDriver_local){
-				return _lindaDriver_scoreboard.readN(mensaje);
+				return _lindaDriver_scoreboard.readN(tupla);
 			}
 		#endif
         
-        //test_server(mensaje.size());
-    
-		string buffer;
-		Canal& c = *getCanal(mensaje.size());
-				
-    //Añadimos "3" para que el subservidor sepa que accion realizar, y el tamaño de la tupla para que pueda tratar el mensaje.
-    string mens = mensaje.to_string() + to_string(mensaje.size()) + "3";
-		c << mens;
+    Canal& subserver = *getCanal(tupla.size());
 		
-		c >> buffer;
-		Tupla mens_final(mensaje.size());
-		bool crear = mens_final.from_string(buffer);
-		if(crear){
-				cout << "OK" << endl;
-				return mens_final;
-		}
-		else{
-				cout << "Error en la tupla enviado por el subservidor 1" << endl;
-		}
+    //Añadimos "r" para que el subservidor sepa que accion realizar, y el tamaño de la tupla para que pueda tratar el mensaje.
+    string mens = "r" + to_string(tupla.size()) + tupla.to_string();
+		cout << mens << endl;
+		subserver << mens;
+		
+		//recibimos respuesta
+		string respuesta;
+		subserver >> respuesta;
+		
+		Tupla resultado(tupla.size());
+		resultado.from_string(respuesta);
+		return resultado;
 }
 
 Canal* LindaDriver::getCanal(const Tupla& note){
@@ -159,8 +143,5 @@ Canal* LindaDriver::getCanal(const Tupla& note){
 			return canal[1];
 		case 6:
 			return canal[2];
-		default:
-			cout << "Nota inválida: " << note << endl;
-			exit(1);
 	}
 }

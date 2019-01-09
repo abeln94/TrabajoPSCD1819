@@ -34,13 +34,20 @@ Servidor::Servidor(int port, int max_connections) {
   socket = new Socket(port);
 
   // Bind
-  socket_fd = socket->Bind();
-  if (socket_fd == -1) {
-    string mensError(strerror(errno));
-    cerr << "Error en el bind: " + mensError + "\n";
-    throw "BIND"; //exit(1);
-  }
-
+	int retry = 10;
+	while(retry>0){
+		socket_fd = socket->Bind();
+		if (socket_fd == -1) {
+			string mensError(strerror(errno));
+			cerr << "Error en el bind: " + mensError + "\n";
+			//throw "BIND"; //exit(1);
+			retry--;
+			this_thread::sleep_for(chrono::milliseconds(1000));
+		}else{
+			break;
+		}
+	}
+	
   // Listen
   int error_code = socket->Listen(max_connections);
   if (error_code == -1) {

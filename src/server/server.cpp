@@ -11,6 +11,7 @@
 #include "Socket.hpp"
 #include "ServerControl.hpp"
 #include <iostream>
+#include <sstream>
 #include <thread>
 #include <cstring>
 #include <cstdlib>
@@ -26,13 +27,12 @@ void contact(Canal cliente, ControlSys& sys){
   string buffer;
 	
 	try{
-
 		sys.safe_print("[x] Cliente conectado.");
 		
+		//le enviamos la informacion
 		cliente << sys.ips_to_string();
-		
-		cliente >> buffer;
 	
+		// no es necesario ningun mensaje de ok
 	}catch(...){
 		sys.err_safe_print("[x] Error al enviar/recibir datos: Finalización del subservidor inesperada.");
 	}
@@ -43,69 +43,30 @@ void contact(Canal cliente, ControlSys& sys){
 }
 
 void conection(Canal subserver, ControlSys &sys){
-  const int maxlength = 150;
-	string buffer = "", res = "", ip;
-  bool err = false;
-  int rcv_bytes = 0, port, id;
-  ssize_t snd_bytes = 0;
+	string mensaje, ip;
+  int port, id;
 
 	try{
 		//recibir el mensaje
-		subserver >> buffer;
+		subserver >> mensaje;
 		
-		//Must recive a buffer like "Si:IP=xxx.xxx.xxx.xxx-PORT=PPPPP"
-		//else, conection corrupted
-		if (buffer.length() >= 22){
-
-			//SUBSERVER ID
-			string sub_id = buffer.substr(0,3);
-			sub_id.erase(0,1);
-			id = atoi(sub_id.c_str());
-			if(id == 0){
-				err = true;
-			}
-
-			//SUBSERVER PORT
-			int portpos = buffer.find("PORT=",0);
-			if(portpos == -1){
-				err = true;
-			} else {
-				port = atoi(buffer.substr(portpos+5,buffer.length()).c_str());
-			}
-
-			//SUBSERVER IP
-			int ippos = buffer.find("IP=",0);
-			if(ippos == -1){
-				err = true;
-			} else if (portpos != -1){
-				ip = buffer.substr(ippos+3,portpos-1-(ippos+3));
-			}
-
-		} else {
-			err = true;
-		}
-
-		if(err){
-			res = "ERROR";
-		}else{
-			res = "OK";
-		}
-	
-		subserver << res;
+		//parsear el mensaje
+		//Must recive a buffer like "i xxx.xxx.xxx.xxx PPPPP" // que si, que se recibe, que no puede ser erroneo
 		
+		stringstream data(mensaje);
+		data >> id >> ip >> port;
 		
-	}catch(...){
-		sys.err_safe_print(buffer);
-    sys.err_safe_print("[x]  datos: Finalización del subservidor inesperada.");
-    err = true;
-	}
-	
-	if(err){
-		sys.safe_print("[x] Ending process with errors.");
-	} else {
-		sys.fill(id,0,port,ip);//el segundo parametro no se usa para nada, asi que le pongo un cero y ale
+		//no es necesario responder
+		
+		//almacenar
+		sys.fill(id,0,port,ip);//el segundo parametro no se usa para nada, así que le pongo un cero y ale
 		sys.safe_print("[x] Subservidor " + to_string(id) + " conectado (" + ip +
 										":" + to_string(port) + ")." );
+		
+	}catch(...){
+		sys.err_safe_print(mensaje);
+    sys.err_safe_print("[x]  datos: Finalización del subservidor inesperada.");
+		return;
 	}
 }
 
