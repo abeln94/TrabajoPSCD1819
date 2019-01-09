@@ -68,91 +68,80 @@ class SafeSYS {
 //###################################################################
 //Funciones encargadas de la comunicación exterior
 
+/*
 void control(Socket& soc, int& socket_fd, SafeSYS& sys){
   // en espera
 }
+*/
 
-void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
+void newclient(Canal cliente, SafeSYS& sys, Scoreboard& pizarra){
   sys.sum(1);
-  string mensaje;
-  string buffer;
-  bool err = false, crear = false;
-  while(!err){
-    buffer = "ERR";
-    int rec_bytes = soc.Recv(socket_fd,mensaje,10000);
-    if(rec_bytes == -1){
-      string mensError = strerror(errno);
-      cerr << "[x] Error al recibir datos de LindaDriver: " + mensError + "\n";
-      err = true;
-      continue;
-    }
+	
+	try{
+		string mensaje, buffer;
+		bool err = false, crear = false;
+		while(!err){
+			//repetimos indefinidamente hasta que el cliente se vaya
+			
+			//esperamos el mensaje
+			cliente >> mensaje;
 
-    // Tratado de msg
-    int tam = mensaje.length();
-    if(mensaje[tam-1] == '1'){ //PN
-        mensaje.erase(tam-1);
-        tam = mensaje.length();
-        string lons = to_string(mensaje[tam-1] - '0');
-        int lon = stoi(lons);
-        mensaje.erase(tam-1);
-        Tupla mens(lon);
-        crear = mens.from_string(mensaje);
-        if(crear){
-            pizarra.PN(mens);
-            buffer = "OK";
-        } else {
-            cerr << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
-        }
-    } else if(mensaje[tam-1] == '2'){ //RN
-        mensaje.erase(tam-1);
-        tam = mensaje.length();
-        string lons = to_string(mensaje[tam-1] - '0');
-        int lon = stoi(lons);
-        mensaje.erase(tam-1);
-        Tupla mens(lon);
-        Tupla mens_fin(lon);
-        crear = mens.from_string(mensaje);
-        if(crear){
-            mens_fin = pizarra.RN(mens);
-            buffer = mens_fin.to_string();
-        } else {
-            cerr << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
-        }
-    } else if(mensaje[tam-1] == '3'){ // Readnote
-        mensaje.erase(tam-1);
-        tam = mensaje.length();
-        string lons = to_string(mensaje[tam-1] - '0');
-        int lon = stoi(lons);
-        mensaje.erase(tam-1);
-        Tupla mens(lon);
-        Tupla mens_fin(lon);
-        crear = mens.from_string(mensaje);
-        if(crear){
-            mens_fin = pizarra.readN(mens);
-            buffer = mens_fin.to_string();
-        } else {
-            cout << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
-        }
-    }
-
-    if(crear){
-      int send_bytes = soc.Send(socket_fd,buffer);
-      if(send_bytes == -1){
-          string mensError = strerror(errno);
-          cerr << "[x] Error al enviar datos a LindaDriver: " + mensError + "\n";
-          err = true;
-          continue;
-      }
-    } else {
-      int send_bytes = soc.Send(socket_fd,"ERR");
-      if(send_bytes == -1){
-          string mensError = strerror(errno);
-          cerr << "[x] Error al enviar datos a LindaDriver: " + mensError + "\n";
-          err = true;
-          continue;
-      }
-    }
-  }
+			// Tratado de msg
+			int tam = mensaje.length();
+			if(mensaje[tam-1] == '1'){ //PN
+					mensaje.erase(tam-1);
+					tam = mensaje.length();
+					string lons = to_string(mensaje[tam-1] - '0');
+					int lon = stoi(lons);
+					mensaje.erase(tam-1);
+					Tupla mens(lon);
+					crear = mens.from_string(mensaje);
+					if(crear){
+							pizarra.PN(mens);
+							buffer = "OK";
+					} else {
+							cerr << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
+							err = true;
+					}
+			} else if(mensaje[tam-1] == '2'){ //RN
+					mensaje.erase(tam-1);
+					tam = mensaje.length();
+					string lons = to_string(mensaje[tam-1] - '0');
+					int lon = stoi(lons);
+					mensaje.erase(tam-1);
+					Tupla mens(lon);
+					Tupla mens_fin(lon);
+					crear = mens.from_string(mensaje);
+					if(crear){
+							mens_fin = pizarra.RN(mens);
+							buffer = mens_fin.to_string();
+					} else {
+							cerr << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
+							err = true;
+					}
+			} else if(mensaje[tam-1] == '3'){ // Readnote
+					mensaje.erase(tam-1);
+					tam = mensaje.length();
+					string lons = to_string(mensaje[tam-1] - '0');
+					int lon = stoi(lons);
+					mensaje.erase(tam-1);
+					Tupla mens(lon);
+					Tupla mens_fin(lon);
+					crear = mens.from_string(mensaje);
+					if(crear){
+							mens_fin = pizarra.readN(mens);
+							buffer = mens_fin.to_string();
+					} else {
+							cout << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
+							err = true;
+					}
+			}
+			cliente << (crear ? buffer : "ERR");
+		}
+  }catch(...){
+		//el cliente se ha desconectado
+		cout << "[x] cliente desconectado" << endl;
+	}
   sys.sum(-1);
 }
 
@@ -230,25 +219,7 @@ int main(int argc, char * argv[]) {
   sigaction(SIGQUIT, &sig_han, NULL);
 
   //Conexión con clientes:
-  Socket soc_local(port_localhost);
-
-  //Bind
-	int soc_local_fd = soc_local.Bind();
-	if (soc_local_fd == -1) {
-		string mensError(strerror(errno));
-    	cerr << "--Error en el bind: " + mensError + "\n";
-		exit(1);
-	}
-
-	//Listen
-	int errcode1 = soc_local.Listen(100);
-	if (errcode1 == -1) {
-		string mensError(strerror(errno));
-    	cerr << "--Error en el listen: " + mensError + "\n";
-		// Cerramos el socket
-		soc_local.Close(soc_local_fd);
-		exit(1);
-	}
+  Servidor localServer(port_localhost, 100);
 
 
   cout << "[x] Fase 1 completada." << endl;
@@ -261,27 +232,15 @@ int main(int argc, char * argv[]) {
   //###################
   //sting miip = getmiip();
 
-  Socket soc_serv(ip_serv,port_serv);
-
-  //Connect
-  int soc_serv_fd = soc_serv.Connect();
-  if (soc_serv_fd == -1) {
-    string mensError(strerror(errno));
-      cerr << "[x]Error en el connect: " + mensError + "\n";
-    exit(1);
-  }
+	Canal servidor(ip_serv,port_serv, 10, 1000);
 
   // Si:IP=xxx.xxx.xxx.xxx-PORT=PPPPP
-  soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":IP=" + ipmia + "-PORT=" + to_string(port_localhost));
-  // Si:PORT=PPPPP
-  //soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":PORT=" + argv[2]);
+	servidor << "S" + quiensoy + ":IP=" + ipmia + "-PORT=" + to_string(port_localhost);
 
   string test;
-  soc_serv.Recv(soc_serv_fd, test, 15);
+	servidor >> test;
   if (test != "OK"){
     cout << "[x] Error en respuesta de CENTRAL." << endl;
-    soc_serv.Close(soc_serv_fd);
-    soc_local.Close(soc_local_fd);
     exit(0);
   }
 
@@ -298,29 +257,25 @@ int main(int argc, char * argv[]) {
 
   cout << "[x] Fase 3 en desarrollo :D"  << endl;
 
-  thread cntrl(&control,ref(soc_serv),ref(soc_serv_fd), ref(system));
+  //thread cntrl(&control,ref(soc_serv),ref(soc_serv_fd), ref(system));
 
   thread cliente;
-  int client_fd = 0;
-  while(end_mark==0){
-    client_fd = soc_local.Accept();
-    if(client_fd == -1 || (client_fd==0 && end_mark==1)) {
-      if (end_mark == 1){
-        system.err_safe_print("[x]Error en accept causado por señal; IGNORAR");
-        break;
-      } else {
-        string mensError(strerror(errno));
-        system.err_safe_print("[x] -- Error en el accept: " + mensError);
-        // Cerramos el socket
-        soc_local.Close(soc_serv_fd);
-        soc_serv.Close(soc_serv_fd);
-        exit(1);
-      }
-    }
+	bool correcto = true;
+  while(correcto){
+		
+		try{
+			//esperamos a un nuevo cliente
+			Canal& c = localServer.getCliente(); // al ponerlo como 'Cliente&' el objeto no se destruye automáticamente al finalizar el loop
 
-    cliente = thread(&newclient, client_fd, std::ref(soc_local), std::ref(system), std::ref(board));
-    cliente.detach();
-    client_fd=0;
+			cliente = thread(&newclient, ref(c), ref(system), ref(board));
+			cliente.detach();
+			
+		}catch(...){
+			string mensError(strerror(errno));
+			system.err_safe_print("[x] -- Error en el accept: " + mensError);
+			// el socket se cierra automáticamente
+			correcto = false;
+		}
   }
 
   //Nos aseguramos que el proceso de control termina
