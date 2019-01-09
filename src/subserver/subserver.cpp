@@ -75,13 +75,14 @@ void control(Socket& soc, int& socket_fd, SafeSYS& sys){
 void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
   sys.sum(1);
   string mensaje;
-  string buffer = "ERR";
+  string buffer;
   bool err = false, crear = false;
   while(!err){
+    buffer = "ERR";
     int rec_bytes = soc.Recv(socket_fd,mensaje,10000);
     if(rec_bytes == -1){
       string mensError = strerror(errno);
-      cerr << "Error al recibir datos de LindaDriver" + mensError + "\n";
+      cerr << "[x] Error al recibir datos de LindaDriver: " + mensError + "\n";
       err = true;
       continue;
     }
@@ -128,9 +129,9 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
         crear = mens.from_string(mensaje);
         if(crear){
             mens_fin = pizarra.readN(mens);
-            string buffer = mens_fin.to_string();
+            buffer = mens_fin.to_string();
         } else {
-            cout << "Error al crear tupla, formato de mensaje incorrecto" << endl;
+            cout << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
         }
     }
 
@@ -138,7 +139,7 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
       int send_bytes = soc.Send(socket_fd,buffer);
       if(send_bytes == -1){
           string mensError = strerror(errno);
-          cerr << "Error al enviar datos a LindaDriver" + mensError + "\n";
+          cerr << "[x] Error al enviar datos a LindaDriver: " + mensError + "\n";
           err = true;
           continue;
       }
@@ -146,7 +147,7 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
       int send_bytes = soc.Send(socket_fd,"ERR");
       if(send_bytes == -1){
           string mensError = strerror(errno);
-          cerr << "Error al enviar datos a LindaDriver" + mensError + "\n";
+          cerr << "[x] Error al enviar datos a LindaDriver: " + mensError + "\n";
           err = true;
           continue;
       }
