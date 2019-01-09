@@ -311,13 +311,74 @@ void LindaDriver::PN(Tupla mensaje){
 }
 
 Tupla LindaDriver::RN(Tupla mensaje){
-	#ifdef ALLOW_LOCAL
-		if(_lindaDriver_local){
-			return _lindaDriver_scoreboard.RN(mensaje);
-		}
-	#endif
+		#ifdef ALLOW_LOCAL
+	if(_lindaDriver_local){
+		return _lindaDriver_scoreboard.RN(mensaje);
+	}
+		#endif
 
-        test_server(mensaje.size());
+	test_server(mensaje.size());
+
+	//Añadimos "2" para que el subservidor sepa que accion realizar
+	//			 y el tamaño de la tupla para que pueda tratar el mensaje.
+	string mens = mensaje.to_string() + to_string(mensaje.size()) + "2";
+	switch (mensaje.size()) {
+		case 1:
+		case 2:
+		case 3:
+			snd_bytes = soc_s1->Send(s1_fd, mens);
+			break;
+		case 4:
+		case 5:
+			snd_bytes = soc_s1->Send(s1_fd, mens);
+			break;
+		case 6:
+			snd_bytes = soc_s1->Send(s1_fd, mens);
+			break;
+		default:
+			cout << "[Linda][PN] Numero de elementos de Tupla invalido" << endl;
+			exit(0);
+	}
+	if(snd_bytes == -1){
+			string mensError = strerror(errno);
+			cerr << "[Linda][PN] Error al enviar mensaje al subservidor: " + mensError + "\n";
+			exit(0);
+	}
+	string buffer;
+	switch (mensaje.size()) {
+		case 1:
+		case 2:
+		case 3:
+			rcv_bytes = soc_s2->Recv(s2_fd, buffer, 1000);
+			break;
+		case 4:
+		case 5:
+			rcv_bytes = soc_s2->Recv(s2_fd, buffer, 1000);
+			break;
+		case 6:
+			rcv_bytes = soc_s3->Recv(s3_fd, buffer, 1000);
+			break;
+		default:
+			cout << "[Linda][PN] Numero de elementos de Tupla invalido" << endl;
+			exit(0);
+			break;
+	}
+	if (rcv_bytes == -1){
+			string mensError = strerror(errno);
+			cerr << "[Linda] Eror al recibir mensaje del subservidor 3: " + mensError + "\n";
+			exit(0);
+	}
+	Tupla mens_final(mensaje.size());
+	bool crear = mens_final.from_string(buffer);
+	if(crear){
+			cout << "OK" << endl;
+			return mens_final;
+	}
+	else{
+			cout << "[Linda][RN] Error en la tupla enviado por el subservidor 1" << endl;
+	}
+
+	/*
     //Añadimos "2" para que el subservidor sepa que accion realizar, y el tamaño de la tupla para que pueda tratar el mensaje.
     string mens = mensaje.to_string() + to_string(mensaje.size()) + "2";
     if(mensaje.size() <=3){
@@ -402,6 +463,7 @@ Tupla LindaDriver::RN(Tupla mensaje){
             }
         }
     }
+	*/
 }
 
 Tupla LindaDriver::readN(Tupla mensaje){
