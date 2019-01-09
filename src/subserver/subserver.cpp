@@ -75,38 +75,34 @@ void control(Socket& soc, int& socket_fd, SafeSYS& sys){
 void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
   sys.sum(1);
   string mensaje;
-  int rec_bytes = soc.Recv(socket_fd,mensaje,10000);
-  if(rec_bytes == -1){
-    string mensError = strerror(errno);
-    cerr << "Error al recibir datos de LindaDriver" + mensError + "\n";
-  }
-  else{
+  string buffer = "ERR";
+  bool err = false, crear = false;
+  while(!err){
+    int rec_bytes = soc.Recv(socket_fd,mensaje,10000);
+    if(rec_bytes == -1){
+      string mensError = strerror(errno);
+      cerr << "Error al recibir datos de LindaDriver" + mensError + "\n";
+      err = true;
+      continue;
+    }
+
+    // Tratado de msg
     int tam = mensaje.length();
-    //Caso PN
-    if(mensaje[tam-1] == '1'){
+    if(mensaje[tam-1] == '1'){ //PN
         mensaje.erase(tam-1);
         tam = mensaje.length();
         string lons = to_string(mensaje[tam-1] - '0');
         int lon = stoi(lons);
         mensaje.erase(tam-1);
         Tupla mens(lon);
-        bool crear = mens.from_string(mensaje);
+        crear = mens.from_string(mensaje);
         if(crear){
             pizarra.PN(mens);
-            string fin = "OK";
-            int send_bytes = soc.Send(socket_fd,fin);
-            if(send_bytes == -1){
-                string mensError = strerror(errno);
-                cerr << "Error al enviar datos a LindaDriver" + mensError + "\n";
-            }
+            buffer = "OK";
+        } else {
+            cerr << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
         }
-        else{
-            cout << "Error al crear tupla, formato de mensaje incorrecto" << endl;
-        }
-
-    }
-    //Caso RN
-    else if(mensaje[tam-1] == '2'){
+    } else if(mensaje[tam-1] == '2'){ //RN
         mensaje.erase(tam-1);
         tam = mensaje.length();
         string lons = to_string(mensaje[tam-1] - '0');
@@ -114,22 +110,14 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
         mensaje.erase(tam-1);
         Tupla mens(lon);
         Tupla mens_fin(lon);
-        bool crear = mens.from_string(mensaje);
+        crear = mens.from_string(mensaje);
         if(crear){
             mens_fin = pizarra.RN(mens);
-            string buffer = mens_fin.to_string();
-            int send_bytes = soc.Send(socket_fd,buffer);
-            if(send_bytes == -1){
-                string mensError = strerror(errno);
-                cerr << "Error al enviar datos a LindaDriver" + mensError + "\n";
-            }
+            buffer = mens_fin.to_string();
+        } else {
+            cerr << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
         }
-        else{
-            cout << "Error al crear tupla, formato de mensaje incorrecto" << endl;
-        }
-    }
-    //Caso readN
-    else{
+    } else if(mensaje[tam-1] == '3'){ // Readnote
         mensaje.erase(tam-1);
         tam = mensaje.length();
         string lons = to_string(mensaje[tam-1] - '0');
@@ -137,26 +125,33 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
         mensaje.erase(tam-1);
         Tupla mens(lon);
         Tupla mens_fin(lon);
-        bool crear = mens.from_string(mensaje);
+        crear = mens.from_string(mensaje);
         if(crear){
             mens_fin = pizarra.readN(mens);
             string buffer = mens_fin.to_string();
-            int send_bytes = soc.Send(socket_fd,buffer);
-            if(send_bytes == -1){
-                string mensError = strerror(errno);
-                cerr << "Error al enviar datos a LindaDriver" + mensError + "\n";
-            }
-        }
-        else{
+        } else {
             cout << "Error al crear tupla, formato de mensaje incorrecto" << endl;
         }
     }
 
+    if(crear){
+      int send_bytes = soc.Send(socket_fd,buffer);
+      if(send_bytes == -1){
+          string mensError = strerror(errno);
+          cerr << "Error al enviar datos a LindaDriver" + mensError + "\n";
+          err = true;
+          continue;
+      }
+    } else {
+      int send_bytes = soc.Send(socket_fd,"ERR");
+      if(send_bytes == -1){
+          string mensError = strerror(errno);
+          cerr << "Error al enviar datos a LindaDriver" + mensError + "\n";
+          err = true;
+          continue;
+      }
+    }
   }
-
-  //.......... codigo???
-
-
   sys.sum(-1);
 }
 
