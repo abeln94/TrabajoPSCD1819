@@ -55,22 +55,6 @@ LindaDriver::LindaDriver(string ip, int puerto){
     buffer.erase(0,found2+1);
   }
 
-  /*
-  //Tratamiento msg
-  bool correcto = true;
-  //end
-  if(!correcto){
-    int snd_bytes = soc_serv -> Send(serv_fd, "ERROR");
-    if(snd_bytes == -1){
-      mensError = strerror(errno);
-      cerr << "[Linda] Error al recibir/enviar datos: " + mensError + "\n";
-    }
-    soc_serv -> Close(serv_fd);
-    return;
-  }*/
-
-  //corecto
-  /*
   int snd_bytes = soc_serv -> Send(serv_fd, "OK");
   if(snd_bytes == -1){
     string mensError = strerror(errno);
@@ -78,7 +62,7 @@ LindaDriver::LindaDriver(string ip, int puerto){
     soc_serv -> Close(serv_fd);
     exit(1);
   }
-  */
+
   s1_ready = false;
   s2_ready = false;
   s3_ready = false;
