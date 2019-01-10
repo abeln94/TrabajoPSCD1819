@@ -21,7 +21,7 @@ using namespace std;
 sig_atomic_t end_mark = 0;
 
 void contact(Canal cliente, ControlSys& sys) {
-	// thread que se encarga de tratar con el cliente
+  // thread que se encarga de tratar con el cliente
   sys.sumPH3(1);
   string buffer;
 
@@ -43,7 +43,7 @@ void contact(Canal cliente, ControlSys& sys) {
 }
 
 void conection(Canal subserver, ControlSys& sys) {
-	// thread que se encarga de tratar con los subservidores
+  // thread que se encarga de tratar con los subservidores
   string mensaje, ip;
   int port, id;
 
@@ -128,7 +128,6 @@ int main(int argc, char* argv[]) {
 
   ControlSys ctrl(SERVER_PORT_PRIVATE, SERVER_PORT_PUBLIC);
 
-	
   // Conexión con servidores:
   Servidor server_priv(SERVER_PORT_PRIVATE, 5);
 
@@ -163,7 +162,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-	// no seguir
+  // no seguir
   if (end_mark == 1) {
     ctrl.safe_print("[x] Fin de Ejecución.");
     // los sockets se cierran solos
@@ -181,7 +180,7 @@ int main(int argc, char* argv[]) {
   thread cliente;
   while (end_mark == 0) {
     try {
-			// nuevo cliente
+      // nuevo cliente
       Canal& canalCliente = server_pub.getCliente();
 
       cliente = thread(&contact, ref(canalCliente), ref(ctrl));

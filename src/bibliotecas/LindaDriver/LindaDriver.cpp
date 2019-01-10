@@ -71,22 +71,24 @@ void LindaDriver::PN(Tupla tupla) {
   }
 #endif
 
-  try{
-		Canal& subserver = *getCanal(tupla.size());
+  try {
+    Canal& subserver = *getCanal(tupla.size());
 
-		// Añadimos "P" para que el subservidor sepa que accion realizar, y el tamaño
-		// de la tupla para que pueda tratar el mensaje.
-		string mens = "P" + to_string(tupla.size()) + tupla.to_string();
-		cout << mens << endl;
-		subserver << mens;
+    // Añadimos "P" para que el subservidor sepa que accion realizar, y el
+    // tamaño
+    // de la tupla para que pueda tratar el mensaje.
+    string mens = "P" + to_string(tupla.size()) + tupla.to_string();
+    cout << mens << endl;
+    subserver << mens;
 
-		// recibimos respuesta, aunque la omitimos
-		string respuesta;
-		subserver >> respuesta;
-	}catch(...){
-		cerr << "Subservidor desconectado" << endl;
-		exit(1);
-	}
+    // recibimos respuesta, aunque la omitimos
+    string respuesta;
+    subserver >> respuesta;
+  }
+  catch (...) {
+    cerr << "Subservidor desconectado" << endl;
+    exit(1);
+  }
 }
 
 Tupla LindaDriver::RN(Tupla tupla) {
@@ -96,26 +98,28 @@ Tupla LindaDriver::RN(Tupla tupla) {
   }
 #endif
 
-	try{
-		Canal& subserver = *getCanal(tupla.size());
+  try {
+    Canal& subserver = *getCanal(tupla.size());
 
-		// Añadimos "R" para que el subservidor sepa que accion realizar, y el tamaño
-		// de la tupla para que pueda tratar el mensaje.
-		string mens = "R" + to_string(tupla.size()) + tupla.to_string();
-		cout << mens << endl;
-		subserver << mens;
+    // Añadimos "R" para que el subservidor sepa que accion realizar, y el
+    // tamaño
+    // de la tupla para que pueda tratar el mensaje.
+    string mens = "R" + to_string(tupla.size()) + tupla.to_string();
+    cout << mens << endl;
+    subserver << mens;
 
-		// recibimos respuesta
-		string respuesta;
-		subserver >> respuesta;
+    // recibimos respuesta
+    string respuesta;
+    subserver >> respuesta;
 
-		Tupla resultado(tupla.size());
-		resultado.from_string(respuesta);
-		return resultado;
-	}catch(...){
-		cerr << "Subservidor desconectado" << endl;
-		exit(1);
-	}
+    Tupla resultado(tupla.size());
+    resultado.from_string(respuesta);
+    return resultado;
+  }
+  catch (...) {
+    cerr << "Subservidor desconectado" << endl;
+    exit(1);
+  }
 }
 
 Tupla LindaDriver::readN(Tupla tupla) {
@@ -125,26 +129,28 @@ Tupla LindaDriver::readN(Tupla tupla) {
   }
 #endif
 
-	try{
-		Canal& subserver = *getCanal(tupla.size());
+  try {
+    Canal& subserver = *getCanal(tupla.size());
 
-		// Añadimos "r" para que el subservidor sepa que accion realizar, y el tamaño
-		// de la tupla para que pueda tratar el mensaje.
-		string mens = "r" + to_string(tupla.size()) + tupla.to_string();
-		cout << mens << endl;
-		subserver << mens;
+    // Añadimos "r" para que el subservidor sepa que accion realizar, y el
+    // tamaño
+    // de la tupla para que pueda tratar el mensaje.
+    string mens = "r" + to_string(tupla.size()) + tupla.to_string();
+    cout << mens << endl;
+    subserver << mens;
 
-		// recibimos respuesta
-		string respuesta;
-		subserver >> respuesta;
+    // recibimos respuesta
+    string respuesta;
+    subserver >> respuesta;
 
-		Tupla resultado(tupla.size());
-		resultado.from_string(respuesta);
-		return resultado;
-	}catch(...){
-		cerr << "Subservidor desconectado" << endl;
-		exit(1);
-	}
+    Tupla resultado(tupla.size());
+    resultado.from_string(respuesta);
+    return resultado;
+  }
+  catch (...) {
+    cerr << "Subservidor desconectado" << endl;
+    exit(1);
+  }
 }
 
 Canal* LindaDriver::getCanal(const Tupla& note) {
