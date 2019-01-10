@@ -68,8 +68,30 @@ class SafeSYS {
 //###################################################################
 //Funciones encargadas de la comunicación exterior
 
-void control(Socket& soc, int& socket_fd, SafeSYS& sys){
+void control(int puerto, Socket& soc, int& socket_fd, SafeSYS& sys){
   // en espera
+  string buffer = "";
+  while(buffer!="END"){
+    soc.Recv(socket_fd,buffer,10);
+    if(buffer == "END"){
+      break;
+    }
+    //Por si aca el server es mas interactivo, codigo a tratar aqui debajo (mas comandos)
+    // \/   \/   \/    \/    \/    \/    \/
+
+    //...
+  }
+
+  raise(SIGTSTP);
+
+  Socket temp("localhost",puerto);
+  int temp_fd = temp.Connect();
+  if (temp_fd == -1) {
+    string mensError(strerror(errno));
+    cerr << "[x]Error en el connect: " + mensError + "\n";
+    return;
+  }
+  temp.Close(temp_fd);
 }
 
 void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
@@ -159,6 +181,9 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
 //###################################################################
 //Función encargada del tratamiento de señales
 void sig_handler(int signo){
+  if (SIGPIPE == signo){
+    return;
+  }
   end_mark = 1;
   cerr << endl;
   if (SIGINT == signo){
@@ -220,7 +245,7 @@ int main(int argc, char * argv[]) {
 
   //Terminacion controlada
   //Protección frente "^C", "^\", "^Z"
-  signal(SIGPIPE, SIG_IGN);
+  //signal(SIGPIPE, SIG_IGN);
   struct sigaction sig_han;
   sig_han.sa_handler = sig_handler;
   sigemptyset(&sig_han.sa_mask);
@@ -228,6 +253,7 @@ int main(int argc, char * argv[]) {
   sigaction(SIGINT, &sig_han, NULL);
   sigaction(SIGTSTP, &sig_han, NULL);
   sigaction(SIGQUIT, &sig_han, NULL);
+  sigaction(SIGPIPE, &sig_han, NULL);
 
   //Conexión con clientes:
   Socket soc_local(port_localhost);
@@ -298,14 +324,14 @@ int main(int argc, char * argv[]) {
 
   cout << "[x] Fase 3 en desarrollo :D"  << endl;
 
-  thread cntrl(&control,ref(soc_serv),ref(soc_serv_fd), ref(system));
+  thread cntrl(&control,port_localhost,ref(soc_serv),ref(soc_serv_fd), ref(system));
 
   thread cliente;
   int client_fd = 0;
   while(end_mark==0){
     client_fd = soc_local.Accept();
     if(client_fd == -1 || (client_fd==0 && end_mark==1)) {
-      if (end_mark == 1){
+      if (end_mark == 1){ //end mark (señal local)
         system.err_safe_print("[x]Error en accept causado por señal; IGNORAR");
         break;
       } else {
@@ -318,9 +344,13 @@ int main(int argc, char * argv[]) {
       }
     }
 
-    cliente = thread(&newclient, client_fd, std::ref(soc_local), std::ref(system), std::ref(board));
-    cliente.detach();
-    client_fd=0;
+    if(end_mark != 1){ //Bugfix
+      cliente = thread(&newclient, client_fd, std::ref(soc_local), std::ref(system), std::ref(board));
+      cliente.detach();
+      client_fd=0;
+    } else { //end_mark a 1 y cliente del proceso de control
+      soc_local.Close(client_fd);
+    }
   }
 
   //Nos aseguramos que el proceso de control termina
@@ -328,6 +358,10 @@ int main(int argc, char * argv[]) {
     system.endPH3();
   }
 
+  cntrl.join();
+
+  soc_serv.Close(soc_serv_fd);
+  soc_local.Close(soc_local_fd);
 
   cout << "[x] Fin de Ejecución."  << endl;
 }
