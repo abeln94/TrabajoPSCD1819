@@ -79,6 +79,21 @@ bool ControlSys::ready(){
   return false;
 }
 
+void ControlSys::end(Socket &priv){
+  if(s1_b){
+    priv.Send(s1_fd,"END");
+    priv.Close(s1_fd);
+  }
+  if(s2_b){
+    priv.Send(s2_fd,"END");
+    priv.Close(s2_fd);
+  }
+  if(s3_b){
+    priv.Send(s3_fd,"END");
+    priv.Close(s3_fd);
+  }
+}
+
 void ControlSys::endPH3(){
   unique_lock<mutex> lck(mtx);
   while(cntrPH3 != 0){

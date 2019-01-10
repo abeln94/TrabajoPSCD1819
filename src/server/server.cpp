@@ -250,6 +250,7 @@ int main(int argc, char * argv[]) {
   }
 
   if (end_mark == 1){
+    ctrl.end(soc_priv);
     ctrl.safe_print("[x] Fin de Ejecución.");
     soc_pub.Close(soc_pub_fd);
     soc_priv.Close(soc_priv_fd);
@@ -290,6 +291,8 @@ int main(int argc, char * argv[]) {
   if(ctrl.sumPH3(0)!=0){
     ctrl.endPH3();
   }
+
+  ctrl.end(soc_priv);
 
   ctrl.safe_print("[x] Fin de Ejecución.");
 

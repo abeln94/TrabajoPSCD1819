@@ -36,6 +36,8 @@ class ControlSys {
 
     bool ready();
 
+    void end(Socket &priv);
+
     void endPH3();
 
     int sumPH3(int n);
