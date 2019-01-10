@@ -31,15 +31,16 @@ void Scoreboard::PN(const Tupla& note) {
       // notify and remove
       (*p).get().condVar.notify_one();
       bool r = (*p).get().remove;
-      pending.erase(p);  // remove now because we know where to find it
+      p = pending.erase(p);  // remove now because we know where to find it
 
       if (r) {
         // note was removed, stop
         return;
       }
+    } else {
+      // the note can't be asigned, check next
+      ++p;
     }
-
-    ++p;
   }
 
   // note wasn't removed, add a copy to list
