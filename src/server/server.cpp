@@ -21,20 +21,21 @@ using namespace std;
 sig_atomic_t end_mark = 0;
 
 void contact(Canal cliente, ControlSys& sys) {
+	// thread que se encarga de tratar con el cliente
   sys.sumPH3(1);
   string buffer;
 
   try {
     sys.safe_print("[x] Cliente conectado.");
 
-    // le enviamos la informacion
+    // le enviamos la información
     cliente << sys.ips_to_string();
 
     // no es necesario ningun mensaje de ok
   }
   catch (...) {
     sys.err_safe_print(
-        "[x] Error al enviar datos: Finalización del subservidor inesperada.");
+        "[x] Error al enviar datos: Finalización del cliente inesperada.");
   }
 
   // End process
@@ -42,6 +43,7 @@ void contact(Canal cliente, ControlSys& sys) {
 }
 
 void conection(Canal subserver, ControlSys& sys) {
+	// thread que se encarga de tratar con los subservidores
   string mensaje, ip;
   int port, id;
 
@@ -49,9 +51,7 @@ void conection(Canal subserver, ControlSys& sys) {
     // recibir el mensaje
     subserver >> mensaje;
 
-    // parsear el mensaje
-    // Must recive a buffer like "i xxx.xxx.xxx.xxx PPPPP" // que si, que se
-    // recibe, que no puede ser erroneo
+    // parsear el mensaje "i xxx.xxx.xxx.xxx PPPPP"
 
     stringstream data(mensaje);
     data >> id >> ip >> port;
@@ -65,9 +65,7 @@ void conection(Canal subserver, ControlSys& sys) {
                    ":" + to_string(port) + ").");
   }
   catch (...) {
-    sys.err_safe_print(mensaje);
-    sys.err_safe_print("[x]  datos: Finalización del subservidor inesperada.");
-    return;
+    sys.err_safe_print("[x]  error: Finalización del subservidor inesperada.");
   }
 }
 
@@ -130,6 +128,7 @@ int main(int argc, char* argv[]) {
 
   ControlSys ctrl(SERVER_PORT_PRIVATE, SERVER_PORT_PUBLIC);
 
+	
   // Conexión con servidores:
   Servidor server_priv(SERVER_PORT_PRIVATE, 5);
 
@@ -154,16 +153,17 @@ int main(int argc, char* argv[]) {
     catch (...) {
       if (end_mark == 1) {
         // Bugfix
-        ctrl.err_safe_print("[x]Error en accept causado por señal; IGNORAR");
+        ctrl.err_safe_print("[x] Error en accept causado por señal; IGNORAR");
         break;
       } else {
-        ctrl.err_safe_print("[x]Error en accept: " + string(strerror(errno)));
+        ctrl.err_safe_print("[x] Error en accept: " + string(strerror(errno)));
         // El socket se cierra solo
         exit(1);
       }
     }
   }
 
+	// no seguir
   if (end_mark == 1) {
     ctrl.safe_print("[x] Fin de Ejecución.");
     // los sockets se cierran solos
@@ -180,8 +180,8 @@ int main(int argc, char* argv[]) {
 
   thread cliente;
   while (end_mark == 0) {
-
     try {
+			// nuevo cliente
       Canal& canalCliente = server_pub.getCliente();
 
       cliente = thread(&contact, ref(canalCliente), ref(ctrl));
@@ -189,12 +189,12 @@ int main(int argc, char* argv[]) {
     }
     catch (...) {
       if (end_mark == 1) {
-        ctrl.err_safe_print("[x]Error en accept causado por señal; IGNORAR");
+        ctrl.err_safe_print("[x] Error en accept causado por señal; IGNORAR");
         break;
       } else {
         string mensError(strerror(errno));
         cerr << "--Error en el accept: " + mensError + "\n";
-        // Sockets se cierran solos
+        // los sockets se cierran solos
         exit(1);
       }
     }
@@ -206,6 +206,6 @@ int main(int argc, char* argv[]) {
 
   ctrl.safe_print("[x] Fin de Ejecución.");
 
-  // Sockets se cierran solos
+  // los sockets se cierran solos
 }
 //-------------------------------------------------------------

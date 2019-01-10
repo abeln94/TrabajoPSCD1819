@@ -72,6 +72,7 @@ void control(Socket& soc, int& socket_fd, SafeSYS& sys){
 */
 
 void newclient(Canal cliente, SafeSYS& sys, Scoreboard& pizarra) {
+  //thread que se encarga de tratar a los clientes
   sys.sum(1);
 
   string mensaje, respuesta;
@@ -84,7 +85,6 @@ void newclient(Canal cliente, SafeSYS& sys, Scoreboard& pizarra) {
       cliente >> mensaje;
 
       // Tratado de msg del tipo "P1[bla]"
-
       Tupla tupla(mensaje[1] - '0');         // tamaño
       tupla.from_string(mensaje.substr(2));  // tupla
 
@@ -101,10 +101,10 @@ void newclient(Canal cliente, SafeSYS& sys, Scoreboard& pizarra) {
           break;
       }
 
+      //devolvemos la respuesta
       cliente << respuesta;
     }
-  }
-  catch (...) {
+  } catch (...) {
     // el cliente se ha desconectado
     cout << "[x] cliente desconectado" << endl;
   }
@@ -186,8 +186,8 @@ int main(int argc, char* argv[]) {
   sigaction(SIGTSTP, &sig_han, NULL);
   sigaction(SIGQUIT, &sig_han, NULL);
 
-  // Conexión con clientes:
-  Servidor localServer(port_localhost, 100);
+	// Iniciar servidor para clientes:
+	Servidor localServer(port_localhost, 100);
 
   cout << "[x] Fase 1 completada." << endl;
   //###################################################//
@@ -198,12 +198,17 @@ int main(int argc, char* argv[]) {
   //###################
   // sting miip = getmiip();
 
-  Canal servidor(ip_serv, port_serv, 10, 1000);
+  try{
+    // conexion con servidor, le enviamos nuestra informacion
+    Canal servidor(ip_serv, port_serv, 10, 1000);
 
-  // i xxx.xxx.xxx.xxx PPPPP
-  servidor << quiensoy + " " + ipmia + " " + to_string(port_localhost);
+    // i xxx.xxx.xxx.xxx PPPPP
+    servidor << quiensoy + " " + ipmia + " " + to_string(port_localhost);
 
-  // no es necesaria una respuesta
+    // no es necesaria una respuesta
+  }catch(...){
+    cout << "[x] Error al conectar con el servidor";
+  }
 
   cout << "[x] Fase 2 completada." << endl;
   //###################################################//
@@ -219,11 +224,10 @@ int main(int argc, char* argv[]) {
 
   // thread cntrl(&control,ref(soc_serv),ref(soc_serv_fd), ref(system));
 
-  thread cliente;
-  bool correcto = true;
-  while (correcto) {
-
-    try {
+	thread cliente;
+	bool correcto = true;
+	while (correcto) {
+		try {
       // esperamos a un nuevo cliente
       Canal& c = localServer.getCliente();  // al ponerlo como 'Cliente&' el
                                             // objeto no se destruye
@@ -232,20 +236,18 @@ int main(int argc, char* argv[]) {
 
       cliente = thread(&newclient, ref(c), ref(system), ref(board));
       cliente.detach();
-    }
-    catch (...) {
-
-      if (end_mark == 1) {
-        system.err_safe_print("[x]Error en accept causado por señal; IGNORAR");
-        break;
-      } else {
-        string mensError(strerror(errno));
-        system.err_safe_print("[x] -- Error en el accept: " + mensError);
-        // el socket se cierra automáticamente
-        exit(1);
-      }
-    }
-  }
+		} catch (...) {
+			if (end_mark == 1) {
+				system.err_safe_print("[x] Error en accept causado por señal; IGNORAR");
+				break;
+			} else {
+				string mensError(strerror(errno));
+				system.err_safe_print("[x] -- Error en el accept: " + mensError);
+				// el socket se cierra automáticamente
+				exit(1);
+			}
+		}
+	}
 
   // Nos aseguramos que el proceso de control termina
   if (system.sum(0) != 0) {
