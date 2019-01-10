@@ -9,9 +9,7 @@
 
 #include "ServerControl.hpp"
 
-
-
-ControlSys::ControlSys(int priv_p, int pub_p){
+ControlSys::ControlSys(int priv_p, int pub_p) {
   private_port = priv_p;
   public_port = pub_p;
   s1_b = false;
@@ -20,16 +18,13 @@ ControlSys::ControlSys(int priv_p, int pub_p){
   cntrPH3 = 0;
 }
 
-ControlSys::~ControlSys(){
+ControlSys::~ControlSys() {}
 
-}
-
-
-void ControlSys::fill(int n, int fd, int port, string ip){
+void ControlSys::fill(int n, int fd, int port, string ip) {
   unique_lock<mutex> lck(mtx);
-  switch(n){
+  switch (n) {
     case 1:
-      if(!s1_b){
+      if (!s1_b) {
         s1_fd = fd;
         port_s1 = port;
         ip_s1 = ip;
@@ -37,7 +32,7 @@ void ControlSys::fill(int n, int fd, int port, string ip){
       }
       break;
     case 2:
-      if(!s2_b){
+      if (!s2_b) {
         s2_fd = fd;
         port_s2 = port;
         ip_s2 = ip;
@@ -45,7 +40,7 @@ void ControlSys::fill(int n, int fd, int port, string ip){
       }
       break;
     case 3:
-      if(!s3_b){
+      if (!s3_b) {
         s3_fd = fd;
         port_s3 = port;
         ip_s3 = ip;
@@ -53,43 +48,44 @@ void ControlSys::fill(int n, int fd, int port, string ip){
       }
       break;
     default:
-      cout << "[x] Error: Value assigned is not correct: fill(" << n << ",?,?,?)" << endl;
+      cout << "[x] Error: Value assigned is not correct: fill(" << n
+           << ",?,?,?)" << endl;
   }
 }
 
-string ControlSys::ips_to_string(){
+string ControlSys::ips_to_string() {
   return ip_s1 + " " + to_string(port_s1) + " " + ip_s2 + " " +
-          to_string(port_s2) + " " + ip_s3 + " " + to_string(port_s3);
+         to_string(port_s2) + " " + ip_s3 + " " + to_string(port_s3);
 }
 
-void ControlSys::safe_print(string c){
+void ControlSys::safe_print(string c) {
   unique_lock<mutex> lck(mtx);
   cout << c << endl;
 }
 
-void ControlSys::err_safe_print(string c){
+void ControlSys::err_safe_print(string c) {
   unique_lock<mutex> lck(mtx);
   cerr << c << endl;
 }
 
-bool ControlSys::ready(){
-  if( s1_b && s2_b && s3_b){
+bool ControlSys::ready() {
+  if (s1_b && s2_b && s3_b) {
     return true;
   }
   return false;
 }
 
-void ControlSys::endPH3(){
+void ControlSys::endPH3() {
   unique_lock<mutex> lck(mtx);
-  while(cntrPH3 != 0){
+  while (cntrPH3 != 0) {
     endPH3_cv.wait(lck);
   }
 }
 
-int ControlSys::sumPH3(int n){
+int ControlSys::sumPH3(int n) {
   unique_lock<mutex> lck(mtx);
   cntrPH3 = cntrPH3 + n;
-  if(cntrPH3 == 0){
+  if (cntrPH3 == 0) {
     endPH3_cv.notify_one();
   }
   return cntrPH3;

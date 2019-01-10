@@ -34,37 +34,37 @@ Servidor::Servidor(int port, int max_connections) {
   socket = new Socket(port);
 
   // Bind
-	int retry = 10;
-	while(retry>0){
-		socket_fd = socket->Bind();
-		if (socket_fd == -1) {
-			string mensError(strerror(errno));
-			cerr << "Error en el bind: " + mensError + "\n";
-			//throw "BIND"; //exit(1);
-			retry--;
-			this_thread::sleep_for(chrono::milliseconds(1000));
-		}else{
-			break;
-		}
-	}
-	
+  int retry = 10;
+  while (retry > 0) {
+    socket_fd = socket->Bind();
+    if (socket_fd == -1) {
+      string mensError(strerror(errno));
+      cerr << "Error en el bind: " + mensError + "\n";
+      // throw "BIND"; //exit(1);
+      retry--;
+      this_thread::sleep_for(chrono::milliseconds(1000));
+    } else {
+      break;
+    }
+  }
+
   // Listen
   int error_code = socket->Listen(max_connections);
   if (error_code == -1) {
     string mensError(strerror(errno));
     cerr << "Error en el listen: " + mensError + "\n";
-    throw "LISTEN"; //exit(1);
+    throw "LISTEN";  // exit(1);
   }
 }
 //-------------------------------------------------------------
-Canal& Servidor::getCliente() {
+Canal &Servidor::getCliente() {
   // Accept
   int client_fd = socket->Accept();
 
   if (client_fd == -1) {
     string mensError(strerror(errno));
     cerr << "Mensaje de error: " + mensError + "\n";
-    throw "ACCEPT"; //exit(1);
+    throw "ACCEPT";  // exit(1);
   }
 
   return *(new Canal(socket, client_fd));
@@ -81,7 +81,7 @@ Servidor::~Servidor() {
 //-------------------------------------------------------------
 
 //-------------------------------------------------------------
-Canal::Canal(Socket* s, int i) {
+Canal::Canal(Socket *s, int i) {
   socket = s;
   socket_fd = i;
   own = false;
@@ -112,8 +112,8 @@ Canal::Canal(string address, int port, int maxAttempts, int millisWait) {
 
   // Chequeamos si se ha realizado la conexión
   if (socket_fd == -1) {
-    cerr << "No se ha podido conectar con el servidor "+address + ":" + to_string(port) + " : " << strerror(errno)
-         << endl;
+    cerr << "No se ha podido conectar con el servidor " + address + ":" +
+                to_string(port) + " : " << strerror(errno) << endl;
     exit(1);
   }
 }
@@ -145,7 +145,7 @@ void Canal::operator<<(const string message) {
   }
 }
 //-------------------------------------------------------------
-void Canal::operator>>(string& message) {
+void Canal::operator>>(string &message) {
   // Recibimos el mensaje
   int read_bytes = socket->Recv(socket_fd, message, MESSAGE_SIZE);
 
@@ -159,7 +159,6 @@ void Canal::operator>>(string& message) {
 ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////
-
 
 //-------------------------------------------------------------
 const int ACK_BUFFER_SIZE = 4;  // para hacer la comunición síncrona

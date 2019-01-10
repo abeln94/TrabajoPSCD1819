@@ -19,20 +19,20 @@ using namespace std;
 
 //...
 
-class LindaDriver{
-  public:
-    LindaDriver(string ip, int puerto);
+class LindaDriver {
+ public:
+  LindaDriver(string ip, int puerto);
 
-    ~LindaDriver();
-    //Operaciones de Linda
-    void PN (Tupla mensaje);
-    Tupla RN (Tupla mensaje);
-    Tupla readN (Tupla mensaje);
+  ~LindaDriver();
+  // Operaciones de Linda
+  void PN(Tupla mensaje);
+  Tupla RN(Tupla mensaje);
+  Tupla readN(Tupla mensaje);
 
-  private:
-		Canal* getCanal(const Tupla& note);
-		
-		Canal* canal[3];
+ private:
+  Canal* getCanal(const Tupla& note);
+
+  Canal* canal[3];
 };
 
 #endif

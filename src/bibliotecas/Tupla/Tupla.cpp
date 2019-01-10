@@ -8,21 +8,21 @@
 //------------ CONSTRUCTORS / DESTRUCTORS -------------
 //-----------------------------------------------------
 Tupla::Tupla(int i) {
-	// empty constructor
+  // empty constructor
 
   assert(i >= 1 && i <= TUPLA_MAX);
   length = i;
 }
 //-----------------------------------------------------
 Tupla::Tupla(string e1) {
-	// direct constructor
+  // direct constructor
 
   length = 1;
   elements[0] = e1;
 }
 //-----------------------------------------------------
 Tupla::Tupla(string e1, string e2) {
-	// direct constructor
+  // direct constructor
 
   length = 2;
   elements[0] = e1;
@@ -30,7 +30,7 @@ Tupla::Tupla(string e1, string e2) {
 }
 //-----------------------------------------------------
 Tupla::Tupla(string e1, string e2, string e3) {
-	// direct constructor
+  // direct constructor
 
   length = 3;
   elements[0] = e1;
@@ -39,7 +39,7 @@ Tupla::Tupla(string e1, string e2, string e3) {
 }
 //-----------------------------------------------------
 Tupla::Tupla(string e1, string e2, string e3, string e4) {
-	// direct constructor
+  // direct constructor
 
   length = 4;
   elements[0] = e1;
@@ -49,7 +49,7 @@ Tupla::Tupla(string e1, string e2, string e3, string e4) {
 }
 //-----------------------------------------------------
 Tupla::Tupla(string e1, string e2, string e3, string e4, string e5) {
-	// direct constructor
+  // direct constructor
 
   length = 5;
   elements[0] = e1;
@@ -60,7 +60,7 @@ Tupla::Tupla(string e1, string e2, string e3, string e4, string e5) {
 }
 //-----------------------------------------------------
 Tupla::Tupla(string e1, string e2, string e3, string e4, string e5, string e6) {
-	// direct constructor
+  // direct constructor
 
   length = 6;
   elements[0] = e1;
@@ -72,11 +72,11 @@ Tupla::Tupla(string e1, string e2, string e3, string e4, string e5, string e6) {
 }
 //-----------------------------------------------------
 Tupla::Tupla(const Tupla& copy) {
-	// clone constructor
+  // clone constructor
 
   length = copy.length;
   for (int i = 0; i < length; ++i) {
-		// for each element, copy
+    // for each element, copy
     elements[i] = copy.elements[i];
   }
 }
@@ -86,25 +86,25 @@ Tupla::~Tupla() {}
 //-------------------- GETTERS ------------------------
 //-----------------------------------------------------
 string Tupla::get(int index) const {
-	// get element (index 1-based)
+  // get element (index 1-based)
 
   assert(index >= 1 && index <= length);
   return elements[index - 1];
 }
 //-----------------------------------------------------
 int Tupla::size() const {
-	// length of tuple
+  // length of tuple
 
-	return length;
+  return length;
 }
 //-----------------------------------------------------
 string Tupla::to_string() const {
-	// stringify tuple
+  // stringify tuple
 
   stringstream ss;
   ss << "[" << this->get(1);
   for (int i = 2; i <= length; ++i) {
-		// for each extra element, add
+    // for each extra element, add
     ss << "," << this->get(i);
   }
   ss << "]";
@@ -114,44 +114,43 @@ string Tupla::to_string() const {
 //------------------- SETTERS -------------------------
 //-----------------------------------------------------
 bool Tupla::from_string(string s) {
-	// parse the stringified tuple
+  // parse the stringified tuple
 
   if (s[0] != '[' || s[s.length() - 1] != ']') {
     // not "[...]", invalid string
     return false;
   }
 
-	string inside = s.substr(1, s.length() - 2);
+  string inside = s.substr(1, s.length() - 2);
 
-	if(inside.length() == 0){
-		//if string is empty it is 1 empty element
-		elements[0] = "";
-		length = 1;
-		return true;
-	}
+  if (inside.length() == 0) {
+    // if string is empty it is 1 empty element
+    elements[0] = "";
+    length = 1;
+    return true;
+  }
 
   stringstream data(inside);
 
   // assign each element
   int i = 0;
   while (i < TUPLA_MAX && getline(data, elements[i], ',')) {
-		// element assigned
+    // element assigned
     i++;
   }
   length = i;
 
-
-	if(inside[inside.length() - 1] == ','){
-		//if string ends with the delimiter, add the missing element
-		elements[i] = "";
-		length++;
-	}
+  if (inside[inside.length() - 1] == ',') {
+    // if string ends with the delimiter, add the missing element
+    elements[i] = "";
+    length++;
+  }
 
   return true;
 }
 //-----------------------------------------------------
 void Tupla::set(int i, string s) {
-	// set element (index 1-based)
+  // set element (index 1-based)
 
   assert(i >= 1 && i <= length);
   elements[i - 1] = s;
@@ -160,27 +159,27 @@ void Tupla::set(int i, string s) {
 //-----------------------OVERLOAD----------------------
 //-----------------------------------------------------
 string& Tupla::operator[](int index) {
-	// get element  (index 0-based)
+  // get element  (index 0-based)
 
   assert(index >= 0 && index < length);
   return elements[index];
 }
 //-----------------------------------------------------
 const string& Tupla::operator[](int index) const {
-	// get element  (index 0-based)
+  // get element  (index 0-based)
 
   assert(index >= 0 && index < length);
   return elements[index];
 }
 //-----------------------------------------------------
 Tupla& Tupla::operator=(const Tupla& rhs) {
-	// copy the rhs tuple into this
+  // copy the rhs tuple into this
 
   if (this != &rhs) {
     // not same object, continue
     length = rhs.length;
     for (int i = 0; i < length; ++i) {
-			// for each element, copy
+      // for each element, copy
       elements[i] = rhs.elements[i];
     }
   }
@@ -188,7 +187,7 @@ Tupla& Tupla::operator=(const Tupla& rhs) {
 }
 //-----------------------------------------------------
 ostream& operator<<(ostream& os, const Tupla& tuple) {
-	// output as string
+  // output as string
 
   os << tuple.to_string();
   return os;
