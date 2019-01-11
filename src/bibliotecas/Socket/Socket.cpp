@@ -40,13 +40,16 @@ Servidor::Servidor(int port, int max_connections) {
     if (socket_fd == -1) {
       string mensError(strerror(errno));
       cerr << "Error en el bind: " + mensError + "\n";
-      // throw "BIND"; //exit(1);
+      
       retry--;
       this_thread::sleep_for(chrono::milliseconds(1000));
     } else {
       break;
     }
   }
+	if(retry == 0){
+		throw "BIND"; //exit(1);
+	}
 
   // Listen
   int error_code = socket->Listen(max_connections);

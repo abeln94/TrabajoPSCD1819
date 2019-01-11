@@ -78,7 +78,7 @@ void LindaDriver::PN(Tupla tupla) {
     // tamaño
     // de la tupla para que pueda tratar el mensaje.
     string mens = "P" + to_string(tupla.size()) + tupla.to_string();
-    cout << mens << endl;
+    
     subserver << mens;
 
     // recibimos respuesta, aunque la omitimos
@@ -105,7 +105,7 @@ Tupla LindaDriver::RN(Tupla tupla) {
     // tamaño
     // de la tupla para que pueda tratar el mensaje.
     string mens = "R" + to_string(tupla.size()) + tupla.to_string();
-    cout << mens << endl;
+    
     subserver << mens;
 
     // recibimos respuesta
@@ -136,7 +136,7 @@ Tupla LindaDriver::readN(Tupla tupla) {
     // tamaño
     // de la tupla para que pueda tratar el mensaje.
     string mens = "r" + to_string(tupla.size()) + tupla.to_string();
-    cout << mens << endl;
+    
     subserver << mens;
 
     // recibimos respuesta
