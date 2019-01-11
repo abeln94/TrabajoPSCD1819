@@ -1,3 +1,12 @@
+//*****************************************************************
+// File:  tests.cpp
+// Authors:   GONZÁLEZ VILLA, DANIEL
+//            NAYA FORCANO, ABEL
+//            GONZÁLEZ GORRADO, JESÚS ÁNGEL
+//            GARCÍA DÍAZ, ÁLVARO
+// Date:   Diciembre 2018-Enero 2019
+//*****************************************************************
+
 /*
 ** Fichero de tests, para usar con Cliente.cpp **
 
@@ -234,10 +243,9 @@ void myexample(char* ip, int port, int i, char* param){
 
 ADDFUNCTION( myexample, "test sencillo, hace PN y RN de tuplas con tamaños 1 a 6, lanzar como '1 myexample .'")
 
-
 	
 //-----------------------------------------------------
-//---------Filosofos
+//---------Filósofos
 //-----------------------------------------------------
 void t_filosofo(char* ip, int port, int i, char* param){
   LindaDriver scb(ip, port);
@@ -259,10 +267,10 @@ void t_filosofo(char* ip, int port, int i, char* param){
   for (int t=0;t<repetir;++t) {
     scb.PN(coger);
     scb.RN(comer);
-    cout << "\tComiendo filosofo " << i << endl;
+    cout << "\tComiendo filósofo " << i << endl;
     esperar(100, 1000);
     scb.PN(terminar);
-    cout << "Pensando filosofo " << i << endl;
+    cout << "Pensando filósofo " << i << endl;
   }
   
 }
@@ -340,7 +348,6 @@ ADDFUNCTION( t_filosofo, "test filósofos, ejecutar como 'N t_filosofo M' siendo
 ADDFUNCTION( t_coger, "test filósofos, ejecutar como '1 t_coger N' siendo N el número de filósofos");
 ADDFUNCTION( t_dejar, "test filósofos, ejecutar como '1 t_dejar N' siendo N el número de filósofos");
 
-
 	
 //-----------------------------------------------------
 //---------Control Gasolinera
@@ -417,7 +424,6 @@ void t_mantenimiento(char* ip, int port, int _, char* param){
 void t_gasolinera(char* ip, int port, int _, char* param){
   LindaDriver scb(ip, port);
 	
-  char * end;
   int max, numCoche;
   sscanf (param,"%d %*c %d",&max,&numCoche);
 
@@ -465,9 +471,7 @@ void t_gasolinera(char* ip, int port, int _, char* param){
 void t_surtidor(char* ip, int port, int _, char* param){
   LindaDriver scb(ip, port);
 
-  char * end;
-  int max, numCoche;
-  sscanf (param,"%d %*c %d",&max,&numCoche);
+  int numCoche = atoi(param);
 
   Tupla gasolinera("gasolinera", "?B");
   Tupla surtidor("surtidor", "entro", "");
@@ -478,10 +482,11 @@ void t_surtidor(char* ip, int port, int _, char* param){
   info = scb.readN(info);
   int repetir = stoi(info[1]);
 
-  scb.readN(gasolinera);
+  Tupla querer = scb.readN(gasolinera);
+  int max = stoi(querer[1]);
   
   for(int i = 0; i < repetir * numCoche; ++i){
-	Tupla querer = scb.RN(surtidorf);
+	querer = scb.RN(surtidorf);
 	surtidor[2] = querer[2]; 
 	querer = scb.RN(gasolinera);
 	int n = stoi(querer[1]);
@@ -511,7 +516,7 @@ void t_surtidor(char* ip, int port, int _, char* param){
 ADDFUNCTION( t_coche, "Control Gasolinera, ejecutar como 'N t_coche M' siendo N el número de coches y M las veces que pasa por la gasolinera");
 ADDFUNCTION( t_mantenimiento, "Control Gasolinera, ejecutar como '1 t_mantenimiento N' siendo N el número de mantenimientos");
 ADDFUNCTION( t_gasolinera, "Control Gasolinera, ejecutar como '1 t_gasolinera N' siendo N el número de surtidores totales y el de coches con este formato 'surtidores:coches'");
-ADDFUNCTION( t_surtidor, "Control Gasolinera, ejecutar como '1 t_surtidor N' siendo N el número de surtidores totales y el de coches con este formato 'surtidores:coches'");
+ADDFUNCTION( t_surtidor, "Control Gasolinera, ejecutar como '1 t_surtidor N' siendo N el número de coches");
 
 
 	
