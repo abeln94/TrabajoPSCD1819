@@ -1,10 +1,10 @@
-//******************************************************************
+//*****************************************************************
 // File:  ServerControl.hpp
-// Authors:   Daniel González
-//            NOMBRES
-//            NOMBRES
-//            NOMBRES
-// Date:   Diciembre 2018
+// Authors:   GONZÁLEZ VILLA, DANIEL
+//            NAYA FORCANO, ABEL
+//            GONZÁLEZ GORRADO, JESÚS ÁNGEL
+//            GARCÍA DÍAZ, ÁLVARO
+// Date:   Diciembre 2018-Enero 2019
 //*****************************************************************
 
 #ifndef SERVER_CONTROL
