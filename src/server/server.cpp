@@ -1,12 +1,11 @@
-//******************************************************************
-// File:  servidor.cpp
-// Authors:   Daniel González
-//            NOMBRES
-//            NOMBRES
-//            NOMBRES
-// Date:   Diciembre 2018
 //*****************************************************************
-
+// File:  server.cpp
+// Authors:   GONZÁLEZ VILLA, DANIEL
+//            NAYA FORCANO, ABEL
+//            GONZÁLEZ GORRADO, JESÚS ÁNGEL
+//            GARCÍA DÍAZ, ÁLVARO
+// Date:   Diciembre 2018-Enero 2019
+//*****************************************************************
 
 #include "Socket.hpp"
 #include "ServerControl.hpp"
@@ -18,7 +17,6 @@
 
 using namespace std;
 
-//Se puede cambiar por otra cosa??
 sig_atomic_t end_mark = 0;
 
 void contact(int client_fd, Socket& soc, ControlSys& sys){
@@ -39,7 +37,7 @@ void contact(int client_fd, Socket& soc, ControlSys& sys){
 
 void conection(int subserv_fd, Socket& soc, ControlSys &sys){
   const int maxlength = 150;
-	string buffer = "", res = "", ip;
+  string buffer = "", res = "", ip;
   bool err = false;
   int rcv_bytes = 0, port, id;
   ssize_t snd_bytes = 0;
@@ -47,7 +45,7 @@ void conection(int subserv_fd, Socket& soc, ControlSys &sys){
   rcv_bytes = soc.Recv(subserv_fd,buffer,maxlength);
   if (rcv_bytes == -1 || rcv_bytes == 0) {
     sys.err_safe_print(buffer);
-    sys.err_safe_print("[x]  datos: Finalización del subservidor inesperada.");
+    sys.err_safe_print("[x] datos: Finalización del subservidor inesperada.");
     err = true;
     if(soc.Close(subserv_fd) == -1){
       sys.err_safe_print("[x] Fallo al cerrar socket corrupto: " + string(strerror(errno)));
@@ -58,7 +56,7 @@ void conection(int subserv_fd, Socket& soc, ControlSys &sys){
     return;
   }
 
-  //Must recive a buffer like "Si:IP=xxx.xxx.xxx.xxx-PORT=PPPPP"
+  //Must receive a buffer like "Si:IP=xxx.xxx.xxx.xxx-PORT=PPPPP"
   //else, conection corrupted
   if (buffer.length() >= 22){
 
@@ -132,9 +130,8 @@ void sig_handler(int signo){
     cerr << "[x]Señal desconocida capturada, cerrando servidor..." << endl;
   }
   cerr << endl;
-  cerr << "[x]Advertencia: Es posible que aun se ejecuten algunas sentencias..."<<endl;
+  cerr << "[x]Advertencia: Es posible que aun se ejecuten algunas sentencias..." <<endl;
   cerr << endl;
-  //signal(signo,sig_handler);
 }
 
 int main(int argc, char * argv[]) {
@@ -144,7 +141,7 @@ int main(int argc, char * argv[]) {
   int SERVER_PORT_PRIVATE;
 
 
-  //COMPROBACIONES
+  //Comprobación de parámetros
   if(argc == 3){
     SERVER_PORT_PUBLIC = atoi(argv[1]);
     SERVER_PORT_PRIVATE = atoi(argv[2]);
@@ -157,13 +154,16 @@ int main(int argc, char * argv[]) {
 
   cout << ">>" << endl;
   cout << ">> INICIANDO SERVICIO" << endl;
+  cout << ">> SERVIDOR PRINCIPAL" << endl;
+  cout << ">> PUERTO PÚBLICO = " << SERVER_PORT_PUBLIC << endl;
+  cout << ">> PUERTO PÚBLICO = " << SERVER_PORT_PRIVATE << endl;
   cout << ">>" << endl;
 
   //###################################################//
   //################## P H A S E : 1 ##################//
   //###################################################//
-  //Creacion de sockets y protección ante señales
-  cout << "[x] Inicio Fase 1 . . ." << endl;
+  //Creación de sockets y protección ante señales
+  cout << "[x] Inicio Fase 1: Creación de sockets y protección ante señales" << endl;
 
   //Terminacion controlada
   //Protección frente "^C", "^\", "^Z"
@@ -182,51 +182,52 @@ int main(int argc, char * argv[]) {
   Socket soc_priv(SERVER_PORT_PRIVATE);
 
   //Bind
-	int soc_priv_fd = soc_priv.Bind();
-	if (soc_priv_fd == -1) {
-		string mensError(strerror(errno));
-    	cerr << "--Error en el bind: " + mensError + "\n";
-		exit(1);
-	}
+  int soc_priv_fd = soc_priv.Bind();
+  if (soc_priv_fd == -1) {
+	string mensError(strerror(errno));
+	cerr << "--Error en el bind: " + mensError + "\n";
+	exit(1);
+  }
 
-	//Listen
-	int errcode1 = soc_priv.Listen(5);
-	if (errcode1 == -1) {
-		string mensError(strerror(errno));
-    	cerr << "--Error en el listen: " + mensError + "\n";
-		// Cerramos el socket
-		soc_priv.Close(soc_priv_fd);
-		exit(1);
-	}
-
+  //Listen
+  int errcode1 = soc_priv.Listen(5);
+  if (errcode1 == -1) {
+	string mensError(strerror(errno));
+	cerr << "--Error en el listen: " + mensError + "\n";
+	// Cerramos el socket
+	soc_priv.Close(soc_priv_fd);
+	exit(1);
+  }
 
   //Conexión con clientes:
-	Socket soc_pub(SERVER_PORT_PUBLIC);
+  Socket soc_pub(SERVER_PORT_PUBLIC);
 
   //Bind
-	int soc_pub_fd = soc_pub.Bind();
-	if (soc_pub_fd == -1) {
-		string mensError(strerror(errno));
-    	cerr << "--Error en el bind: " + mensError + "\n";
-		exit(1);
-	}
+  int soc_pub_fd = soc_pub.Bind();
+  if (soc_pub_fd == -1) {
+	string mensError(strerror(errno));
+   	cerr << "--Error en el bind: " + mensError + "\n";
+	exit(1);
+  }
 
-	// Listen
-	int errcode2 = soc_pub.Listen(100);
-	if (errcode2 == -1) {
-		string mensError(strerror(errno));
-    	cerr << "--Error en el listen: " + mensError + "\n";
-		// Cerramos el socket
-		soc_pub.Close(soc_pub_fd);
-		exit(1);
-	}
+  // Listen
+  int errcode2 = soc_pub.Listen(100);
+  if (errcode2 == -1) {
+	string mensError(strerror(errno));
+   	cerr << "--Error en el listen: " + mensError + "\n";
+	// Cerramos el socket
+	soc_pub.Close(soc_pub_fd);
+	exit(1);
+  }
 
   ctrl.safe_print("[x] Fase 1 completada.");
+  
   //###################################################//
   //################## P H A S E : 2 ##################//
   //###################################################//
   //Conexión con subs
-  ctrl.safe_print("[x] Inicio Fase 2 . . .");
+  
+  ctrl.safe_print("[x] Inicio Fase 2: Conexión con sub-servidores");
   ctrl.safe_print("[x] >>Localizando sub-servidores. (en espera de conexión)");
 
   int strange_fd;
@@ -234,7 +235,6 @@ int main(int argc, char * argv[]) {
     strange_fd = soc_priv.Accept();
     if(strange_fd == -1 || (strange_fd==0 && end_mark==1)) {
       if (end_mark == 1){
-        //Bugfix
         ctrl.err_safe_print("[x]Error en accept causado por señal; IGNORAR");
         break;
       } else {
@@ -257,13 +257,14 @@ int main(int argc, char * argv[]) {
     exit(0);
   }
 
-  ctrl.safe_print("[x] Todos sub-servidores conectados.");
+  ctrl.safe_print("[x] Todos los sub-servidores conectados.");
   ctrl.safe_print("[x] Fase 2 completada.");
+  
   //###################################################//
   //################## P H A S E : 3 ##################//
   //###################################################//
   //Servicio iniciado, comandos disponibles
-  ctrl.safe_print("[x] Inicio Fase 3 . . .");
+  ctrl.safe_print("[x] Inicio Fase 3: Clientes");
 
   int client_fd;
   thread cliente;
@@ -275,7 +276,7 @@ int main(int argc, char * argv[]) {
         break;
       } else {
         string mensError(strerror(errno));
-        cerr << "--Error en el accept: " + mensError + "\n";
+        cerr << "[x] Error en el accept: " + mensError + "\n";
         // Cerramos el socket
         soc_pub.Close(soc_pub_fd);
         soc_priv.Close(soc_priv_fd);
