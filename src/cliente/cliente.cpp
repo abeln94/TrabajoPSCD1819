@@ -12,7 +12,7 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <ctime>
+#include <chrono>
 #include <cstdlib>
 #include <fstream>
 #include "LindaDriver.hpp"

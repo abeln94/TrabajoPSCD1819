@@ -454,8 +454,8 @@ void t_gasolinera(char* ip, int port, int _, char* param){
 	while(n == 0){
 	  querer = scb.readN(gasolinera);
 	  n = stoi(querer[1]);
-	  scb.readN(mantenimiento);
 	}
+	scb.readN(mantenimiento);
 	scb.RN(gasolinera);
 	querer[1] = to_string(n - 1);
 	scb.PN(querer);
@@ -526,8 +526,11 @@ ADDFUNCTION( t_surtidor, "Control Gasolinera, ejecutar como '1 t_surtidor N' sie
 //Devuelve el tiempo que se tarda en una de las operaciones de LindaDriver 
 //con <max> tuplas <a>
 float time_LD(LindaDriver& scb, const int max, const Tupla& a, const int select){
-	
-  clock_t t = clock();
+
+  using namespace std::chrono;
+  
+  high_resolution_clock::time_point t1 = high_resolution_clock::now();
+  
   for(int j = 0; j < max; ++j){
   	switch(select){
   		case 1:
@@ -541,10 +544,11 @@ float time_LD(LindaDriver& scb, const int max, const Tupla& a, const int select)
 		break;
   	}
   }
-  
-  t = clock() - t;
-  return (float(t))/CLOCKS_PER_SEC;
 
+  high_resolution_clock::time_point t2 = high_resolution_clock::now();
+  duration<float> time_span = duration_cast<duration<float>>(t2 - t1);
+
+  return time_span.count();
 }
 
 //--------------------------------------------------
@@ -632,22 +636,3 @@ void t_tuplas(char* ip, int port, int _, char* param){
 //--------------------------------------------------
 
 ADDFUNCTION( t_tuplas, "Tiempo tuplas, ejecutar como '1 t_tuplas N' siendo N el número de tuplas");
-
-void detenedor(char* ip, int port, int _, char* param){
-	
-	
-	Socket soc_serv(ip,port);
-
-  //Connect
-  int soc_serv_fd = soc_serv.Connect();
-  if (soc_serv_fd == -1) {
-    string mensError(strerror(errno));
-      cerr << "[x]Error en el connect: " + mensError + "\n";
-    exit(1);
-  }
-
-  soc_serv.Send(soc_serv_fd, "END");
-	soc_serv.Close(soc_serv_fd);
-}
-
-ADDFUNCTION( detenedor, "Detiene el servidor en activo");
