@@ -1,16 +1,18 @@
-#*****************************************************************
-# File:   Makefile_p5_mod
-# Author: Abel Naya
-# Date:   diciembre 2018
-# Coms:
-#*****************************************************************
+##*****************************************************************
+## File:  Makefile
+## Authors:   GONZÁLEZ VILLA, DANIEL
+##            NAYA FORCANO, ABEL
+##            GONZÁLEZ GORRADO, JESÚS ÁNGEL
+##            GARCÍA DÍAZ, ÁLVARO
+## Date:   Diciembre 2018-Enero 2019
+##*****************************************************************
 
 #-----------------------------------------------------------
 # detectar sistema en el que se ejecuta
-# SOLO FUNCIONA CON gmake!!!!
+# SOLO FUNCIONA CON gmake
 
 UNAME := ${shell uname}
-# Unexpected end of line? Ejecuta con 'gmake'!!!!
+# Unexpected end of line? Ejecuta con 'gmake'
 
 #---------------------------------------------------------------------
 ### directorios
@@ -35,6 +37,7 @@ TUPLA=${TUPLA_DIR}/Tupla
 CLIENTE_DIR=cliente
 CLIENTE=${CLIENTE_DIR}/cliente
 CLIENTE_EXTRA=${CLIENTE_DIR}/tests
+CLIENTE_MEMORIA=${CLIENTE_DIR}/memoria
 
 SERVER_DIR=server
 SERVER=${SERVER_DIR}/server
@@ -86,7 +89,7 @@ ${BIN_DIR}/${CLIENTE}: ${O_DIR}/${LINDADRIVER}.o ${O_DIR}/${SCOREBOARD}.o ${O_DI
 	mkdir -p ${BIN_DIR}/${CLIENTE_DIR}
 	${CC} ${LDFLAGS} ${O_DIR}/${LINDADRIVER}.o ${O_DIR}/${SCOREBOARD}.o ${O_DIR}/${SOCKET}.o ${O_DIR}/${TUPLA}.o ${O_DIR}/${CLIENTE}.o -o ${BIN_DIR}/${CLIENTE} ${SOCKETSFLAGS}
 	
-${O_DIR}/${CLIENTE}.o: ${SRC_DIR}/${CLIENTE}.cpp ${SRC_DIR}/${CLIENTE_EXTRA}.cpp
+${O_DIR}/${CLIENTE}.o: ${SRC_DIR}/${CLIENTE}.cpp ${SRC_DIR}/${CLIENTE_EXTRA}.cpp ${SRC_DIR}/${CLIENTE_MEMORIA}.cpp
 	mkdir -p ${O_DIR}/${CLIENTE_DIR}
 	${CC} -c ${CPPFLAGS} ${SRC_DIR}/${CLIENTE}.cpp -o ${O_DIR}/${CLIENTE}.o
 	

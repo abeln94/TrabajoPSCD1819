@@ -1,3 +1,12 @@
+##*****************************************************************
+## File:  runTests.sh
+## Authors:   GONZÁLEZ VILLA, DANIEL
+##            NAYA FORCANO, ABEL
+##            GONZÁLEZ GORRADO, JESÚS ÁNGEL
+##            GARCÍA DÍAZ, ÁLVARO
+## Date:   Diciembre 2018-Enero 2019
+##*****************************************************************
+
 #!/bin/bash
 set -e #Exit on first error
 
@@ -28,7 +37,7 @@ server=$binaries_dir/server/server
 subserver=$binaries_dir/subserver/subserver
 
 
-###################################33
+###################################
 
 
 # prueba cliente local (sin servidor) con test supersencillo
