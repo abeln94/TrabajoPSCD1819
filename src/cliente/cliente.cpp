@@ -1,3 +1,11 @@
+//*****************************************************************
+// File:  cliente.cpp
+// Authors:   GONZÁLEZ VILLA, DANIEL
+//            NAYA FORCANO, ABEL
+//            GONZÁLEZ GORRADO, JESÚS ÁNGEL
+//            GARCÍA DÍAZ, ÁLVARO
+// Date:   Diciembre 2018-Enero 2019
+//*****************************************************************
 
 #include <iostream>
 #include <thread>
@@ -17,13 +25,13 @@ using namespace std;
 typedef void (* TestFunction)(char*,int,int,char*);
 map<string,TestFunction> functions;
 
-//this...this is a magic macro. I'm proud of it. (check usage in tests.cpp)
-#define ADDFUNCTION(name,description) 															\
+//check usage in tests.cpp or in memoria.cpp
+#define ADDFUNCTION(name,description) 																\
 class _Class##name{         																		\
 	public:                   																		\
 	_Class##name(){           																		\
-		cout << "<" << #name << "> " << description << endl;				\
-		functions.insert( pair<string,TestFunction>(#name,&name) );	\
+		cout << "<" << #name << "> " << description << endl;										\
+		functions.insert( pair<string,TestFunction>(#name,&name) );									\
 	}                         																		\
 };                          																		\
 _Class##name _object##name;  
@@ -32,6 +40,7 @@ _Class##name _object##name;
 //-----------------------------------------------------
 
 #include "tests.cpp"
+#include "memoria.cpp"
 
 //-----------------------------------------------------
 int main(int argc, char* argv[]) {

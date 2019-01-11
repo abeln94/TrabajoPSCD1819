@@ -1,3 +1,11 @@
+//*****************************************************************
+// File:  Tupla.hpp
+// Authors:   GONZÁLEZ VILLA, DANIEL
+//            NAYA FORCANO, ABEL
+//            GONZÁLEZ GORRADO, JESÚS ÁNGEL
+//            GARCÍA DÍAZ, ÁLVARO
+// Date:   Diciembre 2018-Enero 2019
+//*****************************************************************
 #ifndef TUPLA_H
 #define TUPLA_H
 
@@ -38,6 +46,9 @@ class Tupla {
   */
   Tupla(const Tupla& copy);
 
+  /**
+  Destructor
+  */
   ~Tupla();
 
   //-------------------- GETTERS ------------------------

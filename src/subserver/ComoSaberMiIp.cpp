@@ -1,3 +1,12 @@
+//*****************************************************************
+// File:  ComoSaberMiIp.cpp
+// Authors:   GONZÁLEZ VILLA, DANIEL
+//            NAYA FORCANO, ABEL
+//            GONZÁLEZ GORRADO, JESÚS ÁNGEL
+//            GARCÍA DÍAZ, ÁLVARO
+// Date:   Diciembre 2018-Enero 2019
+//*****************************************************************
+
 #include <iostream>
 #include <string>
 #include <strings.h>
@@ -31,14 +40,12 @@ string getIPAddress(){
       // Loop through linked list of interfaces
       temp_addr = interfaces;
       while(temp_addr != NULL) {
-        cout << "BBBBBBBBBBBBBBBBBBucle" << endl;
         if(temp_addr->ifa_addr->sa_family == AF_INET) {
           cout << "-------------IPv4" << endl;
           cout << temp_addr->ifa_name << endl;
           cout << inet_ntoa(((struct sockaddr_in*)temp_addr->ifa_addr)->sin_addr) << endl;
           // Check if interface is en0 which is the wifi connection on the iPhone
           if(strcmp(temp_addr->ifa_name, "en0")==0){
-            cout << "strcmp" << endl;
             ipAddress=inet_ntoa(((struct sockaddr_in*)temp_addr->ifa_addr)->sin_addr);
           }
         }

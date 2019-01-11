@@ -1,12 +1,11 @@
-//******************************************************************
-// File:  servidor.cpp
-// Authors:   Daniel González
-//            NOMBRES
-//            NOMBRES
-//            NOMBRES
-// Date:   Diciembre 2018
 //*****************************************************************
-
+// File:  subserver.cpp
+// Authors:   GONZÁLEZ VILLA, DANIEL
+//            NAYA FORCANO, ABEL
+//            GONZÁLEZ GORRADO, JESÚS ÁNGEL
+//            GARCÍA DÍAZ, ÁLVARO
+// Date:   Diciembre 2018-Enero 2019
+//*****************************************************************
 
 #include "Socket.hpp"
 #include "Scoreboard.hpp"
@@ -25,8 +24,7 @@ using namespace std;
 
 sig_atomic_t end_mark = 0;
 
-//###################################################################
-//Pequeño controlador de exclusion mutua (no mas de 40 lineas)
+//Controlador de exclusion mutua 
 class SafeSYS {
   public:
     //Constructor
@@ -65,21 +63,15 @@ class SafeSYS {
     mutex mtx;
     condition_variable end;
 };
-//###################################################################
-//Funciones encargadas de la comunicación exterior
 
+//Funciones encargadas de la comunicación exterior
 void control(int puerto, Socket& soc, int& socket_fd, SafeSYS& sys){
-  // en espera
   string buffer = "";
   while(buffer!="END"){
     soc.Recv(socket_fd,buffer,10);
     if(buffer == "END"){
       break;
     }
-    //Por si aca el server es mas interactivo, codigo a tratar aqui debajo (mas comandos)
-    // \/   \/   \/    \/    \/    \/    \/
-
-    //...
   }
 
   raise(SIGTSTP);
@@ -140,7 +132,7 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
         } else {
             cerr << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
         }
-    } else if(mensaje[tam-1] == '3'){ // Readnote
+    } else if(mensaje[tam-1] == '3'){ // readN
         mensaje.erase(tam-1);
         tam = mensaje.length();
         string lons = to_string(mensaje[tam-1] - '0');
@@ -160,8 +152,7 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
     if(crear){
       int send_bytes = soc.Send(socket_fd,buffer);
       if(send_bytes == -1){
-          string mensError = strerror(errno);
-          cerr << "[x] Error al enviar datos a LindaDriver: " + mensError + "\n";
+          cerr << "[x] Cliente cerrado\n";
           err = true;
           continue;
       }
@@ -178,7 +169,6 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
   sys.sum(-1);
 }
 
-//###################################################################
 //Función encargada del tratamiento de señales
 void sig_handler(int signo){
   if (SIGPIPE == signo){
@@ -198,10 +188,8 @@ void sig_handler(int signo){
   cerr << endl;
   cerr << "[x]Advertencia: Es posible que aun se ejecuten algunas sentencias..."<<endl;
   cerr << endl;
-  //signal(signo,sig_handler);
 }
 
-//###################################################################
 //Main func.
 int main(int argc, char * argv[]) {
   //Declaración de variables
@@ -211,8 +199,7 @@ int main(int argc, char * argv[]) {
   int port_localhost;
   int port_serv;
 
-
-  //COMPROBACIONES
+  //Comprabación de número de parámetros
   if(argc == 6){
     quiensoy = argv[1];
     ipmia = argv[2];
@@ -220,9 +207,9 @@ int main(int argc, char * argv[]) {
     ip_serv = argv[4];
     port_serv = atoi(argv[5]);
   } else {
-    cout << "[x]Advertencia"<< endl;
-    cout << "[x]Error: Número de argumentos invalido"<< endl;
-    cout << "./<ejecutable> <quiensoy> <ip_mia> <puerto local> <ip_serv> <puerto_serv>"<<endl;
+    cout << "[x]Advertencia" << endl;
+    cout << "[x]Error: Número de argumentos invalido" << endl;
+    cout << "./<ejecutable> <quiensoy> <ip_mia> <puerto local> <ip_serv> <puerto_serv>" <<endl;
     exit(0);
   }
 
@@ -235,17 +222,19 @@ int main(int argc, char * argv[]) {
 
   cout << ">>" << endl;
   cout << ">> INICIANDO SERVICIO" << endl;
+  cout << ">> SUBSERVIDOR " << quiensoy << endl;
+  cout << ">> IP = " << ipmia << endl;
+  cout << ">> PUERTO = " << port_localhost << endl;
   cout << ">>" << endl;
 
   //###################################################//
   //################## P H A S E : 1 ##################//
   //###################################################//
-  //Creacion de sockets y protección ante señales
-  cout << "[x] Inicio Fase 1 . . ." << endl;
+  //Creación de sockets y protección ante señales
+  cout << "[x] Inicio Fase 1: Creación de sockets y protección ante señales" << endl;
 
   //Terminacion controlada
   //Protección frente "^C", "^\", "^Z"
-  //signal(SIGPIPE, SIG_IGN);
   struct sigaction sig_han;
   sig_han.sa_handler = sig_handler;
   sigemptyset(&sig_han.sa_mask);
@@ -259,33 +248,30 @@ int main(int argc, char * argv[]) {
   Socket soc_local(port_localhost);
 
   //Bind
-	int soc_local_fd = soc_local.Bind();
-	if (soc_local_fd == -1) {
-		string mensError(strerror(errno));
-    	cerr << "--Error en el bind: " + mensError + "\n";
-		exit(1);
-	}
+  int soc_local_fd = soc_local.Bind();
+  if (soc_local_fd == -1) {
+	string mensError(strerror(errno));
+    cerr << "--Error en el bind: " + mensError + "\n";
+	exit(1);
+  }
 
-	//Listen
-	int errcode1 = soc_local.Listen(100);
-	if (errcode1 == -1) {
-		string mensError(strerror(errno));
-    	cerr << "--Error en el listen: " + mensError + "\n";
-		// Cerramos el socket
-		soc_local.Close(soc_local_fd);
-		exit(1);
-	}
-
+  //Listen
+  int errcode1 = soc_local.Listen(100);
+  if (errcode1 == -1) {
+	string mensError(strerror(errno));
+   	cerr << "--Error en el listen: " + mensError + "\n";
+	// Cerramos el socket
+	soc_local.Close(soc_local_fd);
+	exit(1);
+  }
 
   cout << "[x] Fase 1 completada." << endl;
+  
   //###################################################//
   //################## P H A S E : 2 ##################//
   //###################################################//
   //Conexión con serv
-  cout << "[x] Inicio Fase 2 . . ."  << endl;
-  //cout << "[x]Localizando sub-servidores. (en espera de conexión)"  << endl;
-  //###################
-  //sting miip = getmiip();
+  cout << "[x] Inicio Fase 2: Conexión con servidor principal"  << endl;
 
   Socket soc_serv(ip_serv,port_serv);
 
@@ -299,8 +285,6 @@ int main(int argc, char * argv[]) {
 
   // Si:IP=xxx.xxx.xxx.xxx-PORT=PPPPP
   soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":IP=" + ipmia + "-PORT=" + to_string(port_localhost));
-  // Si:PORT=PPPPP
-  //soc_serv.Send(soc_serv_fd, "S" + quiensoy + ":PORT=" + argv[2]);
 
   string test;
   soc_serv.Recv(soc_serv_fd, test, 15);
@@ -311,18 +295,16 @@ int main(int argc, char * argv[]) {
     exit(0);
   }
 
-
   cout << "[x] Fase 2 completada." << endl;
+  
   //###################################################//
   //################## P H A S E : 3 ##################//
   //###################################################//
   //Servicio iniciado, comandos disponibles
-  cout << "[x] Inicio Fase 3 . . ."  << endl;
+  cout << "[x] Inicio Fase 3: Clientes"  << endl;
 
   SafeSYS system;
   Scoreboard board;
-
-  cout << "[x] Fase 3 en desarrollo :D"  << endl;
 
   thread cntrl(&control,port_localhost,ref(soc_serv),ref(soc_serv_fd), ref(system));
 

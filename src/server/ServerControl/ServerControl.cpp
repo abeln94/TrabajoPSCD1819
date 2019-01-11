@@ -1,15 +1,13 @@
-//******************************************************************
+//*****************************************************************
 // File:  ServerControl.cpp
-// Authors:   Daniel González
-//            NOMBRES
-//            NOMBRES
-//            NOMBRES
-// Date:   Diciembre 2018
+// Authors:   GONZÁLEZ VILLA, DANIEL
+//            NAYA FORCANO, ABEL
+//            GONZÁLEZ GORRADO, JESÚS ÁNGEL
+//            GARCÍA DÍAZ, ÁLVARO
+// Date:   Diciembre 2018-Enero 2019
 //*****************************************************************
 
 #include "ServerControl.hpp"
-
-
 
 ControlSys::ControlSys(int priv_p, int pub_p){
   private_port = priv_p;
@@ -23,7 +21,6 @@ ControlSys::ControlSys(int priv_p, int pub_p){
 ControlSys::~ControlSys(){
 
 }
-
 
 void ControlSys::fill(int n, int fd, int port, string ip){
   unique_lock<mutex> lck(mtx);
