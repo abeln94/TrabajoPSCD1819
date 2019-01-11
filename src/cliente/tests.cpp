@@ -636,3 +636,23 @@ void t_tuplas(char* ip, int port, int _, char* param){
 //--------------------------------------------------
 
 ADDFUNCTION( t_tuplas, "Tiempo tuplas, ejecutar como '1 t_tuplas N' siendo N el número de tuplas");
+
+//--------------------------------------------------
+void detenedor(char* ip, int port, int _, char* param){
+
+
+	Socket soc_serv(ip,port);
+
+  //Connect
+  int soc_serv_fd = soc_serv.Connect();
+  if (soc_serv_fd == -1) {
+    string mensError(strerror(errno));
+      cerr << "[x]Error en el connect: " + mensError + "\n";
+    exit(1);
+  }
+
+  soc_serv.Send(soc_serv_fd, "END");
+	soc_serv.Close(soc_serv_fd);
+}
+
+ADDFUNCTION( detenedor, "Detiene el servidor en activo");
