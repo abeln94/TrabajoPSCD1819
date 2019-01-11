@@ -58,10 +58,15 @@ xterm -geometry -0-0 -T "Subservidor 1" -e "cd $PWD && ./run subserver 1 $subser
 xterm -geometry -0+0 -T "Subservidor 2" -e "cd $PWD && ./run subserver 2 $subserver_ip2 $subserver_port2 $server_ip $server_privateport && sleep 5" &
 xterm -geometry +0-0 -T "Subservidor 3" -e "cd $PWD && ./run subserver 3 $subserver_ip3 $subserver_port3 $server_ip $server_privateport && sleep 5" &
 
-sleep 5
 
-echo -----Ejecutando cliente-----
-./run cliente $server_ip $server_port 1 myexample .
+if [ $# = 1 ]; then
 
-echo -----Deteniendo-----
-./run cliente $server_ip $server_privateport 1 detenedor .
+	sleep 5
+
+	echo -----Ejecutando cliente-----
+	./run cliente $server_ip $server_port 1 myexample .
+
+	echo -----Deteniendo-----
+	./run cliente $server_ip $server_privateport 1 detenedor .
+
+fi
