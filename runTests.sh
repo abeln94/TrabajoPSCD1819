@@ -3,14 +3,14 @@ set -e #Exit on first error
 
 #configuracion
 server_ip=localhost
-server_port=32040
-server_privateport=32071
+server_port=32500
+server_privateport=32501
 
 subserver_ip1=localhost
 subserver_ip2=localhost
 subserver_ip3=localhost
-subserver_port1=32310
-subserver_port2=32411
+subserver_port1=32510
+subserver_port2=32511
 subserver_port3=32512
 
 local_ip=local

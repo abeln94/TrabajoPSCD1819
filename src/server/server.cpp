@@ -119,6 +119,54 @@ void conection(int subserv_fd, Socket& soc, ControlSys &sys){
   return;
 }
 
+void commands(int puerto, Socket& soc_priv, ControlSys &sys){
+	//sys.sumPH3(1);
+	int strange_fd;
+  while(end_mark == 0){
+    strange_fd = soc_priv.Accept();
+    if(strange_fd == -1 || (strange_fd==0 && end_mark==1)) {
+      if (end_mark == 1){
+        //Bugfix
+        sys.err_safe_print("[x] Señal de finalización, terminar");
+        break;
+      } else {
+        sys.err_safe_print("[x]Error en accept: " + string(strerror(errno)));
+        exit(1);
+				break;
+      }
+    }
+    
+		string buffer;
+		const int maxlength = 150;
+		int rcv_bytes;
+		rcv_bytes = soc_priv.Recv(strange_fd,buffer,maxlength);
+		if (rcv_bytes == -1 || rcv_bytes == 0) {
+			// ha muerto? pues ok, lo omitimos
+			continue;
+		}
+		
+		//tratar mensajes
+		if(buffer == "END"){
+			//finalizar
+			raise(SIGTSTP);
+			
+			//lanzamos un mensaje al otro thread para que se entere
+			Socket temp("localhost",puerto);
+			int temp_fd = temp.Connect();
+			if (temp_fd == -1) {
+				string mensError(strerror(errno));
+				cerr << "[x]Error en el connect: " + mensError + "\n";
+				return;
+			}
+			temp.Close(temp_fd);
+			
+			break;
+		}
+  }
+	
+	//sys.sumPH3(-1);
+}
+
 void sig_handler(int signo){
   end_mark = 1;
   cerr << endl;
@@ -256,6 +304,8 @@ int main(int argc, char * argv[]) {
     soc_priv.Close(soc_priv_fd);
     exit(0);
   }
+	
+	thread(&commands, SERVER_PORT_PUBLIC, ref(soc_priv), ref(ctrl)).detach();
 
   ctrl.safe_print("[x] Todos sub-servidores conectados.");
   ctrl.safe_print("[x] Fase 2 completada.");
@@ -291,7 +341,7 @@ int main(int argc, char * argv[]) {
   if(ctrl.sumPH3(0)!=0){
     ctrl.endPH3();
   }
-
+	
   ctrl.end(soc_priv);
 
   ctrl.safe_print("[x] Fin de Ejecución.");
