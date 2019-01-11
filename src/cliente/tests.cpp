@@ -635,13 +635,8 @@ ADDFUNCTION( t_tuplas, "Tiempo tuplas, ejecutar como '1 t_tuplas N' siendo N el 
 
 void detenedor(char* ip, int port, int _, char* param){
 	
-	char* ip_serv = strtok(param, ":");
-	int port_serv = atoi(strtok(NULL, ""));
 	
-	cout << ip_serv << ":" << port_serv << endl;
-	
-	
-	Socket soc_serv(ip_serv,port_serv);
+	Socket soc_serv(ip,port);
 
   //Connect
   int soc_serv_fd = soc_serv.Connect();
