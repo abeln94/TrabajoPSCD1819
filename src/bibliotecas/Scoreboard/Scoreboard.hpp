@@ -64,6 +64,11 @@ class Scoreboard {
   */
   Tupla readN(const Tupla& note);
 
+  /**
+  Vacia la lista de tuplas
+  */
+  void vaciar();
+  
   //------------------- PRIVADO -----------------------
  private:
   // Information when a thread is waiting for a matching note
