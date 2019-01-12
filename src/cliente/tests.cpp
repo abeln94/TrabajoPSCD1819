@@ -468,124 +468,116 @@ ADDFUNCTION(t_surtidor, "Control Gasolinera, ejecutar como '1 t_surtidor N' ");
 //-----------------------------------------------------
 //---------Tiempo tuplas
 //-----------------------------------------------------
-// Devuelve el tiempo que se tarda en una de las operaciones de LindaDriver
-// con <max> tuplas <a>
-float time_LD(LindaDriver& scb, const int max, const Tupla& a,
-              const int select) {
+//Devuelve el tiempo que se tarda en una de las operaciones de LindaDriver 
+//con <max> tuplas <a>
+float time_LD(LindaDriver& scb, const int max, const Tupla& a, const int select){
 
-  clock_t t = clock();
-  for (int j = 0; j < max; ++j) {
-    switch (select) {
-      case 1:
-        scb.PN(a);
-        break;
-      case -1:
-        scb.RN(a);
-        break;
-      case 0:
-        scb.readN(a);
-        break;
-    }
+  using namespace std::chrono;
+  
+  high_resolution_clock::time_point t1 = high_resolution_clock::now();
+  
+  for(int j = 0; j < max; ++j){
+  	switch(select){
+  		case 1:
+			scb.PN(a);
+		break;
+		case -1:
+			scb.RN(a); 	
+		break;
+		case 0:
+			scb.readN(a);
+		break;
+  	}
   }
 
-  t = clock() - t;
-  return (float(t)) / CLOCKS_PER_SEC;
+  high_resolution_clock::time_point t2 = high_resolution_clock::now();
+  duration<float> time_span = duration_cast<duration<float>>(t2 - t1);
+
+  return time_span.count();
 }
 
 //--------------------------------------------------
-void t_tuplas(char* ip, int port, int _, char* param) {
+void t_tuplas(char* ip, int port, int _, char* param){
   LindaDriver scb(ip, port);
-
+  
   int max = atoi(param);
+  
+  for(int i=1;i<=6;i++){
+	  cout << endl;
+	  cout << "Tamaño de la tupla " << i << endl;
+	  
+	  Tupla a("tupla");
+	  
+	  if(i == 2){
+		Tupla a("tupla", "tupla");
+	  } else if(i == 3){
+		Tupla a("tupla", "tupla", "tupla");
+	  } else if(i == 4){
+		Tupla a("tupla", "tupla", "tupla", "tupla");
+	  } else if(i == 5){
+		Tupla a("tupla", "tupla", "tupla", "tupla", "tupla");
+	  } else if(i == 6){
+		Tupla a("tupla", "tupla", "tupla", "tupla", "tupla", "tupla");
+	  }
+	  
+	  float aux, aux2, aux3;
+	  
+	  cout << "Metiendo " << max << " tuplas..." << endl;
+	  
+	  aux = time_LD(scb, max, a, 1);
+	  cout << "Incluidas " << max << " tuplas en " << fixed << aux << " segundos" << endl;
+	  
+	  cout << "Leyendo " << max << " tuplas..." << endl;
 
-  for (int i = 1; i <= 6; i++) {
-    cout << endl;
-    cout << "Tamaño de la tupla " << i << endl;
+	  aux2 = time_LD(scb, max, a, 0);
+	  cout << "Leídas " << max << " tuplas en " << fixed << aux2 << " segundos" << endl;
+	  aux += aux2;
+	  
+	  cout << "Eliminando " << max << " tuplas..." << endl;
 
-    Tupla a("tupla");
+	  aux2 = time_LD(scb, max, a, -1);
+	  cout << "Eliminadas " << max << " tuplas en " << fixed << aux2 << " segundos" << endl;
+	  aux += aux2;
+	  
+	  cout << "Tiempo total parte 1: " << fixed << aux << " segundos" << endl << endl;
+	  
+	  cout << "Ahora las tuplas serán creadas de la forma from_string" << endl << endl;
+	  
+	  if(i == 1) {
+		a.from_string("[prove]");
+	  } else if(i == 2){
+		a.from_string("[prove,prove]");
+	  } else if(i == 3){
+		a.from_string("[prove,prove,prove]");
+	  } else if(i == 4){
+		a.from_string("[prove,prove,prove,prove]");
+	  } else if(i == 5){
+		a.from_string("[prove,prove,prove,prove,prove]");
+	  } else{
+		a.from_string("[prove,prove,prove,prove,prove,prove]");
+	  }
+	  
+	  cout << "Metiendo " << max << " tuplas..." << endl;
+	  
+	  aux2 = time_LD(scb, max, a, 1);
+	  cout << "Incluidas " << max << " tuplas en " << fixed << aux2 << " segundos" << endl;
+	  
+	  cout << "Leyendo " << max << " tuplas..." << endl;
 
-    if (i == 2) {
-      Tupla a("tupla", "tupla");
-    } else if (i == 3) {
-      Tupla a("tupla", "tupla", "tupla");
-    } else if (i == 4) {
-      Tupla a("tupla", "tupla", "tupla", "tupla");
-    } else if (i == 5) {
-      Tupla a("tupla", "tupla", "tupla", "tupla", "tupla");
-    } else if (i == 6) {
-      Tupla a("tupla", "tupla", "tupla", "tupla", "tupla", "tupla");
-    }
+	  aux3 = time_LD(scb, max, a, 0);
+	  cout << "Leídas " << max << " tuplas en " << fixed << aux3 << " segundos" << endl;
+	  aux2 += aux3;
+	  
+	  cout << "Eliminando " << max << " tuplas..." << endl;
 
-    float aux, aux2, aux3;
-
-    cout << "Metiendo " << max << " tuplas..." << endl;
-
-    aux = time_LD(scb, max, a, 1);
-    cout << "Incluidas " << max << " tuplas en " << fixed << aux << " segundos"
-         << endl;
-
-    cout << "Leyendo " << max << " tuplas..." << endl;
-
-    aux2 = time_LD(scb, max, a, 0);
-    cout << "Leídas " << max << " tuplas en " << fixed << aux2 << " segundos"
-         << endl;
-    aux += aux2;
-
-    cout << "Eliminando " << max << " tuplas..." << endl;
-
-    aux2 = time_LD(scb, max, a, -1);
-    cout << "Eliminadas " << max << " tuplas en " << fixed << aux2
-         << " segundos" << endl;
-    aux += aux2;
-
-    cout << "Tiempo total parte 1: " << fixed << aux << " segundos" << endl
-         << endl;
-
-    cout << "Ahora las tuplas serán creadas de la forma from_string" << endl
-         << endl;
-
-    if (i == 1) {
-      a.from_string("[prove]");
-    } else if (i == 2) {
-      a.from_string("[prove,prove]");
-    } else if (i == 3) {
-      a.from_string("[prove,prove,prove]");
-    } else if (i == 4) {
-      a.from_string("[prove,prove,prove,prove]");
-    } else if (i == 5) {
-      a.from_string("[prove,prove,prove,prove,prove]");
-    } else {
-      a.from_string("[prove,prove,prove,prove,prove,prove]");
-    }
-
-    cout << "Metiendo " << max << " tuplas..." << endl;
-
-    aux2 = time_LD(scb, max, a, 1);
-    cout << "Incluidas " << max << " tuplas en " << fixed << aux2 << " segundos"
-         << endl;
-
-    cout << "Leyendo " << max << " tuplas..." << endl;
-
-    aux3 = time_LD(scb, max, a, 0);
-    cout << "Leídas " << max << " tuplas en " << fixed << aux3 << " segundos"
-         << endl;
-    aux2 += aux3;
-
-    cout << "Eliminando " << max << " tuplas..." << endl;
-
-    aux3 = time_LD(scb, max, a, -1);
-    cout << "Eliminadas " << max << " tuplas en " << fixed << aux3
-         << " segundos" << endl;
-
-    cout << "Tiempo total parte 2: " << fixed << aux2 + aux3 << " segundos"
-         << endl << endl;
-    cout << "Tiempo total entre las dos partes: " << fixed << aux + aux2 + aux3
-         << " segundos" << endl;
+	  aux3 = time_LD(scb, max, a, -1);
+	  cout << "Eliminadas " << max << " tuplas en " << fixed << aux3 << " segundos" << endl;
+	  
+	  cout << "Tiempo total parte 2: " << fixed << aux2 + aux3 << " segundos" << endl << endl;
+	  cout << "Tiempo total entre las dos partes: " << fixed << aux + aux2 + aux3 << " segundos" << endl;
   }
 }
 
 //--------------------------------------------------
 
-ADDFUNCTION(
-    t_tuplas,
-    "Tiempo tuplas, ejecutar como '1 t_tuplas N' siendo N el número de tuplas");
+ADDFUNCTION( t_tuplas, "Tiempo tuplas, ejecutar como '1 t_tuplas N' siendo N el número de tuplas");

@@ -56,6 +56,3 @@ xterm -geometry -0+0 -T "Subservidor 2" -e $PWD/$subserver 2 $subserver_ip2 $sub
 xterm -geometry +0-0 -T "Subservidor 3" -e $PWD/$subserver 3 $subserver_ip3 $subserver_port3 $server_ip $server_privateport &
 
 sleep 1
-
-echo -----Ejecutando cliente-----
-$cliente $server_ip $server_port  1 myexample .

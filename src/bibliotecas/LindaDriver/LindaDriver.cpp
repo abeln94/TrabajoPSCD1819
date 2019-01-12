@@ -66,7 +66,10 @@ LindaDriver::~LindaDriver() {
 void LindaDriver::PN(Tupla tupla) {
 #ifdef ALLOW_LOCAL
   if (_lindaDriver_local) {
-    _lindaDriver_scoreboard.PN(tupla);
+		string t = tupla.to_string();
+		Tupla tt(tupla.size());
+		tt.from_string(t);
+    _lindaDriver_scoreboard.PN(tt);
     return;
   }
 #endif
@@ -94,7 +97,14 @@ void LindaDriver::PN(Tupla tupla) {
 Tupla LindaDriver::RN(Tupla tupla) {
 #ifdef ALLOW_LOCAL
   if (_lindaDriver_local) {
-    return _lindaDriver_scoreboard.RN(tupla);
+		string t = tupla.to_string();
+		Tupla tt(tupla.size());
+		tt.from_string(t);
+    Tupla rr = _lindaDriver_scoreboard.RN(tt);
+		string r = rr.to_string();
+		Tupla respuesta(rr.size());
+		respuesta.from_string(r);
+		return respuesta;
   }
 #endif
 
@@ -125,7 +135,14 @@ Tupla LindaDriver::RN(Tupla tupla) {
 Tupla LindaDriver::readN(Tupla tupla) {
 #ifdef ALLOW_LOCAL
   if (_lindaDriver_local) {
-    return _lindaDriver_scoreboard.readN(tupla);
+		string t = tupla.to_string();
+		Tupla tt(tupla.size());
+		tt.from_string(t);
+    Tupla rr = _lindaDriver_scoreboard.readN(tt);
+		string r = rr.to_string();
+		Tupla respuesta(rr.size());
+		respuesta.from_string(r);
+		return respuesta;
   }
 #endif
 

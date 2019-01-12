@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <ctime>
+#include <chrono>
 #include "LindaDriver.hpp"
 
 using namespace std;
