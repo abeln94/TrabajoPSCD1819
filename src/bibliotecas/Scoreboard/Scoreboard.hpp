@@ -63,6 +63,11 @@ class Scoreboard {
   Idéntico a RN pero no elimina la nota del tablón, devuelve una copia.
   */
   Tupla readN(const Tupla& note);
+	
+	/**
+	Elimina todas las notas almacenadas, cancela procesos pendientes.
+	*/
+	void clear();
 
   //------------------- PRIVADO -----------------------
  private:

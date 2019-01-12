@@ -147,3 +147,23 @@ bool Scoreboard::_compare(const Tupla& dst, const Tupla& src) {
 //-----------------------------------------------------
 Scoreboard::PendingStruct::PendingStruct(Tupla& t, bool remove)
     : note(t), remove(remove) {};
+
+void Scoreboard::clear(){
+	//clear all notes
+	
+	unique_lock<mutex> lck(mtxMonitor);
+	
+	// clear all notes
+	notes.clear();
+	
+	// notify all pendings
+  auto p = pending.begin();
+  while (p != pending.end()) {
+		// for each pending, notify
+		(*p).get().condVar.notify_one();
+		++p;
+  }
+	
+	// clear pendings
+	pending.clear();
+}

@@ -65,13 +65,17 @@ class SafeSYS {
 };
 
 //Funciones encargadas de la comunicación exterior
-void control(int puerto, Socket& soc, int& socket_fd, SafeSYS& sys){
+void control(int puerto, Socket& soc, int& socket_fd, SafeSYS& sys, Scoreboard pizarras[]){
   string buffer = "";
   while(buffer!="END"){
     soc.Recv(socket_fd,buffer,10);
     if(buffer == "END"){
       break;
-    }
+    }else if(buffer == "CLEAR"){
+			for(int i=0;i<6;++i){
+				pizarras[i].clear();
+			}
+		}
   }
 
   raise(SIGTSTP);
@@ -306,7 +310,7 @@ int main(int argc, char * argv[]) {
   SafeSYS system;
   Scoreboard boards[6];
 
-  thread cntrl(&control,port_localhost,ref(soc_serv),ref(soc_serv_fd), ref(system));
+  thread cntrl(&control,port_localhost,ref(soc_serv),ref(soc_serv_fd), ref(system), ref(boards));
 
   thread cliente;
   int client_fd = 0;

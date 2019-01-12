@@ -91,6 +91,19 @@ void ControlSys::end(Socket &priv){
   }
 }
 
+void ControlSys::clear(Socket &priv){
+	string cmd = "CLEAR";
+  if(s1_b){
+    priv.Send(s1_fd,cmd);
+  }
+  if(s2_b){
+    priv.Send(s2_fd,cmd);
+  }
+  if(s3_b){
+    priv.Send(s3_fd,cmd);
+  }
+}
+
 void ControlSys::endPH3(){
   unique_lock<mutex> lck(mtx);
   while(cntrPH3 != 0){

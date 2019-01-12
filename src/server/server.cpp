@@ -159,6 +159,8 @@ void commands(int puerto, Socket& soc_priv, ControlSys &sys){
 			temp.Close(temp_fd);
 			
 			break;
+		}else if(buffer == "CLEAR"){
+			sys.clear(soc_priv);
 		}
   }
 	

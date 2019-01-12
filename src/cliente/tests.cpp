@@ -637,9 +637,13 @@ void t_tuplas(char* ip, int port, int _, char* param){
 
 ADDFUNCTION( t_tuplas, "Tiempo tuplas, ejecutar como '1 t_tuplas N' siendo N el número de tuplas");
 
-//--------------------------------------------------
-void detenedor(char* ip, int port, int _, char* param){
 
+
+
+//--------------------------------------------------
+//--------------------------------------------------
+//--------------------------------------------------
+void commands(char* ip, int port, int _, char* command){
 
 	Socket soc_serv(ip,port);
 
@@ -651,8 +655,8 @@ void detenedor(char* ip, int port, int _, char* param){
     exit(1);
   }
 
-  soc_serv.Send(soc_serv_fd, "END");
+  soc_serv.Send(soc_serv_fd, command);
 	soc_serv.Close(soc_serv_fd);
 }
 
-ADDFUNCTION( detenedor, "Detiene el servidor en activo");
+ADDFUNCTION( commands, "Envía un comando al servidor. ejecutar como '1 commands <COMMAND>'. Comandos admitidos: END, CLEAR");

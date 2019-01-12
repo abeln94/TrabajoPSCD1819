@@ -41,6 +41,8 @@ class ControlSys {
     void endPH3();
 
     int sumPH3(int n);
+		
+		void clear(Socket &priv);
 
 
   private:
