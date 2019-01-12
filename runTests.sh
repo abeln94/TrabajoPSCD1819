@@ -49,14 +49,14 @@ echo -----Compilando todo-----
 gmake
 
 echo -----Ejecutando servidor-----
-xterm -geometry +0+0 -T "Servidor" -e "cd $PWD && ./run server $server_port $server_privateport && sleep 5" &
+xterm -geometry +0+0 -T "Servidor" -e "cd $PWD && ./run server $server_port $server_privateport || sleep 5" &
 
 sleep 5
 
 echo -----Ejecutando subservidores-----
-xterm -geometry -0-0 -T "Subservidor 1" -e "cd $PWD && ./run subserver 1 $subserver_ip1 $subserver_port1 $server_ip $server_privateport && sleep 5" &
-xterm -geometry -0+0 -T "Subservidor 2" -e "cd $PWD && ./run subserver 2 $subserver_ip2 $subserver_port2 $server_ip $server_privateport && sleep 5" &
-xterm -geometry +0-0 -T "Subservidor 3" -e "cd $PWD && ./run subserver 3 $subserver_ip3 $subserver_port3 $server_ip $server_privateport && sleep 5" &
+xterm -geometry -0-0 -T "Subservidor 1" -e "cd $PWD && ./run subserver 1 $subserver_ip1 $subserver_port1 $server_ip $server_privateport || sleep 5" &
+xterm -geometry -0+0 -T "Subservidor 2" -e "cd $PWD && ./run subserver 2 $subserver_ip2 $subserver_port2 $server_ip $server_privateport || sleep 5" &
+xterm -geometry +0-0 -T "Subservidor 3" -e "cd $PWD && ./run subserver 3 $subserver_ip3 $subserver_port3 $server_ip $server_privateport || sleep 5" &
 
 
 if [ $# = 1 ]; then
