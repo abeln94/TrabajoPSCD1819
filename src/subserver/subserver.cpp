@@ -86,7 +86,7 @@ void control(int puerto, Socket& soc, int& socket_fd, SafeSYS& sys){
   temp.Close(temp_fd);
 }
 
-void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
+void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard pizarras[]){
   sys.sum(1);
   string mensaje;
   string buffer;
@@ -112,7 +112,7 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
         Tupla mens(lon);
         crear = mens.from_string(mensaje);
         if(crear){
-            pizarra.PN(mens);
+            pizarras[lon-1].PN(mens);
             buffer = "OK";
         } else {
             cerr << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
@@ -127,7 +127,7 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
         Tupla mens_fin(lon);
         crear = mens.from_string(mensaje);
         if(crear){
-            mens_fin = pizarra.RN(mens);
+            mens_fin = pizarras[lon-1].RN(mens);
             buffer = mens_fin.to_string();
         } else {
             cerr << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
@@ -142,7 +142,7 @@ void newclient(int socket_fd, Socket& soc, SafeSYS& sys, Scoreboard& pizarra){
         Tupla mens_fin(lon);
         crear = mens.from_string(mensaje);
         if(crear){
-            mens_fin = pizarra.readN(mens);
+            mens_fin = pizarras[lon-1].readN(mens);
             buffer = mens_fin.to_string();
         } else {
             cout << "[x] Error al crear tupla, formato de mensaje incorrecto" << endl;
@@ -304,7 +304,7 @@ int main(int argc, char * argv[]) {
   cout << "[x] Inicio Fase 3: Clientes"  << endl;
 
   SafeSYS system;
-  Scoreboard board;
+  Scoreboard boards[6];
 
   thread cntrl(&control,port_localhost,ref(soc_serv),ref(soc_serv_fd), ref(system));
 
@@ -327,7 +327,7 @@ int main(int argc, char * argv[]) {
     }
 
     if(end_mark != 1){ //Bugfix
-      cliente = thread(&newclient, client_fd, std::ref(soc_local), std::ref(system), std::ref(board));
+      cliente = thread(&newclient, client_fd, std::ref(soc_local), std::ref(system), std::ref(boards));
       cliente.detach();
       client_fd=0;
     } else { //end_mark a 1 y cliente del proceso de control

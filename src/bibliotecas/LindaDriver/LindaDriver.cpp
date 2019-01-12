@@ -12,7 +12,7 @@
 #ifdef ALLOW_LOCAL
 	//alows running in local having a global scoreboard object
 	#include "Scoreboard.hpp"
-	Scoreboard _lindaDriver_scoreboard;
+	Scoreboard _lindaDriver_scoreboards[6];
 	bool _lindaDriver_local = false;
 #endif
 
@@ -144,7 +144,7 @@ void LindaDriver::test_server(int numTuplas){
 void LindaDriver::PN(Tupla mensaje){
 		#ifdef ALLOW_LOCAL
 	if(_lindaDriver_local){
-		_lindaDriver_scoreboard.PN(mensaje);
+		_lindaDriver_scoreboards[mensaje.size()-1].PN(mensaje);
 		return;
 	}
 		#endif
@@ -209,7 +209,7 @@ void LindaDriver::PN(Tupla mensaje){
 Tupla LindaDriver::RN(Tupla mensaje){
 		#ifdef ALLOW_LOCAL
 	if(_lindaDriver_local){
-		return _lindaDriver_scoreboard.RN(mensaje);
+		return _lindaDriver_scoreboards[mensaje.size()-1].RN(mensaje);
 	}
 		#endif
 
@@ -277,7 +277,7 @@ Tupla LindaDriver::RN(Tupla mensaje){
 Tupla LindaDriver::readN(Tupla mensaje){
 		#ifdef ALLOW_LOCAL
 	if(_lindaDriver_local){
-		return _lindaDriver_scoreboard.readN(mensaje);
+		return _lindaDriver_scoreboards[mensaje.size()-1].readN(mensaje);
 	}
 		#endif
 
