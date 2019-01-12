@@ -206,7 +206,7 @@ int main(int argc, char * argv[]) {
   cout << ">> INICIANDO SERVICIO" << endl;
   cout << ">> SERVIDOR PRINCIPAL" << endl;
   cout << ">> PUERTO PÚBLICO = " << SERVER_PORT_PUBLIC << endl;
-  cout << ">> PUERTO PÚBLICO = " << SERVER_PORT_PRIVATE << endl;
+  cout << ">> PUERTO PRIVADO = " << SERVER_PORT_PRIVATE << endl;
   cout << ">>" << endl;
 
   //###################################################//

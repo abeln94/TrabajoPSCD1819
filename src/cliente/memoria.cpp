@@ -54,17 +54,14 @@ void t_medio(char* ip, int port, int i, char* param){
   LindaDriver scb(ip, port);
   
   Tupla tamano("numero", "?B");
-  Tupla end("?S");
   Tupla info("tupla", "", "", "", "", "");	//tupla,tamaño tupla,número,PN,readN,RN
   
   while(true){
-	  
-	Tupla querer = scb.readN(end);
-	if(querer[0] == "1"){ 
+	
+	Tupla querer = scb.RN(tamano);
+	if(querer[1] == "terminar"){
 	  break;
 	}
-	
-	querer = scb.RN(tamano);
 	int max = stoi(querer[1]);
 	info[2] = to_string(max);
 	
@@ -141,7 +138,6 @@ void t_cond(char* ip, int port, int _, char* param){
 
   Tupla tamano("numero", "1000");
   Tupla info("tupla", "?P", "?Q", "?X", "?B", "?N");	//tupla,tamaño tupla,número,PN,readN,RN
-  Tupla end("0");
   
   for(int i = 0; i < 6; ++i){
 	if(graf[i].is_open()){
@@ -149,10 +145,8 @@ void t_cond(char* ip, int port, int _, char* param){
 	}
   }
   
-  scb.PN(end);
-  scb.PN(tamano);
-  
   for(int i = 0; i < max; ++i){
+	scb.PN(tamano);
 	for(int j = 0; j < 6; ++j){
 	  Tupla querer = scb.RN(info);
 	  graf[j] << tamano[1] << "," << querer[3] << "," << querer[4] << "," << querer[5];
@@ -161,12 +155,10 @@ void t_cond(char* ip, int port, int _, char* param){
 	}
 	int n = stoi(tamano[1]);
 	tamano[1] = to_string(n + 1000);
-	scb.PN(tamano);
   }
   
-  scb.RN(end);
-  end[0] = "1";
-  scb.PN(end);
+  tamano[1] = "terminar";
+  scb.PN(tamano);
   
   for(int i = 0; i < 6; ++i){
 	cout << "Creado fichero numTuplas-" << i + 1 << ".csv con tuplas de tamaño " << i + 1 << endl;
@@ -176,7 +168,7 @@ void t_cond(char* ip, int port, int _, char* param){
 
 //--------------------------------------------------
 
-ADDFUNCTION( t_medio, "Gráfico, ejecutar como 'M t_medio N' siendo M el número de clientes y N el número de veces");
+ADDFUNCTION( t_medio, "Gráfico, ejecutar como 'M t_medio .' siendo M el número de clientes");
 ADDFUNCTION( t_cond, "Gráfico, ejecutar como '1 t_cond N' siendo N el número de veces");
 
 //--------------------------------------------------
@@ -197,16 +189,15 @@ void t_conc(char* ip, int port, int i, char* param){
   graf[5].open("concTuplas-6.csv");
 
   Tupla tamano("numero", "1000");
-  Tupla end("0");
-  Tupla info("tupla", "", "", "?X", "?B", "?N");	//tupla,tamaño tupla,número,PN,readN,RN
+  Tupla info("tupla", "?M", "", "?X", "?B", "?N");	//tupla,tamaño tupla,número,PN,readN,RN
   
   for (int i = 0; i < max; ++i) {
     scb.PN(tamano);
 	int n = stoi(tamano[1]);
 	tamano[1] = to_string(n + 1000);
   }
-
-  scb.PN(end);
+  
+  tamano[1] = "terminar";
   
   for(int i = 0; i < max; ++i){
 	info[2] = to_string(1000 *(i + 1));
@@ -215,15 +206,12 @@ void t_conc(char* ip, int port, int i, char* param){
 	  Tupla querer = scb.RN(info);
 	  graf[j] << info[2] << "," << querer[3] << "," << querer[4] << "," << querer[5];
 	  querer = scb.RN(info);
-	  graf[j] << "," << querer[3] << "," << querer[4] << "," << querer[5] << endl;;
+	  graf[j] << "," << querer[3] << "," << querer[4] << "," << querer[5] << endl;
 	}
 	cout << "\tRecibido con " << info[2] << " tuplas" << endl;
+	scb.PN(tamano);
   }
 
-  scb.RN(end);
-  end[0] = "1";
-  scb.PN(end);
-  
   for(int i = 0; i < 6; ++i){
 	cout << "Creado fichero concTuplas-" << i + 1 << ".csv con tuplas de tamaño " << i + 1 << endl;
   }
