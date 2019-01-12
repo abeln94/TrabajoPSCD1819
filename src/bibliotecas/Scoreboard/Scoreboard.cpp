@@ -145,9 +145,5 @@ bool Scoreboard::_compare(const Tupla& dst, const Tupla& src) {
   return true;
 }
 //-----------------------------------------------------
-void Scoreboard::vaciar(){
-  notes.clear();
-}
-//-----------------------------------------------------
 Scoreboard::PendingStruct::PendingStruct(Tupla& t, bool remove)
     : note(t), remove(remove) {};
