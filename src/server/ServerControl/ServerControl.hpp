@@ -43,6 +43,8 @@ class ControlSys {
     int sumPH3(int n);
 		
 		void clear(Socket &priv);
+		
+		int size(Socket &priv);
 
 
   private:

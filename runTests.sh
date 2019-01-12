@@ -61,12 +61,18 @@ xterm -geometry +0-0 -T "Subservidor 3" -e "cd $PWD && ./run subserver 3 $subser
 
 if [ $# = 1 ]; then
 
-	sleep 5
+	sleep 10
 
-	echo -----Ejecutando cliente-----
+	echo -----Ejecutando test 1-----
+	./run cliente $server_ip $server_port 1 example .
+	
+	echo -----Borrar notas-----
+	./run cliente $server_ip $server_privateport 1 commands CLEAR
+	
+	echo -----Ejecutando test 2-----
 	./run cliente $server_ip $server_port 1 myexample .
 
 	echo -----Deteniendo-----
-	./run cliente $server_ip $server_privateport 1 detenedor .
+	./run cliente $server_ip $server_privateport 1 commands END
 
 fi

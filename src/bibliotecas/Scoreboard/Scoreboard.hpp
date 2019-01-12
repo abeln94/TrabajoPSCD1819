@@ -68,6 +68,11 @@ class Scoreboard {
 	Elimina todas las notas almacenadas, cancela procesos pendientes.
 	*/
 	void clear();
+	
+	/**
+	Devuelve el número de notas almacenadas
+	*/
+	int size();
 
   //------------------- PRIVADO -----------------------
  private:

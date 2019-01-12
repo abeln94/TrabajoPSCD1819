@@ -651,12 +651,20 @@ void commands(char* ip, int port, int _, char* command){
   int soc_serv_fd = soc_serv.Connect();
   if (soc_serv_fd == -1) {
     string mensError(strerror(errno));
-      cerr << "[x]Error en el connect: " + mensError + "\n";
+      cerr << "[x] Servidor no iniciado o no puede ser contactado";
     exit(1);
   }
 
   soc_serv.Send(soc_serv_fd, command);
+	
+	string buffer;
+	if(strcmp(command,"SIZE")==0){
+		
+		soc_serv.Recv(soc_serv_fd, buffer, 100);
+		cout << "Respuesta obtenida: " << buffer << endl;
+	}
+	
 	soc_serv.Close(soc_serv_fd);
 }
 
-ADDFUNCTION( commands, "Envía un comando al servidor. ejecutar como '1 commands <COMMAND>'. Comandos admitidos: END, CLEAR");
+ADDFUNCTION( commands, "Envía un comando al servidor. ejecutar como '1 commands <COMMAND>'. Comandos admitidos: END, CLEAR, SIZE");

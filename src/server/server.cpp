@@ -161,6 +161,9 @@ void commands(int puerto, Socket& soc_priv, ControlSys &sys){
 			break;
 		}else if(buffer == "CLEAR"){
 			sys.clear(soc_priv);
+		}else if(buffer == "SIZE"){
+			int size = sys.size(soc_priv);
+			soc_priv.Send(strange_fd, to_string(size));
 		}
   }
 	

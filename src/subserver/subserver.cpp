@@ -75,6 +75,12 @@ void control(int puerto, Socket& soc, int& socket_fd, SafeSYS& sys, Scoreboard p
 			for(int i=0;i<6;++i){
 				pizarras[i].clear();
 			}
+		}else if(buffer == "SIZE"){
+			int size = 0;
+			for(int i=0;i<6;++i){
+				size += pizarras[i].size();
+			}
+			soc.Send(socket_fd,to_string(size));
 		}
   }
 

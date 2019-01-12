@@ -104,6 +104,28 @@ void ControlSys::clear(Socket &priv){
   }
 }
 
+int ControlSys::size(Socket &priv){
+	string cmd = "SIZE";
+	int size = 0;
+	string buffer;
+  if(s1_b){
+    priv.Send(s1_fd,cmd);
+		priv.Recv(s1_fd,buffer,10);
+		size += stoi(buffer);
+  }
+  if(s2_b){
+    priv.Send(s2_fd,cmd);
+		priv.Recv(s2_fd,buffer,10);
+		size += stoi(buffer);
+  }
+  if(s3_b){
+    priv.Send(s3_fd,cmd);
+		priv.Recv(s3_fd,buffer,10);
+		size += stoi(buffer);
+  }
+	return size;
+}
+
 void ControlSys::endPH3(){
   unique_lock<mutex> lck(mtx);
   while(cntrPH3 != 0){
