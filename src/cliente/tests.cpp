@@ -81,7 +81,7 @@ void t_worker(char* ip, int port, int i, char* param){
 void t_supervisor(char* ip, int port, int i, char* param){
   LindaDriver ld(ip, port);
 	
-	int M = atoi(param);
+  int M = atoi(param);
 	
   Tupla t_hacer("hacer", "ordenar", "");
   for (int i = 0; i < M; ++i) {
@@ -305,6 +305,7 @@ void t_dejar(char* ip, int port, int _, char* param){
   }
   //finalizar
   scb.RN(info);
+  scb.RN(init);
   
   for (int i = 0; i < max; ++i) {
     tenedor[2] = to_string(i);
@@ -456,7 +457,8 @@ void t_gasolinera(char* ip, int port, int _, char* param){
 	  n = stoi(querer[1]);
 	}
 	scb.readN(mantenimiento);
-	scb.RN(gasolinera);
+	querer = scb.RN(gasolinera);
+	n = stoi(querer[1]);
 	querer[1] = to_string(n - 1);
 	scb.PN(querer);
 	querer = scb.readN(surtidor);
