@@ -298,9 +298,9 @@ void t_dejar(char* ip, int port, int _, char* param){
   for(int i = 0; i < repetir * max; ++i){
 	Tupla querer = scb.RN(terminar);
 	int n = stoi(querer[2]);
-	tenedor[2] = querer[2];
+	(n % 2 == 0 ? tenedor[2] = to_string((n + 1)% max) : tenedor[2] = querer[2]);
 	scb.PN(tenedor);
-	(n % 2 == 0 ? tenedor[2] = to_string((n + 1)% max) : tenedor[2] = to_string((n - 1)% max));
+	(n % 2 == 0 ? tenedor[2] = querer[2] : tenedor[2] = to_string((n + 1)% max));
 	scb.PN(tenedor);
   }
   //finalizar
@@ -333,9 +333,9 @@ void t_coger(char* ip, int port, int _, char* param){
   for(int i = 0; i < repetir * max; ++i){
 	Tupla querer = scb.RN(coger);
 	int n = stoi(querer[2]);
-	tenedor[2] = querer[2];
+	(n % 2 == 0 ? tenedor[2] = to_string((n + 1)% max) : tenedor[2] = querer[2]);
 	scb.RN(tenedor);
-	(n % 2 == 0 ? tenedor[2] = to_string((n + 1)% max) : tenedor[2] = to_string((n - 1)% max));
+	(n % 2 == 0 ? tenedor[2] = querer[2] : tenedor[2] = to_string((n + 1)% max));
 	scb.RN(tenedor);
 	comer[2] = querer[2];
 	scb.PN(comer);
