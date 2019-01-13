@@ -70,7 +70,7 @@ if [ $# = 1 ]; then
 	./run cliente $server_ip $server_privateport 1 commands CLEAR
 	
 	echo -----Ejecutando test 2-----
-	./run cliente $server_ip $server_port 1 myexample .
+	./run cliente $server_ip $server_port 1 t_tuplas 10
 
 	echo -----Deteniendo-----
 	./run cliente $server_ip $server_privateport 1 commands END

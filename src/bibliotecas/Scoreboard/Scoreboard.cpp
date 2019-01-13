@@ -53,7 +53,7 @@ void Scoreboard::PN(const Tupla& note) {
   }
 
   // note wasn't removed, add a copy to list
-  notes.push_back(note);
+  notes.push_front(note); // at the beginning: LIFO
 }
 //-----------------------------------------------------
 Tupla Scoreboard::RN(const Tupla& note) {
@@ -97,7 +97,7 @@ Tupla Scoreboard::_rn(const Tupla& note, bool remove, unique_lock<mutex>& lck) {
   // nothing found, wait for it
   Tupla ret(note);  // this will be modified with the matching note
   Scoreboard::PendingStruct pend(ret, remove);
-  pending.push_back(pend);
+  pending.push_back(pend); // at the end: FIFO
   pend.condVar.wait(lck);
   // no need to remove from pending, already removed
   return ret;
