@@ -46,11 +46,12 @@ class Scoreboard {
   Para que dos notas coincidan se debe cumplir:
           - Deben tener el mismo número de elementos.
           - Para cada elemento de {note} que no comience con "?" o sea vacío, la
-			nota obtenida contendrá exactamente el mismo elemento.
+                        nota obtenida contendrá exactamente el mismo elemento.
           - Para todos los elementos de {note} que comiencen con "?" y sean
-			iguales, la nota obtenida contendrá el mismo elemento en todos ellos.
+                        iguales, la nota obtenida contendrá el mismo elemento en
+  todos ellos.
           - Los elementos de {note} que sean vacíos o la string "?" coinciden
-			con cualquier elemento.
+                        con cualquier elemento.
 
   Ejemplo: La nota [1,2,3,4,5]:
   Coincide con [1,2,3,4,5]
@@ -63,16 +64,16 @@ class Scoreboard {
   Idéntico a RN pero no elimina la nota del tablón, devuelve una copia.
   */
   Tupla readN(const Tupla& note);
-	
-	/**
-	Elimina todas las notas almacenadas, cancela procesos pendientes.
-	*/
-	void clear();
-	
-	/**
-	Devuelve el número de notas almacenadas
-	*/
-	int size();
+
+  /**
+  Elimina todas las notas almacenadas, cancela procesos pendientes.
+  */
+  void clear();
+
+  /**
+  Devuelve el número de notas almacenadas
+  */
+  int size();
 
   //------------------- PRIVADO -----------------------
  private:

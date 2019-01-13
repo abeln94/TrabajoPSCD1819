@@ -22,14 +22,14 @@ Scoreboard::~Scoreboard() {}
 //------------------- FUNCTIONS -----------------------
 //-----------------------------------------------------
 void Scoreboard::PN(const Tupla& note) {
-	// Post Note
+  // Post Note
 
   unique_lock<mutex> lck(mtxMonitor);
 
   // check if there are pending that want it
   auto p = pending.begin();
   while (p != pending.end()) {
-		// for each pending
+    // for each pending
 
     if (_compare((*p).get().note, note)) {
       // the note can be assigned
@@ -46,25 +46,24 @@ void Scoreboard::PN(const Tupla& note) {
         return;
       }
     } else {
-			// the note can't be asigned, check next
-			++p;
-		}
-
+      // the note can't be asigned, check next
+      ++p;
+    }
   }
 
   // note wasn't removed, add a copy to list
-  notes.push_front(note); // at the beginning: LIFO
+  notes.push_front(note);  // at the beginning: LIFO
 }
 //-----------------------------------------------------
 Tupla Scoreboard::RN(const Tupla& note) {
-	// Remove Note
+  // Remove Note
 
   unique_lock<mutex> lck(mtxMonitor);
   return _rn(note, true, lck);
 }
 //-----------------------------------------------------
 Tupla Scoreboard::readN(const Tupla& note) {
-	// read Note
+  // read Note
 
   unique_lock<mutex> lck(mtxMonitor);
   return _rn(note, false, lck);
@@ -73,12 +72,12 @@ Tupla Scoreboard::readN(const Tupla& note) {
 //------------------INTERNAL---------------------------
 //-----------------------------------------------------
 Tupla Scoreboard::_rn(const Tupla& note, bool remove, unique_lock<mutex>& lck) {
-	// Remove/read Note
+  // Remove/read Note
 
   // check if there is a matching note
   auto p = notes.begin();
   while (p != notes.end()) {
-		// for each note
+    // for each note
 
     if (_compare(note, *p)) {
       // note can be assigned
@@ -97,22 +96,22 @@ Tupla Scoreboard::_rn(const Tupla& note, bool remove, unique_lock<mutex>& lck) {
   // nothing found, wait for it
   Tupla ret(note);  // this will be modified with the matching note
   Scoreboard::PendingStruct pend(ret, remove);
-  pending.push_back(pend); // at the end: FIFO
+  pending.push_back(pend);  // at the end: FIFO
   pend.condVar.wait(lck);
   // no need to remove from pending, already removed
   return ret;
 }
 //-----------------------------------------------------
 bool Scoreboard::_compare(const Tupla& dst, const Tupla& src) {
-	// compare patter tuple (dst) with tuple (src)
+  // compare patter tuple (dst) with tuple (src)
 
   if (dst.size() != src.size()) {
     // different sizes, doesn't match
     return false;
   }
 
-	// check each element
-  map<string, string> vars; // to keep named variables
+  // check each element
+  map<string, string> vars;  // to keep named variables
   for (int i = 0; i < src.size(); ++i) {
     // for each element of the notes
 
@@ -148,29 +147,29 @@ bool Scoreboard::_compare(const Tupla& dst, const Tupla& src) {
 Scoreboard::PendingStruct::PendingStruct(Tupla& t, bool remove)
     : note(t), remove(remove) {};
 //-----------------------------------------------------
-void Scoreboard::clear(){
-	//clear all notes
-	
-	unique_lock<mutex> lck(mtxMonitor);
-	
-	// clear all notes
-	notes.clear();
-	
-	// notify all pendings
+void Scoreboard::clear() {
+  // clear all notes
+
+  unique_lock<mutex> lck(mtxMonitor);
+
+  // clear all notes
+  notes.clear();
+
+  // notify all pendings
   auto p = pending.begin();
   while (p != pending.end()) {
-		// for each pending, notify
-		(*p).get().condVar.notify_one();
-		++p;
+    // for each pending, notify
+    (*p).get().condVar.notify_one();
+    ++p;
   }
-	
-	// clear pendings
-	pending.clear();
+
+  // clear pendings
+  pending.clear();
 }
 //-----------------------------------------------------
-int Scoreboard::size(){
-	//returns number of notes
-	
-	unique_lock<mutex> lck(mtxMonitor);
-	return notes.size();
+int Scoreboard::size() {
+  // returns number of notes
+
+  unique_lock<mutex> lck(mtxMonitor);
+  return notes.size();
 }
