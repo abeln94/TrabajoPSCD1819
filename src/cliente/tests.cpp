@@ -581,3 +581,30 @@ void t_tuplas(char* ip, int port, int _, char* param){
 //--------------------------------------------------
 
 ADDFUNCTION( t_tuplas, "Tiempo tuplas, ejecutar como '1 t_tuplas N' siendo N el número de tuplas");
+
+void ping(char* ip, int port, int _, char* param){
+	string s;
+	int v = atoi(param);
+	
+	Canal c(ip, port, 100, 1000);
+	
+	for (int i=0;i<v;++i){
+		c << "ping";
+		c >> s;
+	}
+}
+
+void pong(char* ip, int port, int _, char* param){
+	
+	string s;
+	
+	Servidor sc(port, 1);
+	Canal c = sc.getCliente();
+	while(true){
+		c >> s;
+		c << s;
+	}
+}
+
+ADDFUNCTION(ping,"ping");
+ADDFUNCTION(pong,"pong");
