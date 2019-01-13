@@ -392,33 +392,34 @@ void t_mantenimiento(char* ip, int port, int _, char* param){
   int repetir = atoi(param);
 
   Tupla gasolinera("gasolinera", "?S");
+  Tupla surtidor("surtidor", "entro", "?C");
   Tupla mantenimiento("mantenimiento");
   Tupla fin("fin");
 
-  scb.PN(mantenimiento);
   Tupla querer = scb.readN(gasolinera);
   int max = stoi(querer[1]);
   
   for(int i = 0; i < repetir; ++i){
+	scb.PN(mantenimiento); 
 	esperar(4000, 6000);
 	scb.RN(mantenimiento);
 	cout << "------>>>> LLAMADA MANTENIMIENTO <<<<------" << endl;
-	querer = scb.readN(gasolinera);
-	int n = stoi(querer[1]);
-	while(n != max){
-	  querer = scb.readN(gasolinera);
-	  n = stoi(querer[1]);
+	for(int i = 0; i < max; ++i){
+	  scb.RN(surtidor);
 	}
 	cout << "------>>>> EMPIEZA MANTENIMIENTO <<<<------" << endl;
 	esperar(1000, 2000);
 	cout << "------>>>>   FIN MANTENIMIENTO   <<<<------" << endl;
-	scb.PN(mantenimiento);
+	for(int i = 0; i < max; ++i){
+	  surtidor[2] = to_string(i);
+	  scb.PN(surtidor);
+	}
+	surtidor[2] = "?B";
   }
 
   scb.RN(fin);
   fin.from_string("[OK]");
   scb.PN(fin);
-  scb.RN(mantenimiento);
 }
 
 //-----------------------------------------------------
@@ -445,23 +446,11 @@ void t_gasolinera(char* ip, int port, int _, char* param){
   
   surtidor[2] = "?B";
   scb.PN(gasolinera);
-  gasolinera[1] = "?B";
   
   for(int i = 0; i < repetir * numCoche; ++i){
 	scb.readN(mantenimiento);
-	Tupla querer = scb.RN(coche);
-	querer = scb.readN(gasolinera);
-	int n = stoi(querer[1]);
-	while(n == 0){
-	  querer = scb.readN(gasolinera);
-	  n = stoi(querer[1]);
-	}
-	scb.readN(mantenimiento);
-	querer = scb.RN(gasolinera);
-	n = stoi(querer[1]);
-	querer[1] = to_string(n - 1);
-	scb.PN(querer);
-	querer = scb.readN(surtidor);
+	scb.RN(coche);
+	Tupla querer = scb.readN(surtidor);
 	coger[2] = querer[2];
 	scb.RN(querer);
 	scb.PN(coger);
@@ -490,10 +479,6 @@ void t_surtidor(char* ip, int port, int _, char* param){
   for(int i = 0; i < repetir * numCoche; ++i){
 	querer = scb.RN(surtidorf);
 	surtidor[2] = querer[2]; 
-	querer = scb.RN(gasolinera);
-	int n = stoi(querer[1]);
-	querer[1] = to_string(n + 1);
-	scb.PN(querer);
 	scb.PN(surtidor);
   }
 
