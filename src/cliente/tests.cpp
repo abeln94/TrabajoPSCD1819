@@ -368,140 +368,147 @@ ADDFUNCTION(t_dejar,
 //-----------------------------------------------------
 //---------Asientos avión
 //-----------------------------------------------------
-void t_cliente(char* ip, int port, int i, char* param){
+void t_cliente(char* ip, int port, int i, char* param) {
   LindaDriver scb(ip, port);
 
   int max = atoi(param);
-  
-  Tupla coger("asiento", "" , "");
+
+  Tupla coger("asiento", "", "");
   Tupla asiento("estado", "?X");
-  
+
   Tupla init("init");
   scb.readN(init);
-  
+
   srand(time(NULL));
   string ocup;
-  
-  for(int i = 0; i < max; ++i){
-	for(int j = 0; j < max; ++j){
-	  ocup += 'L';
-	}
-	if(i != max - 1){
-	  ocup += '-';
-	}
+
+  for (int i = 0; i < max; ++i) {
+    for (int j = 0; j < max; ++j) {
+      ocup += 'L';
+    }
+    if (i != max - 1) {
+      ocup += '-';
+    }
   }
-  
+
   int n = 0;
-  while(true){
-	int n1 = rand()%max;
-	int n2 = rand()%max;
-	if(ocup[max * n1 + n1 + n2] != 'X'){
-	  coger[1] = to_string(n1);
-	  coger[2] = to_string(n2);
-	  scb.PN(coger);
-	  cout << "Cliente " << i << " intenta reservar " << coger[1] << coger[2] << endl;
-	  Tupla querer = scb.RN(asiento);
-	  if(querer[1] == "completo"){
-	    break;
-	  }
-	  if(querer[1] == "OK"){
-	    ++n;
-	    cout << "Cliente " << i << " ha reservado el asiento fila " << coger[1] << " número " << coger[2] << endl;
-	  } else{
-	    cout << "Asiento ocupado fila " << coger[1] << " asiento " << coger[2] << endl;
-	    cout << "PLAZA OCUPADA: " << querer[1] << endl;
-		ocup = querer[1];
-	  }
-	}
+  while (true) {
+    int n1 = rand() % max;
+    int n2 = rand() % max;
+    if (ocup[max * n1 + n1 + n2] != 'X') {
+      coger[1] = to_string(n1);
+      coger[2] = to_string(n2);
+      scb.PN(coger);
+      cout << "Cliente " << i << " intenta reservar " << coger[1] << coger[2]
+           << endl;
+      Tupla querer = scb.RN(asiento);
+      if (querer[1] == "completo") {
+        break;
+      }
+      if (querer[1] == "OK") {
+        ++n;
+        cout << "Cliente " << i << " ha reservado el asiento fila " << coger[1]
+             << " número " << coger[2] << endl;
+      } else {
+        cout << "Asiento ocupado fila " << coger[1] << " asiento " << coger[2]
+             << endl;
+        cout << "PLAZA OCUPADA: " << querer[1] << endl;
+        ocup = querer[1];
+      }
+    }
   }
-  
+
   cout << "Cliente " << i << " ha reservado " << n << " asientos" << endl;
 }
 
 //-----------------------------------------------------
-void t_avion(char* ip, int port, int _, char* param){
+void t_avion(char* ip, int port, int _, char* param) {
   LindaDriver scb(ip, port);
-	
-  int client, num;
-  sscanf (param,"%d %*c %d",&client,&num);
 
-  Tupla avion("avion", "" , "", "NO");
-  Tupla coger("asiento", "?C" , "?B");
+  int client, num;
+  sscanf(param, "%d %*c %d", &client, &num);
+
+  Tupla avion("avion", "", "", "NO");
+  Tupla coger("asiento", "?C", "?B");
   Tupla asiento("estado", "");
-  
-  for(int i = 0; i < num; ++i){
-	avion[1] = to_string(i);
-	for(int j = 0; j < num; ++j){
-	  avion[2] = to_string(j);
-	  scb.PN(avion);
-	}
+
+  for (int i = 0; i < num; ++i) {
+    avion[1] = to_string(i);
+    for (int j = 0; j < num; ++j) {
+      avion[2] = to_string(j);
+      scb.PN(avion);
+    }
   }
   avion[3] = "?L";
-  
+
   int ocupados = 0;
-  
+
   Tupla init("init");
   scb.PN(init);
-  
-  while(true){
-	if(ocupados == num * num){
-	  break;
-	}
-	Tupla querer = scb.RN(coger);
-	avion[1] = querer[1];
-	avion[2] = querer[2];
-	querer = scb.readN(avion);
-	if(querer[3] == "SI"){
-	  string ocup;
-	  for(int i = 0; i < num; ++i){
-		avion[1] = to_string(i);
-		for(int j = 0; j < num; ++j){
-		  avion[2] = to_string(j);
-		  querer = scb.readN(avion);
-		  if(querer[3] == "SI"){
-			ocup += 'X';
-		  } else {
-			ocup += 'L';
-		  }
-		}
-		if(i != num - 1){
-		  ocup += '-';
-		}
-	  }
-	  asiento[1] = ocup;
-	} else {
-	  ++ocupados;
-	  scb.RN(querer);
-	  querer[3] = "SI";
-	  scb.PN(querer);
-	  asiento[1] = "OK";
-	}
-	scb.PN(asiento);
+
+  while (true) {
+    if (ocupados == num * num) {
+      break;
+    }
+    Tupla querer = scb.RN(coger);
+    avion[1] = querer[1];
+    avion[2] = querer[2];
+    querer = scb.readN(avion);
+    if (querer[3] == "SI") {
+      string ocup;
+      for (int i = 0; i < num; ++i) {
+        avion[1] = to_string(i);
+        for (int j = 0; j < num; ++j) {
+          avion[2] = to_string(j);
+          querer = scb.readN(avion);
+          if (querer[3] == "SI") {
+            ocup += 'X';
+          } else {
+            ocup += 'L';
+          }
+        }
+        if (i != num - 1) {
+          ocup += '-';
+        }
+      }
+      asiento[1] = ocup;
+    } else {
+      ++ocupados;
+      scb.RN(querer);
+      querer[3] = "SI";
+      scb.PN(querer);
+      asiento[1] = "OK";
+    }
+    scb.PN(asiento);
   }
-  
+
   cout << "VUELO COMPLETO" << endl;
-  
+
   asiento[1] = "completo";
-  for(int i = 0; i < client; ++i){
-	scb.RN(coger);
-	scb.PN(asiento);
+  for (int i = 0; i < client; ++i) {
+    scb.RN(coger);
+    scb.PN(asiento);
   }
-  
-  for(int i = 0; i < num; ++i){
-	avion[1] = to_string(i);
-	for(int j = 0; j < num; ++j){
-	  avion[2] = to_string(j);
-	  scb.RN(avion);
-	}
+
+  for (int i = 0; i < num; ++i) {
+    avion[1] = to_string(i);
+    for (int j = 0; j < num; ++j) {
+      avion[2] = to_string(j);
+      scb.RN(avion);
+    }
   }
-  
+
   scb.RN(init);
 }
 //--------------------------------------------------
 
-ADDFUNCTION( t_cliente, "Asientos avión, ejecutar como '1 t_cliente M' siendo M el número de asientos/filas");
-ADDFUNCTION( t_avion, "Asientos avión, ejecutar como '1 t_avion N' siendo N el número de clientes y el de asientos/filas siguiendo este modelo 'clientes:asientos'");
-
+ADDFUNCTION(t_cliente,
+            "Asientos avión, ejecutar como '1 t_cliente M' siendo M el número "
+            "de asientos/filas");
+ADDFUNCTION(t_avion,
+            "Asientos avión, ejecutar como '1 t_avion N' siendo N el número de "
+            "clientes y el de asientos/filas siguiendo este modelo "
+            "'clientes:asientos'");
 
 //-----------------------------------------------------
 //---------Tiempo tuplas
