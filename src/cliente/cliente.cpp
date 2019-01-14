@@ -14,6 +14,7 @@
 #include <vector>
 #include <chrono>
 #include <cstdlib>
+#include <ctime>
 #include <fstream>
 #include "LindaDriver.hpp"
 
