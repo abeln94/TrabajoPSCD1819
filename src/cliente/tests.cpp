@@ -366,166 +366,142 @@ ADDFUNCTION(t_dejar,
             "filósofos");
 
 //-----------------------------------------------------
-//---------Control Gasolinera
+//---------Asientos avión
 //-----------------------------------------------------
-void t_coche(char* ip, int port, int i, char* param) {
+void t_cliente(char* ip, int port, int i, char* param){
   LindaDriver scb(ip, port);
 
-  int repetir = atoi(param);
-
-  Tupla coche("coche", to_string(i));
-  Tupla coger("surtidor", "coger", "?B");
-  Tupla gasolinera("gasolinera", "?S");
-  Tupla mantenimiento("mantenimiento");
-  Tupla surtidorf("surtidor", "dejo", "");
-
-  if (i == 0) {
-    Tupla info("repetir", to_string(repetir));
-    scb.PN(info);
+  int max = atoi(param);
+  
+  Tupla coger("asiento", "" , "");
+  Tupla asiento("estado", "?X");
+  
+  Tupla init("init");
+  scb.readN(init);
+  
+  srand(time(NULL));
+  string ocup;
+  
+  for(int i = 0; i < max; ++i){
+	for(int j = 0; j < max; ++j){
+	  ocup += 'L';
+	}
+	if(i != max - 1){
+	  ocup += '-';
+	}
   }
-
-  scb.readN(gasolinera);
-
-  for (int t = 0; t < repetir; ++t) {
-    scb.readN(mantenimiento);
-    scb.PN(coche);
-    Tupla querer = scb.RN(coger);
-    cout << "Coche " << i << " en el surtidor " << querer[2] << endl;
-    esperar(100, 1000);  // repostando
-    surtidorf[2] = querer[2];
-    scb.PN(surtidorf);
-    cout << "\tCoche " << i << " deja surtidor " << querer[2] << endl;
-    esperar(100, 1000);  // conduciendo
+  
+  int n = 0;
+  while(true){
+	int n1 = rand()%max;
+	int n2 = rand()%max;
+	if(ocup[max * n1 + n1 + n2] != 'X'){
+	  coger[1] = to_string(n1);
+	  coger[2] = to_string(n2);
+	  scb.PN(coger);
+	  cout << "Cliente " << i << " intenta reservar " << coger[1] << coger[2] << endl;
+	  Tupla querer = scb.RN(asiento);
+	  if(querer[1] == "completo"){
+	    break;
+	  }
+	  if(querer[1] == "OK"){
+	    ++n;
+	    cout << "Cliente " << i << " ha reservado el asiento fila " << coger[1] << " número " << coger[2] << endl;
+	  } else{
+	    cout << "Asiento ocupado fila " << coger[1] << " asiento " << coger[2] << endl;
+	    cout << "PLAZA OCUPADA: " << querer[1] << endl;
+		ocup = querer[1];
+	  }
+	}
   }
+  
+  cout << "Cliente " << i << " ha reservado " << n << " asientos" << endl;
 }
 
 //-----------------------------------------------------
-void t_mantenimiento(char* ip, int port, int _, char* param) {
+void t_avion(char* ip, int port, int _, char* param){
   LindaDriver scb(ip, port);
+	
+  int client, num;
+  sscanf (param,"%d %*c %d",&client,&num);
 
-  int repetir = atoi(param);
-
-  Tupla gasolinera("gasolinera", "?S");
-  Tupla surtidor("surtidor", "entro", "?C");
-  Tupla mantenimiento("mantenimiento");
-  Tupla fin("fin");
-
-  Tupla querer = scb.readN(gasolinera);
-  int max = stoi(querer[1]);
-
-  for (int i = 0; i < repetir; ++i) {
-    scb.PN(mantenimiento);
-    esperar(4000, 6000);
-    scb.RN(mantenimiento);
-    cout << "------>>>> LLAMADA MANTENIMIENTO <<<<------" << endl;
-    for (int i = 0; i < max; ++i) {
-      scb.RN(surtidor);
-    }
-    cout << "------>>>> EMPIEZA MANTENIMIENTO <<<<------" << endl;
-    esperar(1000, 2000);
-    cout << "------>>>>   FIN MANTENIMIENTO   <<<<------" << endl;
-    for (int i = 0; i < max; ++i) {
-      surtidor[2] = to_string(i);
-      scb.PN(surtidor);
-    }
-    surtidor[2] = "?B";
+  Tupla avion("avion", "" , "", "NO");
+  Tupla coger("asiento", "?C" , "?B");
+  Tupla asiento("estado", "");
+  
+  for(int i = 0; i < num; ++i){
+	avion[1] = to_string(i);
+	for(int j = 0; j < num; ++j){
+	  avion[2] = to_string(j);
+	  scb.PN(avion);
+	}
   }
-
-  scb.RN(fin);
-  fin.from_string("[OK]");
-  scb.PN(fin);
+  avion[3] = "?L";
+  
+  int ocupados = 0;
+  
+  Tupla init("init");
+  scb.PN(init);
+  
+  while(true){
+	if(ocupados == num * num){
+	  break;
+	}
+	Tupla querer = scb.RN(coger);
+	avion[1] = querer[1];
+	avion[2] = querer[2];
+	querer = scb.readN(avion);
+	if(querer[3] == "SI"){
+	  string ocup;
+	  for(int i = 0; i < num; ++i){
+		avion[1] = to_string(i);
+		for(int j = 0; j < num; ++j){
+		  avion[2] = to_string(j);
+		  querer = scb.readN(avion);
+		  if(querer[3] == "SI"){
+			ocup += 'X';
+		  } else {
+			ocup += 'L';
+		  }
+		}
+		if(i != num - 1){
+		  ocup += '-';
+		}
+	  }
+	  asiento[1] = ocup;
+	} else {
+	  ++ocupados;
+	  scb.RN(querer);
+	  querer[3] = "SI";
+	  scb.PN(querer);
+	  asiento[1] = "OK";
+	}
+	scb.PN(asiento);
+  }
+  
+  cout << "VUELO COMPLETO" << endl;
+  
+  asiento[1] = "completo";
+  for(int i = 0; i < client; ++i){
+	scb.RN(coger);
+	scb.PN(asiento);
+  }
+  
+  for(int i = 0; i < num; ++i){
+	avion[1] = to_string(i);
+	for(int j = 0; j < num; ++j){
+	  avion[2] = to_string(j);
+	  scb.RN(avion);
+	}
+  }
+  
+  scb.RN(init);
 }
-
-//-----------------------------------------------------
-void t_gasolinera(char* ip, int port, int _, char* param) {
-  LindaDriver scb(ip, port);
-
-  int max, numCoche;
-  sscanf(param, "%d %*c %d", &max, &numCoche);
-
-  Tupla coche("coche", "?B");
-  Tupla gasolinera("gasolinera", to_string(max));
-  Tupla surtidor("surtidor", "entro", "");
-  Tupla coger("surtidor", "coger", "");
-  Tupla mantenimiento("mantenimiento");
-  Tupla info("repetir", "?S");
-
-  for (int i = 0; i < max; ++i) {
-    surtidor[2] = to_string(i);
-    scb.PN(surtidor);
-  }
-
-  info = scb.readN(info);
-  int repetir = stoi(info[1]);
-
-  surtidor[2] = "?B";
-  scb.PN(gasolinera);
-
-  for (int i = 0; i < repetir * numCoche; ++i) {
-    scb.readN(mantenimiento);
-    scb.RN(coche);
-    Tupla querer = scb.readN(surtidor);
-    coger[2] = querer[2];
-    scb.RN(querer);
-    scb.PN(coger);
-  }
-}
-
-//-----------------------------------------------------
-void t_surtidor(char* ip, int port, int _, char* param) {
-  LindaDriver scb(ip, port);
-
-  int numCoche = atoi(param);
-
-  Tupla gasolinera("gasolinera", "?B");
-  Tupla surtidor("surtidor", "entro", "");
-  Tupla surtidorf("surtidor", "dejo", "?B");
-  Tupla info("repetir", "?S");
-  Tupla fin("fin");
-
-  info = scb.readN(info);
-  int repetir = stoi(info[1]);
-
-  Tupla querer = scb.readN(gasolinera);
-  int max = stoi(querer[1]);
-
-  for (int i = 0; i < repetir * numCoche; ++i) {
-    querer = scb.RN(surtidorf);
-    surtidor[2] = querer[2];
-    scb.PN(surtidor);
-  }
-
-  // esperar fin mantenimiento
-  scb.PN(fin);
-  fin.from_string("[OK]");
-  scb.RN(fin);
-
-  // finalizar
-  scb.RN(info);
-
-  for (int i = 0; i < max; ++i) {
-    surtidor[2] = to_string(i);
-    scb.RN(surtidor);
-  }
-
-  scb.RN(gasolinera);
-}
-
 //--------------------------------------------------
 
-ADDFUNCTION(t_coche,
-            "Control Gasolinera, ejecutar como 'N t_coche M' siendo N el "
-            "número de coches y M las veces que pasa por la gasolinera");
-ADDFUNCTION(t_mantenimiento,
-            "Control Gasolinera, ejecutar como '1 t_mantenimiento N' siendo N "
-            "el número de mantenimientos");
-ADDFUNCTION(t_gasolinera,
-            "Control Gasolinera, ejecutar como '1 t_gasolinera N' siendo N el "
-            "número de surtidores totales y el de coches con este formato "
-            "'surtidores:coches'");
-ADDFUNCTION(t_surtidor,
-            "Control Gasolinera, ejecutar como '1 t_surtidor N' siendo N el "
-            "número de coches");
+ADDFUNCTION( t_cliente, "Asientos avión, ejecutar como 'N t_cliente M' siendo N el número de clientes y M el número de asientos/filas");
+ADDFUNCTION( t_avion, "Asientos avión, ejecutar como '1 t_avion N' siendo N el número de clientes y el de asientos/filas siguiendo este modelo 'clientes:asientos'");
+
 
 //-----------------------------------------------------
 //---------Tiempo tuplas
