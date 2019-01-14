@@ -499,7 +499,7 @@ void t_avion(char* ip, int port, int _, char* param){
 }
 //--------------------------------------------------
 
-ADDFUNCTION( t_cliente, "Asientos avión, ejecutar como 'N t_cliente M' siendo N el número de clientes y M el número de asientos/filas");
+ADDFUNCTION( t_cliente, "Asientos avión, ejecutar como '1 t_cliente M' siendo M el número de asientos/filas");
 ADDFUNCTION( t_avion, "Asientos avión, ejecutar como '1 t_avion N' siendo N el número de clientes y el de asientos/filas siguiendo este modelo 'clientes:asientos'");
 
 
