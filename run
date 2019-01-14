@@ -12,11 +12,11 @@ set -e #Exit on first error
 
 case $1 in
   server|subserver|cliente)
-	#compila
-	gmake $1
+    #compila
+    gmake $1
 
-	#ejecuta
-	./build$(uname)/bin/$1/$1 "${@:2}"
+    #ejecuta
+    ./build$(uname)/bin/$1/$1 "${@:2}"
 
     ;;
   *)

@@ -1,5 +1,5 @@
 ##*****************************************************************
-## File:  runTests.sh
+## File:  lanzar.sh
 ## Authors:   GONZÁLEZ VILLA, DANIEL
 ##            NAYA FORCANO, ABEL
 ##            GONZÁLEZ GORRADO, JESÚS ÁNGEL
