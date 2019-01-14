@@ -77,18 +77,18 @@ LindaDriver::~LindaDriver() {
   // Cerramos conexiones restantes
   if (s1_ready) {
     soc_s1->Close(s1_fd);
+		delete soc_s1;
   }
   if (s2_ready) {
     soc_s2->Close(s2_fd);
+		delete soc_s2;
   }
   if (s3_ready) {
     soc_s3->Close(s3_fd);
+		delete soc_s3;
   }
 
   delete soc_serv;
-  delete soc_s1;
-  delete soc_s2;
-  delete soc_s3;
 }
 
 void LindaDriver::rellenar(int id, string ip, int port) {
