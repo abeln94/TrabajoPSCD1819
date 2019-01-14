@@ -178,7 +178,6 @@ void t_tamano(char* ip, int port, int _, char* param){
 	float tPN, treadN, tRN;
 	for(int i = 0; i < client; ++i){
 	  Tupla querer = scb.RN(info);
-	  cout << "INFO " << endl;
 	  tPN += stof(querer[1]);
 	  treadN += stof(querer[2]);
 	  tRN += stof(querer[3]);
