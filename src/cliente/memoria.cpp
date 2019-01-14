@@ -183,7 +183,7 @@ void t_tamano(char* ip, int port, int _, char* param){
 	  treadN += stof(querer[2]);
 	  tRN += stof(querer[3]);
 	}
-	graf << client << "," << tPN/client << "," << treadN/client << "," << tRN/client;
+	graf << client << "," << tPN/client << "," << treadN/client << "," << tRN/client << endl;
 	for(int o = 0; o < client; ++o){
 	  scb.PN(tamano);
 	}
