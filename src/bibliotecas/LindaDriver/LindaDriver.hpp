@@ -17,7 +17,6 @@
 
 using namespace std;
 
-//...
 
 class LindaDriver {
  public:

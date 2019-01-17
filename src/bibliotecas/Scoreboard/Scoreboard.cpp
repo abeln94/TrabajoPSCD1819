@@ -44,7 +44,7 @@ void Scoreboard::PN(const Tupla& note) {
   }
 
   // note wasn't removed, add a copy to list
-  notes.push_back(note);
+  notes.push_front(note);
 }
 //-----------------------------------------------------
 Tupla Scoreboard::RN(const Tupla& note) {

@@ -17,17 +17,6 @@ local_ip=local
 local_port=0
 
 
-#variables
-PWD=$(pwd)
-UNAME=$(uname)
-
-#paths
-binaries_dir=./build$UNAME/bin
-cliente=$binaries_dir/cliente/cliente
-server=$binaries_dir/server/server
-subserver=$binaries_dir/subserver/subserver
-
-
 ###################################33
 
 
@@ -46,13 +35,13 @@ echo -----Compilando todo-----
 gmake
 
 echo -----Ejecutando servidor-----
-xterm -geometry +0+0 -T "Servidor" -e $PWD/$server $server_port $server_privateport &
+xterm -geometry +0+0 -T "Servidor" -e "cd $PWD && ./run server $server_port $subserver_ip1 $subserver_port1 $subserver_ip2 $subserver_port2 $subserver_ip3 $subserver_port3 || sleep 5" &
 
-sleep 1
+sleep 5
 
 echo -----Ejecutando subservidores-----
-xterm -geometry -0-0 -T "Subservidor 1" -e $PWD/$subserver 1 $subserver_ip1 $subserver_port1 $server_ip $server_privateport &
-xterm -geometry -0+0 -T "Subservidor 2" -e $PWD/$subserver 2 $subserver_ip2 $subserver_port2 $server_ip $server_privateport &
-xterm -geometry +0-0 -T "Subservidor 3" -e $PWD/$subserver 3 $subserver_ip3 $subserver_port3 $server_ip $server_privateport &
+xterm -geometry -0-0 -T "Subservidor 1" -e "cd $PWD && ./run subserver $subserver_port1 || sleep 5" &
+xterm -geometry -0+0 -T "Subservidor 2" -e "cd $PWD && ./run subserver $subserver_port2 || sleep 5" &
+xterm -geometry +0-0 -T "Subservidor 3" -e "cd $PWD && ./run subserver $subserver_port3 || sleep 5" &
 
-sleep 1
+sleep 5

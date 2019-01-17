@@ -29,7 +29,7 @@ class Servidor {
   Inicializa un nuevo servidor en localhost:{port} para atender a exactamente
   {max_connections} clientes
   */
-  Servidor(int port, int max_connections);
+  Servidor(int port, int max_connections, int maxAttempts = 10, int millisWait = 1000);
 
   /**
   Finaliza el servidor
@@ -59,7 +59,7 @@ class Canal {
   Si no se consigue se espera {millisWait} millisegundos y se reintenta, un
   máximo de {maxAttempts} reintentos.
   */
-  Canal(string address, int port, int maxAttempts, int millisWait);
+  Canal(string address, int port, int maxAttempts = 10, int millisWait = 1000);
 
   /**
   Finaliza el canal

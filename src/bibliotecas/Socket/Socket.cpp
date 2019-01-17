@@ -28,26 +28,31 @@ using namespace std;
 const int MESSAGE_SIZE = 4001;  // mensajes de no más 4000 caracteres
 
 //-------------------------------------------------------------
-Servidor::Servidor(int port, int max_connections) {
+Servidor::Servidor(int port, int max_connections, int maxAttempts, int millisWait) {
   // Creación del socket con el que se llevará a cabo
   // la comunicación con el servidor.
   socket = new Socket(port);
 
   // Bind
-  int retry = 10;
-  while (retry > 0) {
-    socket_fd = socket->Bind();
-    if (socket_fd == -1) {
-      string mensError(strerror(errno));
-      cerr << "Error en el bind: " + mensError + "\n";
-      
-      retry--;
-      this_thread::sleep_for(chrono::milliseconds(1000));
-    } else {
-      break;
+	int count = 0;
+  do {
+		
+		if (count != 0) {
+      cerr << "Reintento " << count + 1 << "/" << maxAttempts << endl;
     }
-  }
-	if(retry == 0){
+		
+    socket_fd = socket->Bind();
+		count++;
+		
+    if (socket_fd == -1) {
+      this_thread::sleep_for(chrono::milliseconds(millisWait));
+    }
+  } while(socket_fd == -1 && count < maxAttempts);
+	
+	if(socket_fd == -1){
+		string mensError(strerror(errno));
+		cerr << "Error en el bind: " + mensError + "\n";
+		
 		throw "BIND"; //exit(1);
 	}
 
@@ -101,7 +106,7 @@ Canal::Canal(string address, int port, int maxAttempts, int millisWait) {
     // Conexión con el servidor
 
     if (count != 0) {
-      cerr << "Reintento " << count + 1 << "/" << maxAttempts << " ";
+      cerr << "Reintento " << count + 1 << "/" << maxAttempts << endl;
     }
 
     socket_fd = socket->Connect();
@@ -117,7 +122,7 @@ Canal::Canal(string address, int port, int maxAttempts, int millisWait) {
   if (socket_fd == -1) {
     cerr << "No se ha podido conectar con el servidor " + address + ":" +
                 to_string(port) + " : " << strerror(errno) << endl;
-    exit(1);
+    throw "CONNECT";
   }
 }
 //-------------------------------------------------------------
@@ -142,7 +147,7 @@ void Canal::operator<<(const string message) {
   int send_bytes = socket->Send(socket_fd, message);
 
   if (send_bytes <= 0) {
-    if (send_bytes == -1)
+    //if (send_bytes == -1)
       cerr << "Error al enviar datos: " << strerror(errno) << endl;
     throw "SEND_END";  // exit(1);
   }
@@ -153,7 +158,7 @@ void Canal::operator>>(string &message) {
   int read_bytes = socket->Recv(socket_fd, message, MESSAGE_SIZE);
 
   if (read_bytes <= 0) {
-    if (read_bytes == -1)
+    //if (read_bytes == -1)
       cerr << "Mensaje de error: " << strerror(errno) << endl;
     throw "RECV_END";  // exit(1);
   }

@@ -1,12 +1,3 @@
-//******************************************************************
-// File:  LindaDriver.cpp
-// Authors:   NOMBRES
-//            NOMBRES
-//            NOMBRES
-//            NOMBRES
-// Date:   Diciembre 2018-Enero 2019
-//*****************************************************************
-
 #include "LindaDriver.hpp"
 #include <sstream>
 
@@ -17,7 +8,7 @@ Scoreboard _lindaDriver_scoreboard;
 bool _lindaDriver_local = false;
 #endif
 
-//...
+
 
 LindaDriver::LindaDriver(string ip, int puerto) {
 #ifdef ALLOW_LOCAL
@@ -33,8 +24,8 @@ LindaDriver::LindaDriver(string ip, int puerto) {
   Canal servidor(ip, puerto, 10, 1000);
 
   // recibimos mensaje
-  // Buffer content: 000.000.000.000 XXXX 000.000.000.000 XXXX 000.000.000.000
-  // XXXX
+  // Buffer content: 
+	// "000.000.000.000 XXXX 000.000.000.000 XXXX 000.000.000.000 XXXX"
   servidor >> mensaje;
 
   // parseamos mensaje
@@ -43,8 +34,6 @@ LindaDriver::LindaDriver(string ip, int puerto) {
     data >> subIp >> subPort;
     canal[i] = new Canal(subIp, atoi(subPort.c_str()), 10, 1000);
   }
-
-  // no es necesario ningun mensaje de ok
 
   cout << "inicializado" << endl;
   // la conexión con el servidor se cierra automáticamente
@@ -66,10 +55,7 @@ LindaDriver::~LindaDriver() {
 void LindaDriver::PN(Tupla tupla) {
 #ifdef ALLOW_LOCAL
   if (_lindaDriver_local) {
-		string t = tupla.to_string();
-		Tupla tt(tupla.size());
-		tt.from_string(t);
-    _lindaDriver_scoreboard.PN(tt);
+    _lindaDriver_scoreboard.PN(tupla);
     return;
   }
 #endif
@@ -77,12 +63,9 @@ void LindaDriver::PN(Tupla tupla) {
   try {
     Canal& subserver = *getCanal(tupla.size());
 
-    // Añadimos "P" para que el subservidor sepa que accion realizar, y el
-    // tamaño
-    // de la tupla para que pueda tratar el mensaje.
-    string mens = "P" + to_string(tupla.size()) + tupla.to_string();
+    // Enviamos comando P
+    subserver << "P" + tupla.to_string();
     
-    subserver << mens;
 
     // recibimos respuesta, aunque la omitimos
     string respuesta;
@@ -97,34 +80,22 @@ void LindaDriver::PN(Tupla tupla) {
 Tupla LindaDriver::RN(Tupla tupla) {
 #ifdef ALLOW_LOCAL
   if (_lindaDriver_local) {
-		string t = tupla.to_string();
-		Tupla tt(tupla.size());
-		tt.from_string(t);
-    Tupla rr = _lindaDriver_scoreboard.RN(tt);
-		string r = rr.to_string();
-		Tupla respuesta(rr.size());
-		respuesta.from_string(r);
-		return respuesta;
+    return _lindaDriver_scoreboard.RN(tupla);
   }
 #endif
 
   try {
     Canal& subserver = *getCanal(tupla.size());
 
-    // Añadimos "R" para que el subservidor sepa que accion realizar, y el
-    // tamaño
-    // de la tupla para que pueda tratar el mensaje.
-    string mens = "R" + to_string(tupla.size()) + tupla.to_string();
-    
-    subserver << mens;
+    // Enviamos comando R
+    subserver << "R" + tupla.to_string();
 
     // recibimos respuesta
     string respuesta;
     subserver >> respuesta;
 
-    Tupla resultado(tupla.size());
-    resultado.from_string(respuesta);
-    return resultado;
+    tupla.from_string(respuesta);
+    return tupla;
   }
   catch (...) {
     cerr << "Subservidor desconectado" << endl;
@@ -135,34 +106,23 @@ Tupla LindaDriver::RN(Tupla tupla) {
 Tupla LindaDriver::readN(Tupla tupla) {
 #ifdef ALLOW_LOCAL
   if (_lindaDriver_local) {
-		string t = tupla.to_string();
-		Tupla tt(tupla.size());
-		tt.from_string(t);
-    Tupla rr = _lindaDriver_scoreboard.readN(tt);
-		string r = rr.to_string();
-		Tupla respuesta(rr.size());
-		respuesta.from_string(r);
-		return respuesta;
+    return _lindaDriver_scoreboard.readN(tupla);
   }
 #endif
 
   try {
     Canal& subserver = *getCanal(tupla.size());
 
-    // Añadimos "r" para que el subservidor sepa que accion realizar, y el
-    // tamaño
-    // de la tupla para que pueda tratar el mensaje.
-    string mens = "r" + to_string(tupla.size()) + tupla.to_string();
+    // Enviamos comando r
+    subserver << "r" + tupla.to_string();
     
-    subserver << mens;
 
     // recibimos respuesta
     string respuesta;
     subserver >> respuesta;
 
-    Tupla resultado(tupla.size());
-    resultado.from_string(respuesta);
-    return resultado;
+    tupla.from_string(respuesta);
+    return tupla;
   }
   catch (...) {
     cerr << "Subservidor desconectado" << endl;
